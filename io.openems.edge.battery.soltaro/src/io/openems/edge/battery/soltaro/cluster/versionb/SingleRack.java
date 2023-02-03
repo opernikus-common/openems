@@ -434,9 +434,9 @@ public class SingleRack {
 		this.addEntry(map, KEY_MIN_CELL_VOLTAGE_ID, new IntegerDoc().unit(Unit.NONE));
 		this.addEntry(map, KEY_MIN_CELL_VOLTAGE, new IntegerDoc().unit(Unit.MILLIVOLT));
 		this.addEntry(map, KEY_MAX_CELL_TEMPERATURE_ID, new IntegerDoc().unit(Unit.NONE));
-		this.addEntry(map, KEY_MAX_CELL_TEMPERATURE, new IntegerDoc().unit(Unit.DEZIDEGREE_CELSIUS));
+		this.addEntry(map, KEY_MAX_CELL_TEMPERATURE, new IntegerDoc().unit(Unit.DECIDEGREE_CELSIUS));
 		this.addEntry(map, KEY_MIN_CELL_TEMPERATURE_ID, new IntegerDoc().unit(Unit.NONE));
-		this.addEntry(map, KEY_MIN_CELL_TEMPERATURE, new IntegerDoc().unit(Unit.DEZIDEGREE_CELSIUS));
+		this.addEntry(map, KEY_MIN_CELL_TEMPERATURE, new IntegerDoc().unit(Unit.DECIDEGREE_CELSIUS));
 		this.addEntry(map, KEY_ALARM_LEVEL_2_CELL_DISCHA_TEMP_LOW, Doc.of(Level.FAULT)
 				.text("Rack" + this.rackNumber + " Cell Discharge Temperature Low Alarm Level 2")); /* Bit 15 */
 		this.addEntry(map, KEY_ALARM_LEVEL_2_CELL_DISCHA_TEMP_HIGH, Doc.of(Level.FAULT)
@@ -521,7 +521,7 @@ public class SingleRack {
 		for (var i = 0; i < this.numberOfSlaves; i++) {
 			for (var j = i * TEMPERATURE_SENSORS_PER_MODULE; j < (i + 1) * TEMPERATURE_SENSORS_PER_MODULE; j++) {
 				var key = this.getSingleCellPrefix(j) + "_" + TEMPERATURE;
-				this.addEntry(map, key, new IntegerDoc().unit(Unit.DEZIDEGREE_CELSIUS));
+				this.addEntry(map, key, new IntegerDoc().unit(Unit.DECIDEGREE_CELSIUS));
 			}
 		}
 

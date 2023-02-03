@@ -1,0 +1,9 @@
+= Heater Chp Dachs
+
+Implemented Natures::
+- Heater
+- Chp
+- ManagedHeaterByOperationMode
+- ManagedChp
+
+https://github.com/OpenEMS/openems/tree/develop/io.openems.edge.fenecon.mini[Source Code icon:github[]]

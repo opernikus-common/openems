@@ -937,101 +937,101 @@ public class SingleRack extends AbstractOpenemsModbusComponent
 				.unit(Unit.MILLIVOLT)), //
 
 		CLUSTER_1_BATTERY_00_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_01_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_02_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_03_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_04_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_05_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_06_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_07_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_08_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_09_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_10_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_11_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_12_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_13_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_14_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_15_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_16_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_17_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_18_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_19_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_20_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_21_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_22_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_23_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_24_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_25_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_26_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_27_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_28_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_29_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_30_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_31_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_32_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_33_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_34_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_35_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_36_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_37_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_38_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_39_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_40_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_41_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_42_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_43_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_44_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_45_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_46_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_BATTERY_47_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 
 		// StateChannels
 		ALARM_LEVEL_2_CELL_DISCHA_TEMP_LOW(Doc.of(Level.WARNING) //

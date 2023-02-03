@@ -235,15 +235,15 @@ public interface BmwBattery extends OpenemsComponent, EventHandler {
 
 		AVERAGE_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
 				.accessMode(AccessMode.READ_ONLY) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 
 		MINIMUM_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
 				.accessMode(AccessMode.READ_ONLY) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 
 		MAXIMUM_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
 				.accessMode(AccessMode.READ_ONLY) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 
 		AVERAGE_CELL_VOLTAGE(Doc.of(OpenemsType.INTEGER) //
 				.accessMode(AccessMode.READ_ONLY) //
@@ -259,11 +259,11 @@ public interface BmwBattery extends OpenemsComponent, EventHandler {
 
 		CONTAINER_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
 				.accessMode(AccessMode.READ_ONLY) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 
 		AMBIENT_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
 				.accessMode(AccessMode.READ_ONLY) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 
 		HUMIDITY_CONTAINER(Doc.of(OpenemsType.INTEGER) //
 				.accessMode(AccessMode.READ_ONLY) //

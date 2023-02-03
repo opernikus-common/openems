@@ -34,7 +34,7 @@ public interface Heater extends OpenemsComponent {
 	 * </ul>
 	 */
 	FLOW_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-		.unit(Unit.DEZIDEGREE_CELSIUS) //
+		.unit(Unit.DECIDEGREE_CELSIUS) //
 		.persistencePriority(PersistencePriority.MEDIUM) //
 		.accessMode(AccessMode.READ_ONLY)), //
 
@@ -48,7 +48,7 @@ public interface Heater extends OpenemsComponent {
 	 * </ul>
 	 */
 	RETURN_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-		.unit(Unit.DEZIDEGREE_CELSIUS) //
+		.unit(Unit.DECIDEGREE_CELSIUS) //
 		.persistencePriority(PersistencePriority.MEDIUM) //
 		.accessMode(AccessMode.READ_ONLY)), //
 

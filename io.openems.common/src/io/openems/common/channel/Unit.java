@@ -196,7 +196,7 @@ public enum Unit {
 	/**
 	 * Unit of Temperature [dC].
 	 */
-	DEZIDEGREE_CELSIUS("dC", DEGREE_CELSIUS, -1),
+	DECIDEGREE_CELSIUS("dC", DEGREE_CELSIUS, -1),
 
 	// ##########
 	// Time
@@ -304,7 +304,7 @@ public enum Unit {
 			return value.toString();
 		case AMPERE:
 		case DEGREE_CELSIUS:
-		case DEZIDEGREE_CELSIUS:
+		case DECIDEGREE_CELSIUS:
 		case EUROS_PER_MEGAWATT_HOUR:
 		case HERTZ:
 		case MILLIAMPERE:

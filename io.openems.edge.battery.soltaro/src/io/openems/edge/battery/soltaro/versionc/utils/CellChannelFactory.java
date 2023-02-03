@@ -16,7 +16,7 @@ public class CellChannelFactory {
 	public static enum Type {
 		TEMPERATURE_SINGLE(//
 				"_TEMPERATURE", //
-				Unit.DEZIDEGREE_CELSIUS, //
+				Unit.DECIDEGREE_CELSIUS, //
 				Constants.TEMPERATURE_ADDRESS_OFFSET + Constants.SINGLE_RACK_ADDRESS_OFFSET, //
 				Constants.TEMPERATURE_SENSORS_PER_MODULE), //
 		VOLTAGE_SINGLE(//
@@ -27,7 +27,7 @@ public class CellChannelFactory {
 
 		TEMPERATURE_CLUSTER(//
 				"_TEMPERATURE", //
-				Unit.DEZIDEGREE_CELSIUS, //
+				Unit.DECIDEGREE_CELSIUS, //
 				Constants.TEMPERATURE_ADDRESS_OFFSET, //
 				Constants.TEMPERATURE_SENSORS_PER_MODULE), //
 		VOLTAGE_CLUSTER(//

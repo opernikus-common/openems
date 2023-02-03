@@ -934,7 +934,7 @@ public class SingleRackVersionBImpl extends AbstractOpenemsModbusComponent imple
 						// Create Temperature Channel
 						var channelId = new ChannelIdImpl(
 								"CLUSTER_1_BATTERY_" + String.format("%03d", sensor) + "_TEMPERATURE",
-								Doc.of(OpenemsType.INTEGER).unit(Unit.DEZIDEGREE_CELSIUS));
+								Doc.of(OpenemsType.INTEGER).unit(Unit.DECIDEGREE_CELSIUS));
 						this.addChannel(channelId);
 						// Create Modbus-Mapping for Temperatures
 						var uwe = new UnsignedWordElement(TEMPERATURE_ADDRESS_OFFSET + sensor);

@@ -503,7 +503,7 @@ public class Rrd4jTimedataImpl extends AbstractOpenemsComponent
 		case AMPERE:
 		case AMPERE_HOURS:
 		case DEGREE_CELSIUS:
-		case DEZIDEGREE_CELSIUS:
+		case DECIDEGREE_CELSIUS:
 		case EUROS_PER_MEGAWATT_HOUR:
 		case HERTZ:
 		case HOUR:

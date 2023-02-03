@@ -162,7 +162,7 @@ public interface SingleRackVersionC extends Battery, OpenemsComponent, StartStop
 				.accessMode(AccessMode.READ_WRITE) //
 				.text("Default: 2650mV")), //
 		LEVEL2_CELL_OVER_TEMPERATURE_PROTECTION(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		LEVEL2_CELL_OVER_VOLTAGE_PROTECTION(Doc.of(OpenemsType.INTEGER) //
 				.unit(Unit.MILLIVOLT) //
@@ -201,13 +201,13 @@ public interface SingleRackVersionC extends Battery, OpenemsComponent, StartStop
 				.unit(Unit.MILLIAMPERE) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		LEVEL2_CELL_OVER_TEMPERATURE_RECOVER(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		LEVEL2_CELL_UNDER_TEMPERATURE_PROTECTION(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		LEVEL2_CELL_UNDER_TEMPERATURE_RECOVER(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		LEVEL2_SOC_LOW_PROTECTION(Doc.of(OpenemsType.INTEGER) //
 				.unit(Unit.PERCENT) //
@@ -216,10 +216,10 @@ public interface SingleRackVersionC extends Battery, OpenemsComponent, StartStop
 				.unit(Unit.PERCENT) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		LEVEL2_CONNECTOR_TEMPERATURE_HIGH_PROTECTION(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		LEVEL2_CONNECTOR_TEMPERATURE_HIGH_PROTECTION_RECOVER(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		LEVEL2_INSULATION_PROTECTION(Doc.of(OpenemsType.INTEGER) //
 				.unit(Unit.OHM) //
@@ -240,25 +240,25 @@ public interface SingleRackVersionC extends Battery, OpenemsComponent, StartStop
 				.unit(Unit.MILLIVOLT) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		LEVEL2_DISCHARGE_TEMPERATURE_HIGH_PROTECTION(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		LEVEL2_DISCHARGE_TEMPERATURE_HIGH_PROTECTION_RECOVER(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		LEVEL2_DISCHARGE_TEMPERATURE_LOW_PROTECTION(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		LEVEL2_DISCHARGE_TEMPERATURE_LOW_PROTECTION_RECOVER(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		LEVEL2_TEMPERATURE_DIFFERENCE_PROTECTION(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		LEVEL2_TEMPERATURE_DIFFERENCE_PROTECTION_RECOVER(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		LEVEL1_CELL_OVER_TEMPERATURE_PROTECTION(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		LEVEL1_CELL_OVER_VOLTAGE_PROTECTION(Doc.of(OpenemsType.INTEGER) //
 				.unit(Unit.MILLIVOLT) //
@@ -297,13 +297,13 @@ public interface SingleRackVersionC extends Battery, OpenemsComponent, StartStop
 				.unit(Unit.MILLIAMPERE) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		LEVEL1_CELL_OVER_TEMPERATURE_RECOVER(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		LEVEL1_CELL_UNDER_TEMPERATURE_PROTECTION(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		LEVEL1_CELL_UNDER_TEMPERATURE_RECOVER(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		LEVEL1_SOC_LOW_PROTECTION(Doc.of(OpenemsType.INTEGER) //
 				.unit(Unit.PERCENT) //
@@ -312,10 +312,10 @@ public interface SingleRackVersionC extends Battery, OpenemsComponent, StartStop
 				.unit(Unit.PERCENT) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		LEVEL1_CONNECTOR_TEMPERATURE_HIGH_PROTECTION(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		LEVEL1_CONNECTOR_TEMPERATURE_HIGH_PROTECTION_RECOVER(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		LEVEL1_INSULATION_PROTECTION(Doc.of(OpenemsType.INTEGER) //
 				.unit(Unit.OHM) //
@@ -336,22 +336,22 @@ public interface SingleRackVersionC extends Battery, OpenemsComponent, StartStop
 				.unit(Unit.MILLIVOLT) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		LEVEL1_DISCHARGE_TEMPERATURE_HIGH_PROTECTION(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		LEVEL1_DISCHARGE_TEMPERATURE_HIGH_PROTECTION_RECOVER(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		LEVEL1_DISCHARGE_TEMPERATURE_LOW_PROTECTION(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		LEVEL1_DISCHARGE_TEMPERATURE_LOW_PROTECTION_RECOVER(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		LEVEL1_TEMPERATURE_DIFFERENCE_PROTECTION(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		LEVEL1_TEMPERATURE_DIFFERENCE_PROTECTION_RECOVER(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		PRE_ALARM_CELL_OVER_VOLTAGE_ALARM(Doc.of(OpenemsType.INTEGER) //
 				.unit(Unit.MILLIVOLT) //
@@ -390,16 +390,16 @@ public interface SingleRackVersionC extends Battery, OpenemsComponent, StartStop
 				.unit(Unit.MILLIAMPERE) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		PRE_ALARM_CELL_OVER_TEMPERATURE_ALARM(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		PRE_ALARM_CELL_OVER_TEMPERATURE_RECOVER(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		PRE_ALARM_CELL_UNDER_TEMPERATURE_ALARM(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		PRE_ALARM_CELL_UNDER_TEMPERATURE_RECOVER(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		PRE_ALARM_SOC_LOW_ALARM(Doc.of(OpenemsType.INTEGER) //
 				.unit(Unit.PERCENT) //
@@ -408,10 +408,10 @@ public interface SingleRackVersionC extends Battery, OpenemsComponent, StartStop
 				.unit(Unit.PERCENT) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		PRE_ALARM_CONNECTOR_TEMPERATURE_HIGH_ALARM(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		PRE_ALARM_CONNECTOR_TEMPERATURE_HIGH_ALARM_RECOVER(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		PRE_ALARM_INSULATION_ALARM(Doc.of(OpenemsType.INTEGER) //
 				.unit(Unit.OHM) //
@@ -432,22 +432,22 @@ public interface SingleRackVersionC extends Battery, OpenemsComponent, StartStop
 				.unit(Unit.MILLIVOLT) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		PRE_ALARM_DISCHARGE_TEMPERATURE_HIGH_ALARM(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		PRE_ALARM_DISCHARGE_TEMPERATURE_HIGH_ALARM_RECOVER(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		PRE_ALARM_DISCHARGE_TEMPERATURE_LOW_ALARM(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		PRE_ALARM_DISCHARGE_TEMPERATURE_LOW_ALARM_RECOVER(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		PRE_ALARM_TEMPERATURE_DIFFERENCE_ALARM(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.accessMode(AccessMode.READ_WRITE)), //
 		PRE_ALARM_TEMPERATURE_DIFFERENCE_ALARM_RECOVER(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.accessMode(AccessMode.READ_WRITE)), //
 
 		// EnumReadChannels
@@ -476,13 +476,13 @@ public interface SingleRackVersionC extends Battery, OpenemsComponent, StartStop
 				.unit(Unit.NONE) //
 				.text("Range: 1 ~ 512")), //
 		CLUSTER_1_MAX_CELL_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.text("Range: -400 ~ 1500")), //
 		CLUSTER_1_MIN_CELL_TEMPERATURE_ID(Doc.of(OpenemsType.INTEGER) //
 				.unit(Unit.NONE) //
 				.text("Range: 1 ~ 512")), //
 		CLUSTER_1_MIN_CELL_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS) //
+				.unit(Unit.DECIDEGREE_CELSIUS) //
 				.text("Range: -400 ~ 1500")), //
 		CLUSTER_1_AVERAGE_VOLTAGE(Doc.of(OpenemsType.INTEGER) //
 				.unit(Unit.MILLIVOLT)), //
@@ -494,7 +494,7 @@ public interface SingleRackVersionC extends Battery, OpenemsComponent, StartStop
 				.unit(Unit.KILOOHM)),
 		CLUSTER_RUN_STATE(Doc.of(ClusterRunState.values())), // TODO rename Cluster_1
 		CLUSTER_1_AVG_TEMPERATURE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.DEZIDEGREE_CELSIUS)), //
+				.unit(Unit.DECIDEGREE_CELSIUS)), //
 		CLUSTER_1_PROJECT_ID(Doc.of(OpenemsType.INTEGER) //
 				.unit(Unit.NONE) //
 				.text("Project Firmware Version")), //

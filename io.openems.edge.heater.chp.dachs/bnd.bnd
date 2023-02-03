@@ -1,0 +1,16 @@
+Bundle-Name: OpenEMS Edge Chp Dachs
+Bundle-Vendor: Consolinno 
+Bundle-License: https://opensource.org/licenses/EPL-2.0
+Bundle-Version: 1.0.0.${tstamp}
+
+-buildpath: \
+	${buildpath},\
+	io.openems.common,\
+	io.openems.edge.common,\
+	io.openems.edge.heater.api,\
+	io.openems.edge.meter.api,\
+	io.openems.edge.thermometer.api
+
+-testpath: \
+	${testpath},\
+	io.openems.common
