@@ -17,6 +17,6 @@ public enum ThermometerType {
 		this.copyChannel = copyChannel;
 	}
 
-	public ChannelId copyChannel;
+	public final ChannelId copyChannel;
 
 }

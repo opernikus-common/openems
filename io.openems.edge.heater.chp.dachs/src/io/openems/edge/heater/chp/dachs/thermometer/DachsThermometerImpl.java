@@ -1,5 +1,7 @@
 package io.openems.edge.heater.chp.dachs.thermometer;
 
+import io.openems.common.types.OpenemsType;
+import io.openems.edge.common.type.TypeUtils;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -43,8 +45,8 @@ public class DachsThermometerImpl extends AbstractOpenemsComponent implements Th
 
 	private void addCopyListener() {
 		this.parent.channel(this.type.copyChannel).onUpdate((value) -> {
-			Integer intValue = (Integer) value.get();
-			this._setTemperature(intValue);
+			//safe casting with TypeUtils
+			this._setTemperature(TypeUtils.getAsType(OpenemsType.INTEGER, value));
 		});
 	}
 

@@ -25,7 +25,7 @@ public enum ErrorCode implements OptionsEnum {
 	SENSOR1(107, "Sensor 1 - interruption/short-circuit (Fuehler 1 - Unterbrechung/Kurzschluss"), //
 	SENSOR2(108, "Sensor 2 - interruption/short-circuit (Fuehler 2 - Unterbrechung/Kurzschluss"), //
 	OUTSIDE_SENSOR(109, "Outside sensor - interruption/short-circuit (Außenfuehler - Unterbrechung/Kurzschluss"), //
-	ENCLOUSURE_SENSOR(110, "Enclosure sensor - interruption/short-circuit (Kapselfuehler - Unterbrechung/Kurzschluss"), //
+	ENCLOSURE_SENSOR(110, "Enclosure sensor - interruption/short-circuit (Kapselfuehler - Unterbrechung/Kurzschluss"), //
 	CONTROLLER_INTERNAL_SENSOR(111,
 			"Controller internal sensor - interruption/short-circuit (Fuehler Regler "
 					+ "intern - Unterbrechung/Kurzschluss"), //

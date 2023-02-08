@@ -16,7 +16,9 @@ public class ReadWorker extends AbstractCycleWorker {
 
 	@Override
 	protected void forever() throws Throwable {
-
+		//TODO Maybe use the TimerImpl
+		// @see https://github.com/OpenEMS/openems/pull/1754
+		// it even got approved but not merged yet -> To be discussed
 		if (this.coreCycleIntervalCounter++ < this.parent.getConfig().interval()) {
 			return;
 		}

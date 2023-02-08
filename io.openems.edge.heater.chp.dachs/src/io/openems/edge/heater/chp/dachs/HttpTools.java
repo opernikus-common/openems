@@ -11,8 +11,8 @@ import io.openems.common.exceptions.OpenemsException;
 
 public class HttpTools {
 
-	private String url;
-	private String basicAuth;
+	private final String url;
+	private final String basicAuth;
 
 	public HttpTools(String url, String user, String pwd) {
 		this.url = url;
@@ -33,7 +33,7 @@ public class HttpTools {
 	public String readKey(String key) throws OpenemsException {
 		try {
 			URL url = new URL(this.url + "/getKey?k=" + key);
-			StringBuffer buf = new StringBuffer();
+			StringBuilder buf = new StringBuilder();
 			HttpURLConnection con = (HttpURLConnection) url.openConnection();
 			con.setRequestProperty("Authorization", this.basicAuth);
 			con.setRequestMethod("GET");
@@ -44,10 +44,10 @@ public class HttpTools {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
 			String line;
 			while ((line = reader.readLine()) != null) {
-				buf.append(line + "/n");
+				buf.append(line).append("/n");
 			}
 			reader.close();
-			if (status < 300) {
+			if (status < HttpURLConnection.HTTP_MULT_CHOICE) {
 				return buf.toString();
 			}
 			throw new OpenemsException("Invalid HTTP Status Code " + status);
@@ -83,15 +83,15 @@ public class HttpTools {
 			writer.flush();
 			writer.close();
 
-			StringBuffer buf = new StringBuffer();
+			StringBuilder buf = new StringBuilder();
 			BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()));
 			String line;
 			while ((line = reader.readLine()) != null) {
-				buf.append(line + "\n");
+				buf.append(line).append("\n");
 			}
 			reader.close();
 			var status = con.getResponseCode();
-			if (status < 300) {
+			if (status <  HttpURLConnection.HTTP_MULT_CHOICE) {
 				return buf.toString();
 			}
 			throw new OpenemsException("Invalid HTTP Status Code " + status);
@@ -100,13 +100,4 @@ public class HttpTools {
 			throw new OpenemsException("Dachs write: Invalid Server Response for " + key + " ex: " + e.getMessage());
 		}
 	}
-
-	//	private String extractValueFromMessage(String message, String key) {
-	//		if (message.contains(key)) {
-	//			return message.substring(message.indexOf(key) + key.length(), message.indexOf("/n", message.indexOf(key)));
-	//		} else {
-	//			return "";
-	//		}
-	//	}
-
 }

@@ -241,7 +241,7 @@ public interface Chp extends Heater {
     }
 
     /**
-     * Internal method to set the 'nextValue' on {@link ChannelId#FLOW_TEMPERATURE}
+     * Internal method to set the 'nextValue' on {@link Heater.ChannelId#FLOW_TEMPERATURE}
      * Channel.
      *
      * @param value the next value
@@ -251,7 +251,7 @@ public interface Chp extends Heater {
     }
 
     /**
-     * Internal method to set the 'nextValue' on {@link ChannelId#FLOW_TEMPERATURE}
+     * Internal method to set the 'nextValue' on {@link Heater.ChannelId#FLOW_TEMPERATURE}
      * Channel.
      *
      * @param value the next value

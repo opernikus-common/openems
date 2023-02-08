@@ -29,7 +29,7 @@ import io.openems.edge.heater.api.ManagedHeaterByOperationMode;
  * in yet, only those for basic CHP operation.
  */
 @Designate(ocd = Config.class, factory = true)
-@Component(name = "Heater.Chp.Dachs", immediate = true, //
+@Component(name = "Heater.Chp.SenertecDachs", immediate = true, //
 		configurationPolicy = ConfigurationPolicy.REQUIRE, //
 		property = { EventConstants.EVENT_TOPIC + "=" + EdgeEventConstants.TOPIC_CYCLE_BEFORE_PROCESS_IMAGE,
 				EventConstants.EVENT_TOPIC + "=" + EdgeEventConstants.TOPIC_CYCLE_AFTER_PROCESS_IMAGE })
@@ -43,7 +43,6 @@ public class DachsGltImpl extends AbstractOpenemsComponent
 
 	private ReadWorker readWorker;
 	private WriteWorker writeWorker;
-	private DachsDevice dachs;
 
 	public DachsGltImpl() {
 		super(//
@@ -67,11 +66,11 @@ public class DachsGltImpl extends AbstractOpenemsComponent
 		this.config = config;
 		super.activate(context, config.id(), config.alias(), config.enabled());
 
-		this.dachs = new DachsDevice(this);
-		this.readWorker = new ReadWorker(this, this.dachs);
-		this.writeWorker = new WriteWorker(this, this.dachs);
+        DachsDevice dachs = new DachsDevice(this);
+        this.readWorker = new ReadWorker(this, dachs);
 		this.readWorker.activate(config.id() + ".rw");
 		if (!this.config.readOnly()) {
+            this.writeWorker = new WriteWorker(this, dachs);
 			this.writeWorker.activate(config.id() + ".ww");
 		}
 	}
@@ -80,6 +79,8 @@ public class DachsGltImpl extends AbstractOpenemsComponent
 	protected void deactivate() {
 		if (this.readWorker != null) {
 			this.readWorker.deactivate();
+        }
+        if (this.writeWorker != null) {
 			this.writeWorker.deactivate();
 		}
 		super.deactivate();
@@ -94,6 +95,9 @@ public class DachsGltImpl extends AbstractOpenemsComponent
 		case EdgeEventConstants.TOPIC_CYCLE_BEFORE_PROCESS_IMAGE:
 			this.readWorker.triggerNextRun();
 			break;
+            //TODO check later -> if instead of after process image ->
+            // use topic cycle after controllers since we await the controller input
+            // and then write into the chp dachs with incoming information
 		case EdgeEventConstants.TOPIC_CYCLE_AFTER_PROCESS_IMAGE:
 			if (!this.config.readOnly()) {
 				this.writeWorker.triggerNextRun();
@@ -107,6 +111,7 @@ public class DachsGltImpl extends AbstractOpenemsComponent
 		this.logInfo(this.log, txt);
 	}
 
+    //unused atm ? TODO either remove or add somewhere
 	protected void logWarn(String txt) {
 		this.logWarn(this.log, txt);
 	}
