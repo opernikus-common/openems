@@ -50,7 +50,7 @@ public class DachsDevice {
                 res = extractValue(res);
                 //internal method to cast values
                 //if null/empty String sets to null automatically
-                this.parent.channel(channelId).setNextValue(res);
+                this.parent.channel(channelId).setNextValue(channelId.applyConverter(res));
                 if (this.parent.getConfig().verbose()) {
                     this.parent.logInfo("Request: " + key);
                     this.parent.logInfo("Response: " + res);

@@ -56,7 +56,7 @@ public interface DachsGlt extends ManagedChp {
             channel.onUpdate(newValue -> newValue.asOptional().ifPresent(dValue -> {
 					var component = channel.getComponent();
 					if (component instanceof Chp) {
-                    ((Chp) component)._setElectricProductionEnergy(TypeUtils.getAsType(OpenemsType.INTEGER, dValue * 1000));
+                    ((Chp) component)._setElectricProductionEnergy(TypeUtils.getAsType(OpenemsType.LONG, dValue * 1000));
 					}
             }));
 		}),
@@ -74,7 +74,7 @@ public interface DachsGlt extends ManagedChp {
             channel.onUpdate(newValue -> newValue.asOptional().ifPresent(dValue -> {
 					var component = channel.getComponent();
 					if (component instanceof Heater) {
-                    ((Heater) component)._setHeatingEnergy(TypeUtils.getAsType(OpenemsType.INTEGER, dValue * 1000));
+                    ((Heater) component)._setHeatingEnergy(TypeUtils.getAsType(OpenemsType.LONG, dValue * 1000));
 					}
             }));
 		}),

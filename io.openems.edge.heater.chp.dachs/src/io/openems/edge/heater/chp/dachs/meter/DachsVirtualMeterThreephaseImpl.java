@@ -67,28 +67,26 @@ public class DachsVirtualMeterThreephaseImpl extends AbstractOpenemsComponent
 	}
 
 	private void mapEnergyAndPower() throws OpenemsException {
-		this.dachs.getFlowTemperatureChannel().onUpdate(this::updatePowerChannel);
+		this.dachs.getElectricProductionPowerChannel().onUpdate(this::updatePowerChannel);
 
 		this.dachs.channel(DachsGlt.ChannelId.ELECTRICAL_WORK).onUpdate((newValue) -> {
 			Double dValue = TypeUtils.getAsType(OpenemsType.DOUBLE, newValue);
 			this.getActiveProductionEnergyChannel().setNextValue(dValue == null ? null : (long) (dValue * 1000));
 		});
-        /* should already be null. if you want to set them to
-        this.getReactivePowerChannel().setNextValue(null);
-        this.getReactivePowerL1Channel().setNextValue(null);
-        this.getReactivePowerL2Channel().setNextValue(null);
-        this.getReactivePowerL3Channel().setNextValue(null);*/
 	}
 
 	protected void updatePowerChannel(Value<Integer> newValue) {
-		Integer value = TypeUtils.getAsType(OpenemsType.INTEGER, newValue);
-		this.getActivePowerChannel().setNextValue(value);
-		if (value != null) {
+		this._setActivePower(newValue.get());
+		newValue.asOptional().ifPresentOrElse(value -> {
 			value /= 3;
-			this.getActivePowerL1Channel().setNextValue(value);
-			this.getActivePowerL2Channel().setNextValue(value);
-			this.getActivePowerL3Channel().setNextValue(value);
-		}
+			this._setActivePowerL1(value);
+			this._setActivePowerL2(value);
+			this._setActivePowerL3(value);
+		}, () -> {
+			this._setActivePowerL1(null);
+			this._setActivePowerL2(null);
+			this._setActivePowerL3(null);
+		});
 	}
 
 	@Override
