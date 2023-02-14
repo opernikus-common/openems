@@ -13,7 +13,9 @@ import io.openems.edge.common.channel.Channel;
 import io.openems.edge.common.channel.Doc;
 import io.openems.edge.common.channel.DoubleReadChannel;
 import io.openems.edge.common.channel.EnumReadChannel;
+import io.openems.edge.common.channel.EnumWriteChannel;
 import io.openems.edge.common.channel.IntegerDoc;
+import io.openems.edge.common.channel.IntegerReadChannel;
 import io.openems.edge.common.channel.IntegerWriteChannel;
 import io.openems.edge.common.channel.StringWriteChannel;
 import io.openems.edge.common.channel.value.Value;
@@ -188,6 +190,33 @@ public interface ManagedEvcs extends Evcs {
 		.unit(Unit.WATT) //
 		.accessMode(AccessMode.READ_ONLY) //
 		.persistencePriority(PersistencePriority.HIGH)), //
+
+	/**
+	 * Gets a rough estimation of the time precision the chargepoint has.
+	 * 
+	 * <p>
+	 * It is the time in s between setting charge power and the time the charge
+	 * power is applied to the vehicle. Some chargepoints react within milliseconds
+	 * and some within 30s. This might allow some controllers to work with cloud
+	 * based chargepoints as well.
+	 * 
+	 * <p>
+	 * Note that this is only a very rough estimate. It depends on used connection
+	 * and on the response time of vehicles also.
+	 * 
+	 * <p>
+	 * <ul>
+	 * <li>Interface: ManagedEvcs
+	 * <li>Read Only
+	 * <li>Type: Integer
+	 * <li>Unit: Seconds
+	 * </ul>
+	 */
+
+	TIME_PRECISION(Doc.of(OpenemsType.INTEGER) //
+		.unit(Unit.SECONDS) //
+		.accessMode(AccessMode.READ_ONLY) //
+		.persistencePriority(PersistencePriority.LOW)),
 
 	/**
 	 * Sets the charge power limit of the EVCS in [W].
@@ -365,7 +394,101 @@ public interface ManagedEvcs extends Evcs {
 	 */
 	CHARGE_STATE(Doc.of(ChargeState.values()) //
 		.accessMode(AccessMode.READ_ONLY) //
-		.persistencePriority(PersistencePriority.HIGH));
+		.persistencePriority(PersistencePriority.HIGH)), //
+
+	/**
+	 * Debug readonly Priority of this EVCS.
+	 *
+	 * <ul>
+	 * <li>Interface: ManagedEvcs
+	 * <li>ReadOnly
+	 * <li>Type: Priority @see {@link Priority}
+	 * </ul>
+	 */
+	DEBUG_PRIORITY(Doc.of(Priority.values()) //
+		.accessMode(AccessMode.READ_ONLY) //
+		.persistencePriority(PersistencePriority.LOW)),
+
+	/**
+	 * Priority of this EVCS.
+	 *
+	 * <ul>
+	 * <li>Interface: ManagedEvcs
+	 * <li>Writable
+	 * <li>Type: Priority @see {@link Priority}
+	 * </ul>
+	 */
+	PRIORITY(Doc.of(Priority.values()) //
+		.accessMode(AccessMode.READ_WRITE) //
+		.persistencePriority(PersistencePriority.LOW)
+		.onInit(new EnumWriteChannel.MirrorToDebugChannel(ManagedEvcs.ChannelId.DEBUG_PRIORITY))), //
+
+	/**
+	 * Sets the charge power limit of the EVCS in [W].
+	 *
+	 * <ul>
+	 * <li>Interface: ManagedEvcs
+	 * <li>Writable
+	 * <li>Type: Integer
+	 * <li>Unit: W
+	 * </ul>
+	 */
+	SET_CHARGE_POWER_EQUALS(Doc.of(OpenemsType.INTEGER).unit(Unit.WATT) //
+		.accessMode(AccessMode.WRITE_ONLY) //
+		.persistencePriority(PersistencePriority.HIGH)), //
+	// TODO when PowerObject is working -> onInit(new PowerConstraint(...)), siehe
+	// ManagedSymmetricEss
+
+	/**
+	 * Sets the charge power limit of the EVCS in [W].
+	 *
+	 * <ul>
+	 * <li>Interface: ManagedEvcs
+	 * <li>Writable
+	 * <li>Type: Integer
+	 * <li>Unit: W
+	 * </ul>
+	 */
+	SET_CHARGE_POWER_EQUALS_WITH_FILTER(Doc.of(OpenemsType.INTEGER) //
+		.unit(Unit.WATT) //
+		.accessMode(AccessMode.WRITE_ONLY) //
+		.persistencePriority(PersistencePriority.HIGH)), //
+	// TODO when PowerObject is working -> onInit(new PowerConstraint(...)), siehe
+	// ManagedSymmetricEss
+
+	/**
+	 * Sets the charge power limit of the EVCS in [W].
+	 *
+	 * <ul>
+	 * <li>Interface: ManagedEvcs
+	 * <li>Writable
+	 * <li>Type: Integer
+	 * <li>Unit: W
+	 * </ul>
+	 */
+	SET_CHARGE_POWER_LESS_OR_EQUALS(Doc.of(OpenemsType.INTEGER).unit(Unit.WATT) //
+		.accessMode(AccessMode.WRITE_ONLY) //
+		.persistencePriority(PersistencePriority.HIGH)), //
+	// TODO when PowerObject is working -> onInit(new PowerConstraint(...)), siehe
+	// ManagedSymmetricEss
+
+	/**
+	 * Sets the charge power limit of the EVCS in [W].
+	 *
+	 * <ul>
+	 * <li>Interface: ManagedEvcs
+	 * <li>Writable
+	 * <li>Type: Integer
+	 * <li>Unit: W
+	 * </ul>
+	 */
+	SET_CHARGE_POWER_GREATER_OR_EQUALS(Doc.of(OpenemsType.INTEGER).unit(Unit.WATT) //
+		.accessMode(AccessMode.WRITE_ONLY) //
+		.persistencePriority(PersistencePriority.HIGH)), //
+	// TODO when PowerObject is working -> onInit(new PowerConstraint(...)), siehe
+	// ManagedSymmetricEss
+
+	;
 
 	private final Doc doc;
 
@@ -378,6 +501,15 @@ public interface ManagedEvcs extends Evcs {
 	    return this.doc;
 	}
     }
+
+    /**
+     * Command to send the given power, to the EVCS.
+     * 
+     * @param power Power that should be send in watt
+     * @return boolean if the power was applied to the EVCS
+     * @throws OpenemsException on error
+     */
+    public boolean applyChargePower(int power) throws Exception;
 
     /**
      * Gets the Channel for {@link ChannelId#POWER_PRECISION}.
@@ -416,6 +548,281 @@ public interface ManagedEvcs extends Evcs {
      */
     public default void _setPowerPrecision(double value) {
 	this.getPowerPrecisionChannel().setNextValue(value);
+    }
+
+    /**
+     * Gets the Channel for {@link ChannelId#TIME_PRECISION}.
+     *
+     * @return the Channel
+     */
+    public default IntegerReadChannel getTimePrecisionChannel() {
+	return this.channel(ChannelId.TIME_PRECISION);
+    }
+
+    /**
+     * Gets the time precision value of the EVCS in [ms]. See
+     * {@link ChannelId#TIME_PRECISION}.
+     *
+     * @return the Channel {@link Value}
+     */
+    public default Value<Integer> getTimePrecision() {
+	return this.getTimePrecisionChannel().value();
+    }
+
+    /**
+     * Internal method to set the 'nextValue' on {@link ChannelId#TIME_PRECISION}
+     * Channel.
+     *
+     * @param value the next value
+     */
+    public default void _setTimePrecision(Integer value) {
+	this.getTimePrecisionChannel().setNextValue(value);
+    }
+
+    /**
+     * Internal method to set the 'nextValue' on {@link ChannelId#TIME_PRECISION}
+     * Channel.
+     *
+     * @param value the next value
+     */
+    public default void _setTimePrecision(int value) {
+	this.getTimePrecisionChannel().setNextValue(value);
+    }
+
+    /**
+     * Gets the Channel for {@link ChannelId#PRIORITY}.
+     *
+     * @return the Channel
+     */
+    public default EnumReadChannel getPriorityChannel() {
+	return this.channel(ChannelId.PRIORITY);
+    }
+
+    /**
+     * Gets the priority of the EVCS. See {@link ChannelId#PRIORITY}.
+     *
+     * @return the Channel {@link Value}
+     */
+    public default Value<Integer> getPriority() {
+	return this.getPriorityChannel().value();
+    }
+
+    /**
+     * Internal method to set the 'nextValue' on {@link ChannelId#PRIORITY} Channel.
+     *
+     * @param value the next value
+     */
+    public default void _setPriority(Integer value) {
+	this.getPriorityChannel().setNextValue(value);
+    }
+
+    /**
+     * Internal method to set the 'nextValue' on {@link ChannelId#PRIORITY} Channel.
+     *
+     * @param value the next value
+     */
+    public default void _setPriority(int value) {
+	this.getPriorityChannel().setNextValue(value);
+    }
+
+    /**
+     * Gets the Channel for {@link ChannelId#SET_CHARGE_POWER_EQUALS}.
+     *
+     * @return the Channel
+     */
+    public default IntegerWriteChannel getSetChargePowerLimitEqualsChannel() {
+	return this.channel(ChannelId.SET_CHARGE_POWER_EQUALS);
+    }
+
+    /**
+     * Gets the set charge power limit of the EVCS in [W]. See
+     * {@link ChannelId#SET_CHARGE_POWER_EQUALS}.
+     *
+     * @return the Channel {@link Value}
+     */
+    public default Value<Integer> getSetChargePowerLimitEquals() {
+	return this.getSetChargePowerLimitEqualsChannel().value();
+    }
+
+    /**
+     * Internal method to set the 'nextValue' on
+     * {@link ChannelId#SET_CHARGE_POWER_EQUALS} Channel.
+     *
+     * @param value the next value
+     */
+    public default void _setSetChargePowerLimitEquals(Integer value) {
+	this.getSetChargePowerLimitEqualsChannel().setNextValue(value);
+    }
+
+    /**
+     * Internal method to set the 'nextValue' on
+     * {@link ChannelId#SET_CHARGE_POWER_EQUALS} Channel.
+     *
+     * @param value the next value
+     */
+    public default void _setSetChargePowerLimitEquals(int value) {
+	this.getSetChargePowerLimitEqualsChannel().setNextValue(value);
+    }
+
+    /**
+     * Sets the charge power limit of the EVCS in [W]. See
+     * {@link ChannelId#SET_CHARGE_POWER_EQUALS}.
+     *
+     * @param value the next write value
+     * @throws OpenemsNamedException on error
+     */
+    public default void setChargePowerLimitEquals(Integer value) throws OpenemsNamedException {
+	this.getSetChargePowerLimitEqualsChannel().setNextWriteValue(value);
+    }
+
+    /**
+     * Gets the Channel for {@link ChannelId#SET_CHARGE_POWER_EQUALS_WITH_FILTER}.
+     *
+     * @return the Channel
+     */
+    public default IntegerWriteChannel getSetChargePowerLimitEqualsWithFilterChannel() {
+	return this.channel(ChannelId.SET_CHARGE_POWER_EQUALS_WITH_FILTER);
+    }
+
+    /**
+     * Gets the set charge power limit of the EVCS in [W]. See
+     * {@link ChannelId#SET_CHARGE_POWER_EQUALS_WITH_FILTER}.
+     *
+     * @return the Channel {@link Value}
+     */
+    public default Value<Integer> getSetChargePowerLimitEqualsWithFilter() {
+	return this.getSetChargePowerLimitEqualsWithFilterChannel().value();
+    }
+
+    /**
+     * Internal method to set the 'nextValue' on
+     * {@link ChannelId#SET_CHARGE_POWER_EQUALS_WITH_FILTER} Channel.
+     *
+     * @param value the next value
+     */
+    public default void _setSetChargePowerLimitEqualsWithFilter(Integer value) {
+	this.getSetChargePowerLimitEqualsWithFilterChannel().setNextValue(value);
+    }
+
+    /**
+     * Internal method to set the 'nextValue' on
+     * {@link ChannelId#SET_CHARGE_POWER_EQUALS_WITH_FILTER} Channel.
+     *
+     * @param value the next value
+     */
+    public default void _setSetChargePowerLimitEqualsWithFilter(int value) {
+	this.getSetChargePowerLimitEqualsWithFilterChannel().setNextValue(value);
+    }
+
+    /**
+     * Sets the charge power limit of the EVCS in [W]. See
+     * {@link ChannelId#SET_CHARGE_POWER_EQUALS_WITH_FILTER}.
+     *
+     * @param value the next write value
+     * @throws OpenemsNamedException on error
+     */
+    public default void setChargePowerLimitEqualsWithFilter(Integer value) throws OpenemsNamedException {
+	this.getSetChargePowerLimitEqualsWithFilterChannel().setNextWriteValue(value);
+    }
+
+    /**
+     * Gets the Channel for {@link ChannelId#SET_CHARGE_POWER_LESS_OR_EQUALS}.
+     *
+     * @return the Channel
+     */
+    public default IntegerWriteChannel getSetChargePowerLimitLessOrEqualsChannel() {
+	return this.channel(ChannelId.SET_CHARGE_POWER_LESS_OR_EQUALS);
+    }
+
+    /**
+     * Gets the set charge power limit of the EVCS in [W]. See
+     * {@link ChannelId#SET_CHARGE_POWER_LESS_OR_EQUALS}.
+     *
+     * @return the Channel {@link Value}
+     */
+    public default Value<Integer> getSetChargePowerLimitLessOrEquals() {
+	return this.getSetChargePowerLimitLessOrEqualsChannel().value();
+    }
+
+    /**
+     * Internal method to set the 'nextValue' on
+     * {@link ChannelId#SET_CHARGE_POWER_LESS_OR_EQUALS} Channel.
+     *
+     * @param value the next value
+     */
+    public default void _setSetChargePowerLimitLessOrEquals(Integer value) {
+	this.getSetChargePowerLimitLessOrEqualsChannel().setNextValue(value);
+    }
+
+    /**
+     * Internal method to set the 'nextValue' on
+     * {@link ChannelId#SET_CHARGE_POWER_LESS_OR_EQUALS} Channel.
+     *
+     * @param value the next value
+     */
+    public default void _setSetChargePowerLimitLessOrEquals(int value) {
+	this.getSetChargePowerLimitLessOrEqualsChannel().setNextValue(value);
+    }
+
+    /**
+     * Sets the charge power limit of the EVCS in [W]. See
+     * {@link ChannelId#SET_CHARGE_POWER_LESS_OR_EQUALS}.
+     *
+     * @param value the next write value
+     * @throws OpenemsNamedException on error
+     */
+    public default void setChargePowerLimitLessOrEquals(Integer value) throws OpenemsNamedException {
+	this.getSetChargePowerLimitLessOrEqualsChannel().setNextWriteValue(value);
+    }
+
+    /**
+     * Gets the Channel for {@link ChannelId#SET_CHARGE_POWER_GREATER_OR_EQUALS}.
+     *
+     * @return the Channel
+     */
+    public default IntegerWriteChannel getSetChargePowerLimitGreaterOrEqualsChannel() {
+	return this.channel(ChannelId.SET_CHARGE_POWER_GREATER_OR_EQUALS);
+    }
+
+    /**
+     * Gets the set charge power limit of the EVCS in [W]. See
+     * {@link ChannelId#SET_CHARGE_POWER_GREATER_OR_EQUALS}.
+     *
+     * @return the Channel {@link Value}
+     */
+    public default Value<Integer> getSetChargePowerLimitGreaterOrEquals() {
+	return this.getSetChargePowerLimitGreaterOrEqualsChannel().value();
+    }
+
+    /**
+     * Internal method to set the 'nextValue' on
+     * {@link ChannelId#SET_CHARGE_POWER_GREATER_OR_EQUALS} Channel.
+     *
+     * @param value the next value
+     */
+    public default void _setSetChargePowerLimitGreaterOrEquals(Integer value) {
+	this.getSetChargePowerLimitGreaterOrEqualsChannel().setNextValue(value);
+    }
+
+    /**
+     * Internal method to set the 'nextValue' on
+     * {@link ChannelId#SET_CHARGE_POWER_GREATER_OR_EQUALS} Channel.
+     *
+     * @param value the next value
+     */
+    public default void _setSetChargePowerLimitGreaterOrEquals(int value) {
+	this.getSetChargePowerLimitGreaterOrEqualsChannel().setNextValue(value);
+    }
+
+    /**
+     * Sets the charge power limit of the EVCS in [W]. See
+     * {@link ChannelId#SET_CHARGE_POWER_GREATER_OR_EQUALS}.
+     *
+     * @param value the next write value
+     * @throws OpenemsNamedException on error
+     */
+    public default void setChargePowerLimitGreaterOrEquals(Integer value) throws OpenemsNamedException {
+	this.getSetChargePowerLimitGreaterOrEqualsChannel().setNextWriteValue(value);
     }
 
     /**

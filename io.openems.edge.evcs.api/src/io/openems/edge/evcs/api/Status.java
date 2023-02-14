@@ -3,6 +3,9 @@ package io.openems.edge.evcs.api;
 import io.openems.common.types.OptionsEnum;
 
 public enum Status implements OptionsEnum {
+    /**
+     * state of EVCS is unknown. 
+     */
     UNDEFINED(-1, "Undefined"), //
     STARTING(0, "Starting"), //
     /**
@@ -13,10 +16,22 @@ public enum Status implements OptionsEnum {
      * Waiting for EV charging request.
      */
     READY_FOR_CHARGING(2, "Ready for Charging"), //
+    /**
+     * EV is charging.
+     */
     CHARGING(3, "Charging"), //
+    /**
+     * EVCS has an internal error.
+     */
     ERROR(4, "Error"), //
+    /**
+     * Charging was rejected by unkown reason.
+     */
     CHARGING_REJECTED(5, "Charging rejected"), //
     ENERGY_LIMIT_REACHED(6, "The charging limit reached"), //
+    /**
+     * Charging was finished.
+     */
     CHARGING_FINISHED(7, "Charging has finished");
 
     private final int value;

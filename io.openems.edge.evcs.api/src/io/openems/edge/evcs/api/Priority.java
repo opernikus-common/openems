@@ -2,33 +2,29 @@ package io.openems.edge.evcs.api;
 
 import io.openems.common.types.OptionsEnum;
 
-public enum ChargingType implements OptionsEnum {
-
+public enum Priority implements OptionsEnum {
     /**
-     * Plug type is unkown.
+     * priority is unknown.
      */
     UNDEFINED(-1, "Undefined"), //
     /**
-     * Plugs using the Combined Charging System standard.
+     * EVCS is used for cars with long standing times.
      */
-    CCS(0, "CCS"), //
+    LOW(1, "Low"), //
     /**
-     * Plugs using the Chademo standard.
+     * EVCS is used for cars with average standing times.
      */
-    CHADEMO(1, "Chademo"), //
+    REGULAR(2, "Regular"), //
     /**
-     * general AC Plugs.
+     * EVCS should be charged as fast as possible.
      */
-    AC(2, "AC"), //
-    /**
-     * Plugs using the Tesla Supercharger standard.
-     */
-    SUPERCHARGER(3, "Supercharger");
+    HIGH(3, "High") //
+    ;
 
     private final int value;
     private final String name;
 
-    private ChargingType(int value, String name) {
+    private Priority(int value, String name) {
 	this.value = value;
 	this.name = name;
     }
@@ -47,4 +43,5 @@ public enum ChargingType implements OptionsEnum {
     public OptionsEnum getUndefined() {
 	return UNDEFINED;
     }
+
 }
