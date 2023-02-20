@@ -7,8 +7,8 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.event.Event;
-import org.osgi.service.event.EventConstants;
 import org.osgi.service.event.EventHandler;
+import org.osgi.service.event.propertytypes.EventTopics;
 import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,10 +30,12 @@ import io.openems.edge.heater.api.ManagedHeaterByOperationMode;
  */
 @Designate(ocd = Config.class, factory = true)
 @Component(name = "Heater.Chp.Dachs", immediate = true, //
-		configurationPolicy = ConfigurationPolicy.REQUIRE, //
-		property = { EventConstants.EVENT_TOPIC + "=" + EdgeEventConstants.TOPIC_CYCLE_BEFORE_PROCESS_IMAGE,
-				EventConstants.EVENT_TOPIC + "=" + EdgeEventConstants.TOPIC_CYCLE_AFTER_PROCESS_IMAGE })
-
+		configurationPolicy = ConfigurationPolicy.REQUIRE //
+		)
+@EventTopics({ //
+	EdgeEventConstants.TOPIC_CYCLE_BEFORE_PROCESS_IMAGE, //
+	EdgeEventConstants.TOPIC_CYCLE_AFTER_CONTROLLERS //
+})
 public class DachsGltImpl extends AbstractOpenemsComponent
 		implements Heater, Chp, ManagedHeaterByOperationMode, ManagedChp, DachsGlt, OpenemsComponent, EventHandler {
 
@@ -43,7 +45,6 @@ public class DachsGltImpl extends AbstractOpenemsComponent
 
 	private ReadWorker readWorker;
 	private WriteWorker writeWorker;
-	private DachsDevice dachs;
 
 	public DachsGltImpl() {
 		super(//
@@ -67,11 +68,11 @@ public class DachsGltImpl extends AbstractOpenemsComponent
 		this.config = config;
 		super.activate(context, config.id(), config.alias(), config.enabled());
 
-		this.dachs = new DachsDevice(this);
-		this.readWorker = new ReadWorker(this, this.dachs);
-		this.writeWorker = new WriteWorker(this, this.dachs);
+        DachsDevice dachs = new DachsDevice(this);
+        this.readWorker = new ReadWorker(this, dachs);
 		this.readWorker.activate(config.id() + ".rw");
 		if (!this.config.readOnly()) {
+            this.writeWorker = new WriteWorker(this, dachs);
 			this.writeWorker.activate(config.id() + ".ww");
 		}
 	}
@@ -80,6 +81,8 @@ public class DachsGltImpl extends AbstractOpenemsComponent
 	protected void deactivate() {
 		if (this.readWorker != null) {
 			this.readWorker.deactivate();
+        }
+        if (this.writeWorker != null) {
 			this.writeWorker.deactivate();
 		}
 		super.deactivate();
@@ -94,7 +97,7 @@ public class DachsGltImpl extends AbstractOpenemsComponent
 		case EdgeEventConstants.TOPIC_CYCLE_BEFORE_PROCESS_IMAGE:
 			this.readWorker.triggerNextRun();
 			break;
-		case EdgeEventConstants.TOPIC_CYCLE_AFTER_PROCESS_IMAGE:
+		case EdgeEventConstants.TOPIC_CYCLE_AFTER_CONTROLLERS:
 			if (!this.config.readOnly()) {
 				this.writeWorker.triggerNextRun();
 			}
@@ -105,10 +108,6 @@ public class DachsGltImpl extends AbstractOpenemsComponent
 
 	protected void logInfo(String txt) {
 		this.logInfo(this.log, txt);
-	}
-
-	protected void logWarn(String txt) {
-		this.logWarn(this.log, txt);
 	}
 
 	protected void logError(String txt) {

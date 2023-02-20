@@ -53,17 +53,12 @@ public interface DachsGlt extends ManagedChp {
 		 * </ul>
 		 */
 		ELECTRICAL_WORK(new DoubleDoc().unit(Unit.KILOWATT_HOURS).accessMode(AccessMode.READ_ONLY).onInit((channel) -> {
-			channel.onUpdate(newValue -> {
-				if (newValue.isDefined()) {
-					var value = newValue.get();
-					var longValue =  Math.round(1000 * value);
+            channel.onUpdate(newValue -> newValue.asOptional().ifPresent(dValue -> {
 					var component = channel.getComponent();
 					if (component instanceof Chp) {
-						var chp = (Chp) component;
-						chp._setElectricProductionEnergy(longValue);
+                    ((Chp) component)._setElectricProductionEnergy(TypeUtils.getAsType(OpenemsType.LONG, dValue * 1000));
 					}
-				}
-			});
+            }));
 		}),
 				"Hka_Bd.ulArbeitElektr"),
 
@@ -76,17 +71,12 @@ public interface DachsGlt extends ManagedChp {
 		 * </ul>
 		 */
 		THERMAL_WORK(new DoubleDoc().unit(Unit.KILOWATT_HOURS).accessMode(AccessMode.READ_ONLY).onInit((channel) -> {
-			channel.onUpdate(newValue -> {
-				if (newValue.isDefined()) {
-					var value = newValue.get();
-					var longValue =  Math.round(1000 * value);
+            channel.onUpdate(newValue -> newValue.asOptional().ifPresent(dValue -> {
 					var component = channel.getComponent();
 					if (component instanceof Heater) {
-						var heater = (Heater) component;
-						heater._setHeatingEnergy(longValue);
+                    ((Heater) component)._setHeatingEnergy(TypeUtils.getAsType(OpenemsType.LONG, dValue * 1000));
 					}
-				}
-			});
+            }));
 		}),
 				"Hka_Bd.ulArbeitThermHka"),
 
@@ -217,18 +207,12 @@ public interface DachsGlt extends ManagedChp {
 		 */
 		RAW_ELECTRIC_PRODUCTION_POWER(
 				new DoubleDoc().unit(Unit.KILOWATT).accessMode(AccessMode.READ_ONLY).onInit((channel) -> {
-					channel.onUpdate(newValue -> {
-						if (newValue.isDefined()) {
-							var value = newValue.get();
-							value *= 1000;
+                    channel.onUpdate(newValue -> newValue.asOptional().ifPresent(dValue -> {
 							var component = channel.getComponent();
 							if (component instanceof Chp) {
-								var chp = (Chp) component;
-								var intValue = value.intValue();
-								chp._setElectricProductionPower(intValue);
+                            ((Chp) component)._setElectricProductionPower(TypeUtils.getAsType(OpenemsType.INTEGER, dValue * 1000));
 							}
-						}
-					});
+                    }));
 				}), "Hka_Mw1.sWirkleistung"),
 
 		/**
@@ -240,16 +224,12 @@ public interface DachsGlt extends ManagedChp {
 		 */
 		RAW_FLOW_TEMPERATURE(
 				new IntegerDoc().unit(Unit.DECIDEGREE_CELSIUS).accessMode(AccessMode.READ_ONLY).onInit((channel) -> {
-					channel.onUpdate(newValue -> {
-						if (newValue.isDefined()) {
-							var value = newValue.get();
+                    channel.onUpdate(newValue -> newValue.asOptional().ifPresent(iValue -> {
 							var component = channel.getComponent();
 							if (component instanceof Heater) {
-								var heater = (Heater) component;
-								heater._setFlowTemperature(value);
+                            ((Heater) component)._setFlowTemperature(iValue);
 							}
-						}
-					});
+                    }));
 				}), "Hka_Mw1.Temp.sbVorlauf", SCALE_FACTOR_1),
 
 		/**
@@ -262,14 +242,12 @@ public interface DachsGlt extends ManagedChp {
 		RAW_RETURN_TEMPERATURE(
 				new IntegerDoc().unit(Unit.DECIDEGREE_CELSIUS).accessMode(AccessMode.READ_ONLY).onInit((channel) -> {
 					channel.onUpdate(newValue -> {
-						if (newValue.isDefined()) {
-							var value = newValue.get();
+                        newValue.asOptional().ifPresent(iValue -> {
 							var component = channel.getComponent();
 							if (component instanceof Heater) {
-								var heater = (Heater) component;
-								heater._setReturnTemperature(value);
+                                ((Heater) component)._setReturnTemperature(iValue);
 							}
-						}
+                        });
 					});
 				}), "Hka_Mw1.Temp.sbRuecklauf", SCALE_FACTOR_1),
 

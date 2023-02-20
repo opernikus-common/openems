@@ -43,8 +43,7 @@ public class DachsThermometerImpl extends AbstractOpenemsComponent implements Th
 
 	private void addCopyListener() {
 		this.parent.channel(this.type.copyChannel).onUpdate((value) -> {
-			Integer intValue = (Integer) value.get();
-			this._setTemperature(intValue);
+			this.getTemperatureChannel().setNextValue(value);
 		});
 	}
 
