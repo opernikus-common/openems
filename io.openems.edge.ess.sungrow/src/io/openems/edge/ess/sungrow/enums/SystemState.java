@@ -3,7 +3,7 @@ package io.openems.edge.ess.sungrow.enums;
 import io.openems.common.types.OptionsEnum;
 
 public enum SystemState implements OptionsEnum {
-    UNDEFINED(1, "Undefined"),
+    UNDEFINED(-1, "Undefined"),
     STOP(0x0002, "Stop"),
     STANDBY(0x0008, "Standby"),
     INITIAL_STANDBY(0x0010, "Initial Standby"),

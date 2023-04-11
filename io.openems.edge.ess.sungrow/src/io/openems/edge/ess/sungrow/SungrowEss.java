@@ -4,9 +4,13 @@ import io.openems.common.channel.AccessMode;
 import io.openems.common.channel.PersistencePriority;
 import io.openems.common.channel.Unit;
 import io.openems.common.types.OpenemsType;
+import io.openems.edge.common.channel.BooleanReadChannel;
 import io.openems.edge.common.channel.Doc;
 import io.openems.edge.common.channel.EnumWriteChannel;
+import io.openems.edge.common.channel.IntegerReadChannel;
 import io.openems.edge.common.channel.IntegerWriteChannel;
+import io.openems.edge.common.channel.LongReadChannel;
+import io.openems.edge.common.channel.value.Value;
 import io.openems.edge.common.component.OpenemsComponent;
 import io.openems.edge.ess.sungrow.enums.ChargeDischargeCommand;
 import io.openems.edge.ess.sungrow.enums.EmsMode;
@@ -19,7 +23,7 @@ public interface SungrowEss extends OpenemsComponent {
 	    SERIAL_NUMBER(Doc.of(OpenemsType.STRING).accessMode(AccessMode.READ_ONLY).persistencePriority(PersistencePriority.VERY_LOW)),
 	    NOMINAL_OUTPUT_POWER(Doc.of(OpenemsType.INTEGER).unit(Unit.WATT).accessMode(AccessMode.READ_ONLY).persistencePriority(PersistencePriority.VERY_LOW)),
 	    DAILY_OUTPUT_ENERGY(Doc.of(OpenemsType.INTEGER).unit(Unit.WATT_HOURS).accessMode(AccessMode.READ_ONLY).persistencePriority(PersistencePriority.LOW)),
-	    TOTAL_OUTPUT_ENERGY(Doc.of(OpenemsType.LONG).unit(Unit.WATT_HOURS).accessMode(AccessMode.READ_ONLY).persistencePriority(PersistencePriority.LOW)),
+	    //TOTAL_OUTPUT_ENERGY(Doc.of(OpenemsType.LONG).unit(Unit.WATT_HOURS).accessMode(AccessMode.READ_ONLY).persistencePriority(PersistencePriority.LOW)), =Active discharge energy?
 	    INSIDE_TEMPERATURE(Doc.of(OpenemsType.INTEGER).unit(Unit.DEZIDEGREE_CELSIUS).accessMode(AccessMode.READ_ONLY).persistencePriority(PersistencePriority.LOW)),
 	    MPPT1_VOLTAGE(Doc.of(OpenemsType.INTEGER).unit(Unit.VOLT).accessMode(AccessMode.READ_ONLY).persistencePriority(PersistencePriority.LOW)),
 	    MPPT1_CURRENT(Doc.of(OpenemsType.INTEGER).unit(Unit.AMPERE).accessMode(AccessMode.READ_ONLY).persistencePriority(PersistencePriority.LOW)),
@@ -49,7 +53,7 @@ public interface SungrowEss extends OpenemsComponent {
 	    TOTAL_PV_GENERATION(Doc.of(OpenemsType.LONG).unit(Unit.WATT_HOURS).accessMode(AccessMode.READ_ONLY).persistencePriority(PersistencePriority.LOW)),
 	    DAILY_EXPORT_POWER_FROM_PV(Doc.of(OpenemsType.INTEGER).unit(Unit.WATT).accessMode(AccessMode.READ_ONLY).persistencePriority(PersistencePriority.LOW)),
 	    TOTAL_EXPORT_ENERGY_FROM_PV(Doc.of(OpenemsType.LONG).unit(Unit.WATT_HOURS).accessMode(AccessMode.READ_ONLY).persistencePriority(PersistencePriority.LOW)),
-	    //LOAD_POWER(Doc.of(OpenemsType.INTEGER).unit(Unit.WATT).accessMode(AccessMode.READ_ONLY).persistencePriority(PersistencePriority.MEDIUM)), = DC_DISCHARGE_POWER?
+	    LOAD_POWER(Doc.of(OpenemsType.INTEGER).unit(Unit.WATT).accessMode(AccessMode.READ_ONLY).persistencePriority(PersistencePriority.MEDIUM)),
 	    EXPORT_POWER(Doc.of(OpenemsType.INTEGER).unit(Unit.WATT).accessMode(AccessMode.READ_ONLY).persistencePriority(PersistencePriority.MEDIUM)),
 	    DAILY_BATTERY_CHARGE_ENERGY_FROM_PV(Doc.of(OpenemsType.INTEGER).unit(Unit.WATT_HOURS).accessMode(AccessMode.READ_ONLY).persistencePriority(PersistencePriority.LOW)),
 	    TOTAL_BATTERY_CHARGE_ENERGY_FROM_PV(Doc.of(OpenemsType.LONG).unit(Unit.WATT_HOURS).accessMode(AccessMode.READ_ONLY).persistencePriority(PersistencePriority.LOW)),
@@ -111,6 +115,46 @@ public interface SungrowEss extends OpenemsComponent {
 	
 	public default IntegerWriteChannel getChargeDischargePowerChannel() {
 	    return this.channel(ChannelId.CHARGE_DISCHARGE_POWER);
+	}
+	
+	public default BooleanReadChannel getBatteryChargingChannel() {
+		return this.channel(ChannelId.BATTERY_CHARGING);
+	}
+	
+	public default BooleanReadChannel getBatteryDischargingChannel() {
+		return this.channel(ChannelId.BATTERY_DISCHARGING);
+	}
+	
+	public default IntegerReadChannel getGridFrequencyChannel() {
+		return this.channel(ChannelId.GRID_FREQUENCY);
+	}
+	
+	public default IntegerReadChannel getTotalDcPowerChannel() {
+		return this.channel(ChannelId.TOTAL_DC_POWER);
+	}
+ 	
+	public default IntegerReadChannel getExportPowerChannel() {
+		return this.channel(ChannelId.EXPORT_POWER);
+	}
+	
+	public default LongReadChannel getTotalBatteryChargeEnergyFromPvChannel() {
+		return this.channel(ChannelId.TOTAL_BATTERY_CHARGE_ENERGY_FROM_PV);
+	}
+	
+	public default Value<Long> getTotalBatteryChargeEnergyFromPv() {
+		return this.getTotalBatteryChargeEnergyFromPvChannel().value();
+	}
+	
+	public default LongReadChannel getTotalPvGenerationChannel() {
+		return this.channel(ChannelId.TOTAL_PV_GENERATION);
+	}
+	
+	public default LongReadChannel getTotalImportEnergyChannel() {
+		return this.channel(ChannelId.TOTAL_IMPORT_ENERGY);
+	}
+	
+	public default LongReadChannel getTotalExportEnergyChannel() {
+		return this.channel(ChannelId.TOTAL_EXPORT_ENERGY);
 	}
 
 }
