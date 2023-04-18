@@ -9,7 +9,7 @@ import io.openems.edge.common.test.DummyConfigurationAdmin;
 
 public class MyModbusDeviceTest {
 
-    private static final String COMPONENT_ID = "component0";
+    private static final String COMPONENT_ID = "ess0";
     private static final String MODBUS_ID = "modbus0";
 
     @Test
@@ -20,6 +20,7 @@ public class MyModbusDeviceTest {
 		.activate(MyConfig.create() //
 			.setId(COMPONENT_ID) //
 			.setModbusId(MODBUS_ID) //
+			.setReadOnly(false) //
 			.build())
 		.next(new TestCase());
     }
