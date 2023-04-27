@@ -90,7 +90,7 @@ public class SungrowEssImpl extends AbstractOpenemsModbusComponent implements Su
 
     private Config config = null;
 
-    private int heartbeat = 1;
+	private int heartbeat = 500;
 
     public SungrowEssImpl() {
 	super(//
@@ -342,22 +342,27 @@ public class SungrowEssImpl extends AbstractOpenemsModbusComponent implements Su
     public void applyPower(int activePower, int reactivePower) throws OpenemsNamedException {
 	if (this.config.readOnly()) {
 	    this.getEmsModeChannel().setNextWriteValue(EmsMode.SELF_CONSUMPTION);
-	    return;
+			this.getHeartbeatChannel().setNextWriteValue(0);
+			return;
+		}
+		if (this.heartbeat == 500) {
+			this.heartbeat = 600;
+		} else {
+			this.heartbeat = 500;
+		}
+		this.getHeartbeatChannel().setNextWriteValue(this.heartbeat);
+		this.channel(SungrowEss.ChannelId.DEBUG_HEARTBEAT).setNextValue(this.heartbeat);
+	
+		this.getEmsModeChannel().setNextWriteValue(EmsMode.EXTERNAL_EMS_MODE);
+	
+		if (activePower > 0) {
+			this.getChargeDischargeCommandChannel().setNextWriteValue(ChargeDischargeCommand.DISCHARGE);
+			this.getChargeDischargePowerChannel().setNextWriteValue(activePower);
+		} else {
+			this.getChargeDischargeCommandChannel().setNextWriteValue(ChargeDischargeCommand.CHARGE);
+			this.getChargeDischargePowerChannel().setNextWriteValue(-activePower);
+		}
 	}
-	this.heartbeat++;
-	this.heartbeat = (this.heartbeat - 1) % 1000 + 1;
-	this.getHeartbeatChannel().setNextWriteValue(this.heartbeat);
-	this.channel(SungrowEss.ChannelId.DEBUG_HEARTBEAT).setNextValue(this.heartbeat);
-	this.getEmsModeChannel().setNextWriteValue(EmsMode.EXTERNAL_EMS_MODE);
-
-	if (activePower > 0) {
-	    this.getChargeDischargeCommandChannel().setNextWriteValue(ChargeDischargeCommand.DISCHARGE);
-	    this.getChargeDischargePowerChannel().setNextWriteValue(activePower);
-	} else {
-	    this.getChargeDischargeCommandChannel().setNextWriteValue(ChargeDischargeCommand.CHARGE);
-	    this.getChargeDischargePowerChannel().setNextWriteValue(-activePower);
-	}
-    }
 
     @Override
     public int getPowerPrecision() {
