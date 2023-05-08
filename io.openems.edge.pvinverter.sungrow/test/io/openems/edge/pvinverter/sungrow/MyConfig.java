@@ -2,6 +2,7 @@ package io.openems.edge.pvinverter.sungrow;
 
 import io.openems.common.test.AbstractComponentConfig;
 import io.openems.common.utils.ConfigUtils;
+import io.openems.edge.meter.api.MeterType;
 
 @SuppressWarnings("all")
 public class MyConfig extends AbstractComponentConfig implements Config {
@@ -63,6 +64,11 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 	@Override
 	public int modbusUnitId() {
 		return this.builder.modbusUnitId;
+	}
+	
+	@Override
+	public MeterType type() {
+		return MeterType.PRODUCTION;
 	}
 
 }
