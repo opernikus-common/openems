@@ -96,7 +96,8 @@ public class SolarEdgePvInverterImpl extends AbstractSunSpecPvInverter
 	@Activate
 	private void activate(ComponentContext context, Config config) throws OpenemsException {
 		if (super.activate(context, config.id(), config.alias(), config.enabled(), config.readOnly(),
-				config.modbusUnitId(), this.cm, "Modbus", config.modbus_id(), READ_FROM_MODBUS_BLOCK, config.phase())) {
+		config.modbusUnitId(), this.cm, "Modbus", config.modbus_id(), READ_FROM_MODBUS_BLOCK, config.phase(),
+		config.dynamicRuntimeScalefactors())) {
 			return;
 		}
 	}

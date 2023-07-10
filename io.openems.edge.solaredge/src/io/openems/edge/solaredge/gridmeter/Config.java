@@ -20,6 +20,9 @@ import io.openems.edge.meter.api.MeterType;
 
 	@AttributeDefinition(name = "Meter-Type", description = "What is measured by this Meter?")
 	MeterType type() default MeterType.GRID;
+	
+	@AttributeDefinition(name = "Dynamic SF", description = "Some Inverters use dynamic scalefactors at runtime. Set this to true if your inverter does so.")
+	boolean dynamicRuntimeScalefactors() default true;
 
 	@AttributeDefinition(name = "Modbus-ID", description = "ID of Modbus bridge.")
 	String modbus_id() default "modbus0";

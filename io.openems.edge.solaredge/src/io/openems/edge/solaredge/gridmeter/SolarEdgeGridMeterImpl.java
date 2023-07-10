@@ -74,14 +74,15 @@ public class SolarEdgeGridMeterImpl extends AbstractSunSpecMeter
 		);
 	}
 
-	@Activate
-	private void activate(ComponentContext context, Config config) throws OpenemsException {
-		if (super.activate(context, config.id(), config.alias(), config.enabled(), config.modbusUnitId(), this.cm,
-				"Modbus", config.modbus_id(), READ_FROM_MODBUS_BLOCK)) {
-			return;
-		}
-		this.config = config;
+    @Activate
+    private void activate(ComponentContext context, Config config) throws OpenemsException {
+	var readOnly = true;
+	if (super.activate(context, config.id(), config.alias(), config.enabled(), config.modbusUnitId(), this.cm,
+		"Modbus", config.modbus_id(), READ_FROM_MODBUS_BLOCK, readOnly, config.dynamicRuntimeScalefactors())) {
+	    return;
 	}
+	this.config = config;
+    }
 
 	@Override
 	@Deactivate
