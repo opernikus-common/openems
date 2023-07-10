@@ -379,4 +379,9 @@ public class MetadataFile extends AbstractMetadata implements Metadata, EventHan
 		);
 	}
 
+	@Override
+	public Optional<Level> getSumState(String edgeId) {
+		throw new UnsupportedOperationException("FileMetadata.getSumState() is not implemented");
+	}
+
 }

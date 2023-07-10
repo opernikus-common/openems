@@ -365,4 +365,12 @@ public interface Metadata {
 	 */
 	public EdgeMetadata getEdgeMetadataForUser(User user, String edgeId) throws OpenemsNamedException;
 
+	/**
+	 * Get the SumState of the edge with the given edgeId.
+	 * 
+	 * @param edgeId to search for
+	 * @return sumState as {@link Optional} of {@link Level}
+	 */
+	public Optional<Level> getSumState(String edgeId);
+
 }

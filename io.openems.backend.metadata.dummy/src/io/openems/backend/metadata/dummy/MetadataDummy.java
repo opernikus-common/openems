@@ -348,4 +348,8 @@ public class MetadataDummy extends AbstractMetadata implements Metadata, EventHa
 		);
 	}
 
+	@Override
+	public Optional<Level> getSumState(String edgeId) {
+		throw new UnsupportedOperationException("DummyMetadata.getSumState() is not implemented");
+	}
 }
