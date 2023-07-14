@@ -281,6 +281,9 @@ public interface SungrowEss extends OpenemsComponent {
 	return this.channel(ChannelId.TOTAL_PV_GENERATION);
     }
 
+	public default IntegerReadChannel getBatteryPowerChannel() {
+		return this.channel(ChannelId.BATTERY_POWER);
+	}
     public default LongReadChannel getTotalImportEnergyChannel() {
 	return this.channel(ChannelId.TOTAL_IMPORT_ENERGY);
     }

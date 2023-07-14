@@ -112,42 +112,58 @@ public class SungrowEssImpl extends AbstractOpenemsModbusComponent implements Su
 	super.setModbus(modbus);
     }
 
-    @Activate
-    void activate(ComponentContext context, Config config) throws OpenemsException {
-	if (super.activate(context, config.id(), config.alias(), config.enabled(), config.modbusUnitId(), this.cm,
-		"Modbus", config.modbus_id())) {
-	    return;
+	@Activate
+	void activate(ComponentContext context, Config config) throws OpenemsException {
+		if (super.activate(context, config.id(), config.alias(), config.enabled(), config.modbusUnitId(), this.cm,
+				"Modbus", config.modbus_id())) {
+			return;
+		}
+		this.config = config;
+		//TODO These values shouldn't be hard coded, maybe derived from nominal output power
+		this._setAllowedChargePower(-8000);
+		this._setAllowedDischargePower(8000);
+		this._setMaxApparentPower(8000);
+		//NOTE: This should normally be read from the device
+		this._setGridMode(GridMode.ON_GRID);
+		
+		this.installPowerListener();
+		this.installEnergyListener();
 	}
-	this.config = config;
-	// TODO These values shouldn't be hard coded, maybe derived from nominal output
-	// power
-	this._setAllowedChargePower(-8000);
-	this._setAllowedDischargePower(8000);
-	this._setMaxApparentPower(8000);
-	// NOTE: This should normally be read from the device
-	this._setGridMode(GridMode.ON_GRID);
 
-	this.installListener();
-    }
+	@Deactivate
+	protected void deactivate() {
+		super.deactivate();
+	}
+	
+	private void installPowerListener() {
+		this.getBatteryPowerChannel().onUpdate(value -> {
+			if (!value.isDefined()) {
+				return;
+			}
+			var power = value.get();
+			if (this.isCharging()) {
+				this._setDcDischargePower(-power);
+			} else {
+				this._setDcDischargePower(power);
+			}
+		});
+	}
+	
+	private void installEnergyListener() {
+		final Consumer<Value<Long>> acChargeEnergy = (value) -> {
+			var dcChrg = this.getDcChargeEnergy();
+			var pvChrg = this.getTotalBatteryChargeEnergyFromPv();
+			if (dcChrg.isDefined() && pvChrg.isDefined()) {
+				var dcChargeEnergy = dcChrg.get();
+				var pvChargeEnergy = pvChrg.get();
+				this._setActiveChargeEnergy(dcChargeEnergy - pvChargeEnergy);
+			}
+		};
+		this.getDcChargeEnergyChannel().onUpdate(acChargeEnergy);
+		this.getTotalBatteryChargeEnergyFromPvChannel().onUpdate(acChargeEnergy);
+	}
+	
 
-    @Deactivate
-    protected void deactivate() {
-	super.deactivate();
-    }
-
-    private void installListener() {
-	final Consumer<Value<Long>> acChargeEnergy = (value) -> {
-	    var dcChrg = this.getDcChargeEnergy();
-	    var pvChrg = this.getTotalBatteryChargeEnergyFromPv();
-	    if (dcChrg.isDefined() && pvChrg.isDefined()) {
-		var dcChargeEnergy = dcChrg.get();
-		var pvChargeEnergy = pvChrg.get();
-		this._setActiveChargeEnergy(dcChargeEnergy - pvChargeEnergy);
-	    }
-	};
-	this.getDcChargeEnergyChannel().onUpdate(acChargeEnergy);
-	this.getTotalBatteryChargeEnergyFromPvChannel().onUpdate(acChargeEnergy);
-    }
 
     @Override
     protected ModbusProtocol defineModbusProtocol() throws OpenemsException {
@@ -246,8 +262,7 @@ public class SungrowEssImpl extends AbstractOpenemsModbusComponent implements Su
 				ElementToChannelConverter.SCALE_FACTOR_MINUS_1), //
 			m(SungrowEss.ChannelId.BATTERY_CURRENT, new UnsignedWordElement(13020), //
 				ElementToChannelConverter.SCALE_FACTOR_MINUS_1), //
-			m(HybridEss.ChannelId.DC_DISCHARGE_POWER, new UnsignedWordElement(13021), //
-				ElementToChannelConverter.INVERT_IF_TRUE(this.isCharging())), //
+						m(SungrowEss.ChannelId.BATTERY_POWER, new UnsignedWordElement(13021)), //
 			m(SymmetricEss.ChannelId.SOC, new UnsignedWordElement(13022), //
 				ElementToChannelConverter.SCALE_FACTOR_MINUS_1), //
 			m(SungrowEss.ChannelId.SOH, new UnsignedWordElement(13023), //
