@@ -305,6 +305,11 @@ public class MetadataFile extends AbstractMetadata implements Metadata, EventHan
 	}
 
 	@Override
+	public UserAlertingSettings getUserAlertingSettings(String edgeId, String userId) throws OpenemsException {
+		throw new UnsupportedOperationException("FileMetadata.getUserAlertingSettings() is not implemented");
+	}
+	
+	@Override
 	public List<UserAlertingSettings> getUserAlertingSettings(String edgeId) {
 		throw new UnsupportedOperationException("FileMetadata.getUserAlertingSettings() is not implemented");
 	}
@@ -317,11 +322,6 @@ public class MetadataFile extends AbstractMetadata implements Metadata, EventHan
 	@Override
 	public List<SumStateAlertingSetting> getSumStateAlertingSettings(String edgeId) throws OpenemsException {
 		throw new UnsupportedOperationException("FileMetadata.getSumStateAlertingSettings() is not implemented");
-	}
-
-	@Override
-	public UserAlertingSettings getUserAlertingSettings(String edgeId, String userId) throws OpenemsException {
-		throw new UnsupportedOperationException("FileMetadata.getUserAlertingSettings() is not implemented");
 	}
 
 	@Override
