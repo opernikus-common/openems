@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
 
+import io.openems.edge.evcs.api.ManagedEvcs;
+import io.openems.edge.evcs.api.MeasuringEvcs;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
@@ -53,6 +55,7 @@ public class SimulatorGridMeterReactingImpl extends AbstractOpenemsComponent
 			ElectricityMeter.ChannelId.ACTIVE_CONSUMPTION_ENERGY);
 
 	private final CopyOnWriteArraySet<ManagedSymmetricEss> symmetricEsss = new CopyOnWriteArraySet<>();
+	private final CopyOnWriteArraySet<ManagedEvcs> managedEvcs = new CopyOnWriteArraySet<>();
 	private final CopyOnWriteArraySet<ElectricityMeter> meters = new CopyOnWriteArraySet<>();
 
 	@Reference
@@ -75,7 +78,20 @@ public class SimulatorGridMeterReactingImpl extends AbstractOpenemsComponent
 		ess.getActivePowerChannel().removeOnSetNextValueCallback(this.updateChannelsCallback);
 		this.symmetricEsss.remove(ess);
 	}
+	@Reference(//
+			policy = ReferencePolicy.DYNAMIC, //
+			policyOption = ReferencePolicyOption.GREEDY, //
+			cardinality = ReferenceCardinality.MULTIPLE, //
+			target = "(enabled=true)")
+	private void addEvcs(ManagedEvcs evcs) {
+		this.managedEvcs.add(evcs);
+		evcs.getChargePowerChannel().onSetNextValue(this.updateChannelsCallback);
+	}
 
+	protected void removeEvcs(ManagedEvcs evcs) {
+		evcs.getChargePowerChannel().removeOnSetNextValueCallback(this.updateChannelsCallback);
+		this.managedEvcs.remove(evcs);
+	}
 	@Reference(//
 			policy = ReferencePolicy.DYNAMIC, //
 			policyOption = ReferencePolicyOption.GREEDY, //
@@ -134,6 +150,13 @@ public class SimulatorGridMeterReactingImpl extends AbstractOpenemsComponent
 				continue;
 			}
 			activePower = subtract(activePower, ess.getActivePowerChannel().getNextValue().get());
+		}
+		for (ManagedEvcs evcs : this.managedEvcs) {
+			if (evcs instanceof MeasuringEvcs) {
+				// ignore this Ess
+				continue;
+			}
+			activePower = add(activePower, evcs.getChargePowerChannel().getNextValue().get());
 		}
 		for (var m : this.meters) {
 			try {
