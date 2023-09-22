@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
+import io.openems.edge.timedata.api.Timedata;
+import io.openems.edge.timedata.api.TimedataProvider;
+import io.openems.edge.timedata.api.utils.CalculateEnergyFromPower;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
@@ -11,6 +14,9 @@ import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Deactivate;
 import org.osgi.service.component.annotations.Reference;
+import org.osgi.service.component.annotations.ReferenceCardinality;
+import org.osgi.service.component.annotations.ReferencePolicy;
+import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
 import org.osgi.service.event.propertytypes.EventTopics;
@@ -41,7 +47,7 @@ import io.openems.edge.meter.api.MeterType;
 		EdgeEventConstants.TOPIC_CYCLE_EXECUTE_WRITE, //
 })
 public class SimulatorEvcsImpl extends AbstractManagedEvcsComponent
-		implements SimulatorEvcs, ElectricityMeter, ManagedEvcs, Evcs, OpenemsComponent, EventHandler {
+		implements SimulatorEvcs, ManagedEvcs, Evcs, OpenemsComponent, EventHandler {
 
 	@Reference
 	private EvcsPower evcsPower;
@@ -56,7 +62,6 @@ public class SimulatorEvcsImpl extends AbstractManagedEvcsComponent
 				OpenemsComponent.ChannelId.values(), //
 				ManagedEvcs.ChannelId.values(), //
 				Evcs.ChannelId.values(), //
-				ElectricityMeter.ChannelId.values(), //
 				SimulatorEvcs.ChannelId.values() //
 		);
 	}
@@ -101,13 +106,13 @@ public class SimulatorEvcsImpl extends AbstractManagedEvcsComponent
 
 		/*
 		 * Set Simulated "meter" Active Power
-		 */
+
 		this._setActivePower(chargePowerLimit);
 		var simulatedActivePowerByThree = TypeUtils.divide(chargePowerLimit, 3);
 		this._setActivePowerL1(simulatedActivePowerByThree);
 		this._setActivePowerL2(simulatedActivePowerByThree);
 		this._setActivePowerL3(simulatedActivePowerByThree);
-
+		*/
 		/*
 		 * Set calculated energy
 		 */
@@ -119,6 +124,7 @@ public class SimulatorEvcsImpl extends AbstractManagedEvcsComponent
 
 		this.lastUpdate = LocalDateTime.now();
 	}
+
 
 	@Override
 	public String debugLog() {
@@ -168,28 +174,10 @@ public class SimulatorEvcsImpl extends AbstractManagedEvcsComponent
 		return false;
 	}
 
-	@Override
 	public MeterType getMeterType() {
 		return MeterType.CONSUMPTION_METERED;
 	}
 
-	@Override
-	public void _setActiveConsumptionEnergy(Long value) {
-		ElectricityMeter.super._setActiveConsumptionEnergy(value);
-	}
 
-	@Override
-	public void _setActiveConsumptionEnergy(long value) {
-		ElectricityMeter.super._setActiveConsumptionEnergy(value);
-	}
 
-	@Override
-	public LongReadChannel getActiveConsumptionEnergyChannel() {
-		return ElectricityMeter.super.getActiveConsumptionEnergyChannel();
-	}
-
-	@Override
-	public Value<Long> getActiveConsumptionEnergy() {
-		return ElectricityMeter.super.getActiveConsumptionEnergy();
-	}
 }
