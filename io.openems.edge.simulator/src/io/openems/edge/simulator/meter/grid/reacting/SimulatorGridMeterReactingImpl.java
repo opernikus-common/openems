@@ -78,7 +78,20 @@ public class SimulatorGridMeterReactingImpl extends AbstractOpenemsComponent
 		ess.getActivePowerChannel().removeOnSetNextValueCallback(this.updateChannelsCallback);
 		this.symmetricEsss.remove(ess);
 	}
+	@Reference(//
+			policy = ReferencePolicy.DYNAMIC, //
+			policyOption = ReferencePolicyOption.GREEDY, //
+			cardinality = ReferenceCardinality.MULTIPLE, //
+			target = "(enabled=true)")
+	private void addEvcs(ManagedEvcs evcs) {
+		this.managedEvcs.add(evcs);
+		evcs.getChargePowerChannel().onSetNextValue(this.updateChannelsCallback);
+	}
 
+	protected void removeEvcs(ManagedEvcs evcs) {
+		evcs.getChargePowerChannel().removeOnSetNextValueCallback(this.updateChannelsCallback);
+		this.managedEvcs.remove(evcs);
+	}
 	@Reference(//
 			policy = ReferencePolicy.DYNAMIC, //
 			policyOption = ReferencePolicyOption.GREEDY, //
