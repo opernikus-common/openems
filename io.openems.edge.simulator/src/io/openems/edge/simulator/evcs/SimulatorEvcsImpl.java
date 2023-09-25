@@ -174,10 +174,4 @@ public class SimulatorEvcsImpl extends AbstractManagedEvcsComponent
 		return false;
 	}
 
-	public MeterType getMeterType() {
-		return MeterType.CONSUMPTION_METERED;
-	}
-
-
-
 }
