@@ -1,0 +1,9 @@
+= Consolinno MBus Meter
+
+This Module contains all mbus meter consolinno uses for their KFW40+ Visualisation.
+
+== Code Quality
+Production State: *pilot projects* 
+
+Development State:
+-

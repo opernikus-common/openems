@@ -2,18 +2,26 @@ package io.openems.edge.bridge.mbus.api;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
+import org.openmuc.jmbus.VariableDataStructure;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.ComponentContext;
 
+import io.openems.edge.common.channel.Channel;
 import io.openems.edge.common.component.AbstractOpenemsComponent;
 import io.openems.edge.common.component.OpenemsComponent;
 
-public abstract class AbstractOpenemsMbusComponent extends AbstractOpenemsComponent {
+public abstract class AbstractOpenemsMbusComponent extends AbstractOpenemsComponent implements MbusComponent {
 
 	protected final List<ChannelRecord> channelDataRecordsList = new ArrayList<>();
+	private final AtomicReference<BridgeMbus> mBus = new AtomicReference<>(null);
 
+	private static final int NOT_DEFINED = -404;
 	private Integer primaryAddress = null;
+
+	private String moduleId;
+	protected boolean dynamicDataAddress = false; // For M-Bus devices that have dynamic addresses of their data.
 
 	protected AbstractOpenemsMbusComponent(io.openems.edge.common.channel.ChannelId[] firstInitialChannelIds,
 			io.openems.edge.common.channel.ChannelId[]... furtherInitialChannelIds) {
@@ -51,13 +59,46 @@ public abstract class AbstractOpenemsMbusComponent extends AbstractOpenemsCompon
 	 */
 	protected boolean activate(ComponentContext context, String id, String alias, boolean enabled, int primaryAddress,
 			ConfigurationAdmin cm, String mbusReference, String mbusId) {
+		return this.activate(context, id, alias, enabled, primaryAddress, cm, mbusReference, mbusId, 0);
+	}
+
+	/**
+	 * Call this method from Component implementations activate().
+	 *
+	 * @param context        ComponentContext of this component. Receive it from
+	 *                       parameter for @Activate
+	 * @param id             ID of this component. Typically 'config.id()'
+	 * @param alias          Human-readable name of this Component. Typically
+	 *                       'config.alias()'. Defaults to 'id' if empty
+	 * @param enabled        Whether the component should be enabled. Typically
+	 *                       'config.enabled()'
+	 * @param primaryAddress Primary address of the M-Bus device. Typically
+	 *                       'config.primaryAddress'
+	 * @param cm             An instance of ConfigurationAdmin. Receive it
+	 *                       using @Reference
+	 * @param mbusReference  The name of the @Reference setter method for the M-Bus
+	 *                       bridge
+	 * @param mbusId         The ID of the M-Bus bridge. Typically
+	 *                       'config.mbus_id()'
+	 * @param pollInterval   the pollingInterval -> how often ask the mbus meter
+	 *                       data values
+	 * @return true if the target filter was updated. You may use it to abort the
+	 *         activate() method.
+	 */
+	protected boolean activate(ComponentContext context, String id, String alias, boolean enabled, int primaryAddress,
+			ConfigurationAdmin cm, String mbusReference, String mbusId, int pollInterval) {
 		super.activate(context, id, alias, enabled);
 		this.primaryAddress = primaryAddress;
 
-		if (OpenemsComponent.updateReferenceFilter(cm, this.servicePid(), "mbus", mbusId)) {
+		if (OpenemsComponent.updateReferenceFilter(cm, this.servicePid(), "Mbus", mbusId)) {
 			return true;
 		}
-		this.addChannelDataRecords();
+		this.moduleId = id;
+		BridgeMbus mbus = this.mBus.get();
+		if (this.isEnabled() && mbus != null) {
+			this.addChannelDataRecords();
+			mbus.addTask(this.moduleId, new MbusTask(mbus, this, pollInterval));
+		}
 		return false;
 	}
 
@@ -67,4 +108,66 @@ public abstract class AbstractOpenemsMbusComponent extends AbstractOpenemsCompon
 	 * address values.
 	 */
 	protected abstract void addChannelDataRecords();
+
+	/**
+	 * Set the Mbus bridge. Should be called by @Reference
+	 *
+	 * @param mBus the BridgeMbus Reference
+	 */
+	protected void setMbus(BridgeMbus mBus) {
+		this.mBus.set(mBus);
+	}
+
+	/**
+	 * Unset the Mbus bridge. Should be called by @Reference
+	 *
+	 * @param mbus the BridgeMbus Reference
+	 */
+	protected void unsetMbus(BridgeMbus mbus) {
+		this.mBus.compareAndSet(mbus, null);
+		if (mbus != null) {
+			mbus.removeTask(this.moduleId);
+			;
+		}
+	}
+
+	protected BridgeMbus getMBus() {
+		return this.mBus.get();
+	}
+
+	/**
+	 * Some meters change the record positions in their data during runtime. This
+	 * option accounts for that. When enabled, it checks for the correctness of the
+	 * record position by comparing the unit of the channel with the unit of the
+	 * data on that record position. If it is a mismatch, the records are searched
+	 * to find a data item with matching unit.
+	 *
+	 * @return use dynamicDataAddress true/false
+	 */
+	public boolean hasDynamicDataAddress() {
+		return this.dynamicDataAddress;
+	}
+
+	/**
+	 * If "dynamicDataAddress" is true, this method is called. It checks for the
+	 * correctness of the record position by comparing the unit of the channel with
+	 * the unit of the data on that record position. If it is a mismatch, the
+	 * records are searched to find a data item with matching unit.
+	 *
+	 * @param data                   The data received from the WM-Bus device.
+	 */
+	public abstract void findRecordPositions(VariableDataStructure data);
+
+	/**
+	 * Internal Method for Generic MBus Meter. This determines if a configured
+	 * channel has a correct address or is "undefined" e.g. shouldn't be handled.
+	 *
+	 * @param channel the channel of the meter.
+	 * @param address the address where the channel receives it's data.
+	 */
+	protected void addToChannelDataRecordListIfDefined(Channel<?> channel, int address) {
+		if (address != NOT_DEFINED) {
+			this.channelDataRecordsList.add(new ChannelRecord(channel, address));
+		}
+	}
 }

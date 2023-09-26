@@ -5,12 +5,14 @@ import io.openems.edge.common.channel.Channel;
 public class ChannelRecord {
 
 	public enum DataType {
-		Manufacturer, DeviceId, MeterType
+		Manufacturer, //
+		DeviceId, //
+		MeterType //
 	}
 
 	public final DataType dataType;
 	public final Channel<?> channel;
-	public final int dataRecordPosition;
+	private int dataRecordPosition;
 
 	/**
 	 * In this case you will request secondary address values. eg. manufacturer,
@@ -35,6 +37,14 @@ public class ChannelRecord {
 		this.channel = channel;
 		this.dataRecordPosition = dataRecordPosition;
 		this.dataType = null;
+	}
+
+	public int getDataRecordPosition() {
+		return this.dataRecordPosition;
+	}
+
+	public void setDataRecordPosition(int dataRecordPosition) {
+		this.dataRecordPosition = dataRecordPosition;
 	}
 
 }

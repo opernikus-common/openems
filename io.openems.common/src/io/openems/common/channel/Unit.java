@@ -276,14 +276,137 @@ public enum Unit {
 	 */
 	MICROOHM("uOhm", OHM, -6),
 
+	//oEMS start
+	
+	// ##########
+	// Percolation Q
+	// ##########
+
+	/**
+	 * Unit of Percolation [m³/s].
+	 */
+	CUBICMETER_PER_SECOND("m³/s"),
+
+	/**
+	 * Unit of Percolation [m³/h].
+	 */
+	CUBICMETER_PER_HOUR("m³/h"),
+
+	/**
+	 * Unit of Percolation [l/min].
+	 */
+	LITER_PER_MINUTE("l/min"),
+
+	/**
+	 * Unit of Percolation [dl/min].
+	 */
+	DECILITER_PER_MINUTE("dl/min", LITER_PER_MINUTE, -1),
+
 	// ##########
 	// Pressure
 	// ##########
+	/**
+	 * Unit of Pressure[Pa].
+	 */
+	PASCAL("Pa"),
+
+	/**
+	 * Unit of Pressure[hPa].
+	 */
+	HECTO_PASCAL("hPa", PASCAL, 2),
 
 	/**
 	 * Unit of Pressure [bar].
 	 */
-	BAR("bar");
+	BAR("bar"),
+
+	/**
+	 * Unit of Pressure [dbar].
+	 */
+	DECI_BAR("dbar", BAR, -1),
+
+	/**
+	 * Unit of Pressure [cbar].
+	 */
+	CENTI_BAR("cbar", BAR, -2),
+
+	// ##########
+	// Rotation
+	// ##########
+	/**
+	 * Unit of Rotation per seconds.
+	 */
+	ROTATION_PER_SECONDS("R/sec"),
+
+	/**
+	 * Unit of Rotation per minute.
+	 */
+
+	ROTATION_PER_MINUTE("R/min"),
+
+	// ##########
+	// Angle
+	// ##########
+
+	/**
+	 * Unit of Degree [°].
+	 *
+	 */
+	DEGREE("°"),
+
+	MILLI_DEGREE("m°", DEGREE, -3),
+
+	// #########
+	// Volume
+	// ########
+
+	/**
+	 * Unit volume [m³].
+	 */
+	CUBIC_METER("m³"),
+
+	/**
+	 * Unit volume [l].
+	 */
+	LITRES("l", CUBIC_METER, -3),
+
+	// #########
+	// Wireless signal strength
+	// ########
+
+	/**
+	 * Unit of wireless signal strength [dBm].
+	 */
+	DECIBEL_MILLIWATT("dBm"),
+	// #########
+	// SPEED
+	// ########
+
+	/**
+	 * Unit of speed [m/s].
+	 */
+	METER_PER_SECOND("m/s"),
+
+	/**
+	 * Unit of speed [mph].
+	 */
+	MILES_PER_HOUR("mph"),
+
+	/**
+	 * Unit of speed [km/h].
+	 */
+	KILOMETER_PER_HOUR("km/h"),
+
+	// #########
+	// Irradiation
+	// ########
+
+	/**
+	 * Unit of Irradiation [W/m²].
+	 */
+	WATT_PER_SQUARE_METER("W/m²");
+
+	//oEMS end
 
 	public final String symbol;
 	public final Unit baseUnit;
@@ -331,6 +454,10 @@ public enum Unit {
 		this.discreteUnit = null;
 	}
 
+	public Unit getBaseUnit() {
+		return this.baseUnit;
+	}
+
 	/**
 	 * Gets the value in its base unit, e.g. converts [kW] to [W].
 	 *
@@ -339,6 +466,56 @@ public enum Unit {
 	 */
 	public int getAsBaseUnit(int value) {
 		return (int) (value * Math.pow(10, this.scaleFactor));
+	}
+
+	/**
+	 * Gets the value in its base unit, e.g. converts [kW] to [W].
+	 *
+	 * @param value the value
+	 * @return the converted value
+	 */
+	public int getAsBaseUnit(double value) {
+		return (int) (value * Math.pow(10, this.scaleFactor));
+	}
+
+	/**
+	 * Allows the conversion of a value to another scaled Unit. e.g. converts kV to
+	 * mV. Unit conversion is only allowed if both Units have the same base Unit.
+	 * 
+	 * @param value the value
+	 * @param unit  the other Unit to convert to.
+	 * @return the converted value.
+	 */
+	public int convertToScaledUnit(int value, Unit unit) {
+		if (this.baseUnit == unit.baseUnit || this == unit.baseUnit) {
+			return (int) (this.getAsBaseUnit(value) * Math.pow(10, unit.scaleFactor * -1));
+		} else if (this.baseUnit == unit) {
+			return this.getAsBaseUnit(value);
+		} else {
+			return value;
+		}
+	}
+
+	/**
+	 * Allows the conversion of a value to another scaled Unit. e.g. converts kV to
+	 * mV. Unit conversion is only allowed if both Units have the same base Unit.
+	 *
+	 * @param value the value
+	 * @param unit  the other Unit to convert to.
+	 * @return the converted value.
+	 */
+	public double convertToScaledUnit(double value, Unit unit) {
+		if (this.baseUnit == unit.baseUnit || this == unit.baseUnit) {
+			return (double) (this.getAsBaseUnit(value) * Math.pow(10, unit.scaleFactor * -1));
+		} else if (this.baseUnit == unit) {
+			return this.getAsBaseUnit(value);
+		} else {
+			return value;
+		}
+	}
+
+	public String getSymbol() {
+		return this.symbol;
 	}
 
 	/**
@@ -356,14 +533,18 @@ public enum Unit {
 		return switch (this) {
 		case NONE -> //
 			value.toString();
-
 		case AMPERE, DEGREE_CELSIUS, DEZIDEGREE_CELSIUS, EUROS_PER_MEGAWATT_HOUR, HERTZ, MILLIAMPERE, MICROAMPERE,
 				MILLIHERTZ, MILLIVOLT, MICROVOLT, PERCENT, VOLT, VOLT_AMPERE, VOLT_AMPERE_REACTIVE, WATT, KILOWATT,
 				MILLIWATT, WATT_HOURS, OHM, KILOOHM, SECONDS, AMPERE_HOURS, HOUR, CUMULATED_SECONDS, KILOAMPERE_HOURS,
 				KILOVOLT_AMPERE, KILOVOLT_AMPERE_REACTIVE, KILOVOLT_AMPERE_REACTIVE_HOURS, KILOWATT_HOURS, MICROOHM,
 				MILLIAMPERE_HOURS, MILLIOHM, MILLISECONDS, MINUTE, THOUSANDTH, VOLT_AMPERE_HOURS,
-				VOLT_AMPERE_REACTIVE_HOURS, WATT_HOURS_BY_WATT_PEAK, CUMULATED_WATT_HOURS, BAR -> //
-			value + " " + this.symbol;
+				VOLT_AMPERE_REACTIVE_HOURS, WATT_HOURS_BY_WATT_PEAK, CUMULATED_WATT_HOURS,
+				// oems start
+				CUBICMETER_PER_SECOND, CUBICMETER_PER_HOUR, LITER_PER_MINUTE, DECILITER_PER_MINUTE, PASCAL,
+				HECTO_PASCAL, BAR, DECI_BAR, CENTI_BAR, ROTATION_PER_SECONDS, ROTATION_PER_MINUTE, DEGREE, MILLI_DEGREE,
+				CUBIC_METER, LITRES, DECIBEL_MILLIWATT, METER_PER_SECOND, MILES_PER_HOUR, KILOMETER_PER_HOUR,
+				WATT_PER_SQUARE_METER // oems end
+			-> value + " " + this.symbol;
 
 		case ON_OFF -> //
 			value == null ? "UNDEFINED" : ((Boolean) value).booleanValue() ? "ON" : "OFF";
