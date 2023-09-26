@@ -10,8 +10,9 @@ Bundle-Version: 1.0.0.${tstamp}
 	io.openems.edge.bridge.modbus,\
 	io.openems.edge.common,\
 	io.openems.edge.io.api,\
-	io.openems.edge.thermometer.api,\
+	io.openems.edge.thermometer.api
 
 -testpath: \
-	${testpath}
+	${testpath},\
+	com.ghgande.j2mod
 
