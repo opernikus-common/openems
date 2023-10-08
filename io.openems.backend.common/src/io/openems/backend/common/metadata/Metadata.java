@@ -369,7 +369,7 @@ public interface Metadata {
 
 	/**
 	 * Gets a map of Edge-IDs with the role of the given user.
-	 *
+	 * 
 	 * @param user              {@link User} the current user
 	 * @param paginationOptions the options of the requesting page
 	 * @return the role to the Edge-IDs
@@ -380,7 +380,7 @@ public interface Metadata {
 
 	/**
 	 * Gets the Role for a edge of the current user.
-	 *
+	 * 
 	 * @param user   {@link User} the current user
 	 * @param edgeId the Edge-ID
 	 * @return the role to the edge

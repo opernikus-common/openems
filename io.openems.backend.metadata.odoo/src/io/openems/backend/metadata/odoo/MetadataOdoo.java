@@ -68,7 +68,8 @@ import io.openems.common.utils.ThreadPoolUtils;
 @EventTopics({ //
 		Edge.Events.ALL_EVENTS //
 })
-public class MetadataOdoo extends AbstractMetadata implements Metadata, Mailer, EventHandler {
+public class MetadataOdoo extends AbstractMetadata implements AppCenterMetadata, AppCenterMetadata.EdgeData,
+		AppCenterMetadata.UiData, Metadata, Mailer, EventHandler {
 
 	private static final int EXECUTOR_MIN_THREADS = 1;
 	private static final int EXECUTOR_MAX_THREADS = 50;
@@ -135,6 +136,13 @@ public class MetadataOdoo extends AbstractMetadata implements Metadata, Mailer, 
 		var result = this.odooHandler.authenticateSession(sessionId);
 
 		// Parse Result
+		var jUser = JsonUtils.getAsJsonObject(result, "user");
+		var odooUserId = JsonUtils.getAsInt(jUser, "id");
+		var login = JsonUtils.getAsString(jUser, "login");
+		var name = JsonUtils.getAsString(jUser, "name");
+		var language = Language.from(JsonUtils.getAsString(jUser, "language"));
+		var globalRole = Role.getRole(JsonUtils.getAsString(jUser, "global_role"));
+		var hasMultipleEdges = JsonUtils.getAsBoolean(jUser, "has_multiple_edges");
 		var jDevices = JsonUtils.getAsJsonArray(result, "devices");
 		NavigableMap<String, Role> roles = new TreeMap<>();
 		for (JsonElement device : jDevices) {
@@ -142,19 +150,14 @@ public class MetadataOdoo extends AbstractMetadata implements Metadata, Mailer, 
 			var role = Role.getRole(JsonUtils.getAsString(device, "role"));
 			roles.put(edgeId, role);
 		}
-		var jUser = JsonUtils.getAsJsonObject(result, "user");
-		var odooUserId = JsonUtils.getAsInt(jUser, "id");
 
-		var user = new MyUser(//
-				odooUserId, //
-				JsonUtils.getAsString(jUser, "login"), //
-				JsonUtils.getAsString(jUser, "name"), //
-				sessionId, //
-				Language.from(JsonUtils.getAsString(jUser, "language")), //
-				Role.getRole(JsonUtils.getAsString(jUser, "global_role")), //
-				roles);
-
-		this.users.put(user.getId(), user);
+		var user = new MyUser(odooUserId, login, name, sessionId, language, globalRole, roles, hasMultipleEdges);
+		var oldUser = this.users.put(login, user);
+		if (oldUser != null) {
+			oldUser.getEdgeRoles().forEach((edgeId, role) -> {
+				user.setRole(edgeId, role);
+			});
+		}
 		return user;
 	}
 
@@ -325,10 +328,8 @@ public class MetadataOdoo extends AbstractMetadata implements Metadata, Mailer, 
 			break;
 
 		case Edge.Events.ON_SET_SUM_STATE: {
-			var edgeId = reader.getString(Edge.Events.OnSetSumState.EDGE_ID);
+			var edge = (MyEdge) reader.getProperty(Edge.Events.OnSetSumState.EDGE);
 			var sumState = (Level) reader.getProperty(Edge.Events.OnSetSumState.SUM_STATE);
-
-			var edge = this.edgeCache.getEdgeFromEdgeId(edgeId);
 			// Set Sum-State in Odoo/Postgres
 			this.postgresHandler.getPeriodicWriteWorker().onSetSumState(edge, sumState);
 		}
@@ -509,19 +510,6 @@ public class MetadataOdoo extends AbstractMetadata implements Metadata, Mailer, 
 		} else {
 			throw new OpenemsException("User information is from foreign source!!");
 		}
-	}
-
-
-
-	@Override
-	public Role getRoleForEdge(User user, String edgeId) throws OpenemsNamedException {
-		var result = this.odooHandler.getEdgeWithRole((MyUser) user, edgeId);
-		var roleString = JsonUtils.getAsOptionalString(result, "role") //
-				.orElseThrow(() -> OpenemsError.COMMON_ROLE_UNDEFINED.exception(edgeId, user.getId()));
-
-		var role = Role.getRole(roleString);
-		user.setRole(edgeId, role);
-		return role;
 	}
 
 	@Override
