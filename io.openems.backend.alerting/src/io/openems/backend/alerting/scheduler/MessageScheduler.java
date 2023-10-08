@@ -24,7 +24,6 @@ import io.openems.backend.alerting.Message;
 public class MessageScheduler<T extends Message> {
 	private final Map<String, T> messageForId;
 	private final PriorityQueue<T> queue;
-
 	private final Handler<T> handler;
 
 	public MessageScheduler(Handler<T> handler) {
@@ -39,13 +38,14 @@ public class MessageScheduler<T extends Message> {
 	 * @param msg to add
 	 */
 	public void schedule(T msg) {
-		if (msg != null) {
-			synchronized (this) {
-				this.messageForId.computeIfAbsent(msg.getId(), (key) -> {
-					this.queue.add(msg);
-					return msg;
-				});
-			}
+		if (msg == null) {
+			return;
+		}
+		synchronized (this) {
+			this.messageForId.computeIfAbsent(msg.getId(), (key) -> {
+				this.queue.add(msg);
+				return msg;
+			});
 		}
 	}
 
@@ -55,12 +55,13 @@ public class MessageScheduler<T extends Message> {
 	 * @param msgId for message to remove
 	 */
 	public void remove(String msgId) {
-		if (msgId != null) {
-			synchronized (this) {
-				var msg = this.messageForId.remove(msgId);
-				if (msg != null) {
-					this.queue.remove(msg);
-				}
+		if (msgId == null) {
+			return;
+		}
+		synchronized (this) {
+			var msg = this.messageForId.remove(msgId);
+			if (msg != null) {
+				this.queue.remove(msg);
 			}
 		}
 	}

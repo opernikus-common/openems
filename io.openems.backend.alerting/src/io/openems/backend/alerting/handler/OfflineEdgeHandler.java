@@ -152,7 +152,7 @@ public class OfflineEdgeHandler implements Handler<OfflineEdgeMessage> {
 	protected OfflineEdgeMessage getEdgeMessage(Edge edge) {
 		if (edge == null || edge.getId() == null) {
 			this.log.warn("Called method getEdgeMessage with " //
-					+ edge == null ? "Edge{null}" : "Edge{id=null}");
+					+ edge == null ? "Edge=null" : "Edge{id=null}");
 			return null;
 		}
 		try {

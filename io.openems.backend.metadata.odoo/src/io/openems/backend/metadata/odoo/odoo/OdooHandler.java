@@ -1298,7 +1298,7 @@ public class OdooHandler {
 
 	/**
 	 * Gets the Edges of the given user matching the {@link PaginationOptions}.
-	 *
+	 * 
 	 * @param user              the current {@link MyUser}
 	 * @param paginationOptions the {@link PaginationOptions}
 	 * @return the edges
@@ -1322,7 +1322,7 @@ public class OdooHandler {
 
 	/**
 	 * Gets the edge with the {@link Role} of the user.
-	 *
+	 * 
 	 * @param user   the current {@link MyUser}
 	 * @param edgeId the id of the edge
 	 * @return the edge with the role of the user
