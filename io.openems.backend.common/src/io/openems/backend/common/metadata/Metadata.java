@@ -14,6 +14,9 @@ import org.osgi.service.event.EventAdmin;
 import com.google.common.collect.HashMultimap;
 import com.google.gson.JsonObject;
 
+import io.openems.backend.common.alerting.OfflineEdgeAlertingSetting;
+import io.openems.backend.common.alerting.SumStateAlertingSetting;
+import io.openems.backend.common.alerting.UserAlertingSettings;
 import io.openems.backend.common.event.BackendEventConstants;
 import io.openems.common.OpenemsOEM;
 import io.openems.common.channel.Level;
@@ -24,7 +27,6 @@ import io.openems.common.jsonrpc.request.GetEdgesRequest.PaginationOptions;
 import io.openems.common.jsonrpc.response.GetEdgesResponse.EdgeMetadata;
 import io.openems.common.session.Language;
 import io.openems.common.types.ChannelAddress;
-import io.openems.common.types.EdgeConfig;
 import io.openems.common.types.EdgeConfig.Component.Channel;
 import io.openems.common.types.EdgeConfig.Component.Channel.ChannelDetailState;
 
@@ -178,7 +180,7 @@ public interface Metadata {
 	 * @return a string
 	 */
 	public static String activeStateChannelsToString(
-			Map<ChannelAddress, EdgeConfig.Component.Channel> activeStateChannels) {
+			Map<ChannelAddress, Channel> activeStateChannels) {
 		// Sort active State-Channels by Level and Component-ID
 		var states = new HashMap<Level, HashMultimap<String, Channel>>();
 		for (Entry<ChannelAddress, Channel> entry : activeStateChannels.entrySet()) {
@@ -291,6 +293,16 @@ public interface Metadata {
 	public void updateUserLanguage(User user, Language language) throws OpenemsNamedException;
 
 	/**
+	 * Gets the alerting settings for given edge id and userId.
+	 *
+	 * @param edgeId the Edge ID
+	 * @param userId the User ID
+	 * @return List of {@link UserAlertingSettings}
+	 * @throws OpenemsException on error
+	 */
+	public UserAlertingSettings getUserAlertingSettings(String edgeId, String userId) throws OpenemsException;
+
+	/**
 	 * Gets all the alerting settings for given edge id.
 	 *
 	 *
@@ -298,27 +310,37 @@ public interface Metadata {
 	 * @return List of {@link AlertingSetting}
 	 * @throws OpenemsException on error
 	 */
-	public List<AlertingSetting> getUserAlertingSettings(String edgeId) throws OpenemsException;
+	public List<UserAlertingSettings> getUserAlertingSettings(String edgeId) throws OpenemsException;
 
 	/**
-	 * Gets the alerting settings for given edge id and userId.
+	 * Gets all the offline-edge-alerting settings for given edge id.
+	 *
 	 *
 	 * @param edgeId the Edge ID
-	 * @param userId the User ID
-	 * @return List of {@link UserRoleDelayTime}
+	 * @return List of {@link OfflineEdgeAlertingSetting}
 	 * @throws OpenemsException on error
 	 */
-	public AlertingSetting getUserAlertingSettings(String edgeId, String userId) throws OpenemsException;
+	public List<OfflineEdgeAlertingSetting> getEdgeOfflineAlertingSettings(String edgeId) throws OpenemsException;
+
+	/**
+	 * Gets all the sumState-alerting settings for given edge id.
+	 *
+	 *
+	 * @param edgeId the Edge ID
+	 * @return List of {@link SumStateAlertingSetting}
+	 * @throws OpenemsException on error
+	 */
+	public List<SumStateAlertingSetting> getSumStateAlertingSettings(String edgeId) throws OpenemsException;
 
 	/**
 	 * Sets the alerting settings for the given list of users.
 	 *
-	 * @param user   {@link User} the current user
-	 * @param edgeId the Edge-ID
-	 * @param users  list of users to update
+	 * @param user   	{@link User} the current user
+	 * @param edgeId 	the Edge-ID
+	 * @param settings	list of updated {@link UserAlertingSettings}
 	 * @throws OpenemsException on error
 	 */
-	public void setUserAlertingSettings(User user, String edgeId, List<AlertingSetting> users) throws OpenemsException;
+	public void setUserAlertingSettings(User user, String edgeId, List<UserAlertingSettings> settings) throws OpenemsException;
 
 	/**
 	 * Returns an EventAdmin, used by Edge objects.
@@ -364,5 +386,13 @@ public interface Metadata {
 	 * @throws OpenemsNamedException on error
 	 */
 	public EdgeMetadata getEdgeMetadataForUser(User user, String edgeId) throws OpenemsNamedException;
+
+	/**
+	 * Get the SumState of the edge with the given edgeId.
+	 *
+	 * @param edgeId to search for
+	 * @return sumState as {@link Optional} of {@link Level}
+	 */
+	public Optional<Level> getSumState(String edgeId);
 
 }

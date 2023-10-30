@@ -34,8 +34,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
+import io.openems.backend.common.alerting.OfflineEdgeAlertingSetting;
+import io.openems.backend.common.alerting.SumStateAlertingSetting;
+import io.openems.backend.common.alerting.UserAlertingSettings;
 import io.openems.backend.common.metadata.AbstractMetadata;
-import io.openems.backend.common.metadata.AlertingSetting;
 import io.openems.backend.common.metadata.AppCenterMetadata;
 import io.openems.backend.common.metadata.Edge;
 import io.openems.backend.common.metadata.EdgeHandler;
@@ -83,7 +85,9 @@ public class MetadataOdoo extends AbstractMetadata implements AppCenterMetadata,
 	private final ThreadPoolExecutor executor = new ThreadPoolExecutor(EXECUTOR_MIN_THREADS, EXECUTOR_MAX_THREADS, 60L,
 			TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>(),
 			new ThreadFactoryBuilder().setNameFormat("Metadata.Odoo.Worker-%d").build());
-	/** Maps User-ID to {@link User}. */
+	/**
+	 * Maps User-ID to {@link User}.
+	 */
 	private final ConcurrentHashMap<String, User> users = new ConcurrentHashMap<>();
 
 	@Reference
@@ -200,7 +204,8 @@ public class MetadataOdoo extends AbstractMetadata implements AppCenterMetadata,
 
 	@Override
 	public Collection<Edge> getAllOfflineEdges() {
-		return this.edgeCache.getAllEdges().stream().filter(Edge::isOffline).toList();
+		return this.edgeCache.stream().filter(Edge::isOffline) //
+				.map(e -> (Edge) e).toList();
 	}
 
 	/**
@@ -485,18 +490,33 @@ public class MetadataOdoo extends AbstractMetadata implements AppCenterMetadata,
 	}
 
 	@Override
-	public List<AlertingSetting> getUserAlertingSettings(String edgeId) throws OpenemsException {
-		return this.odooHandler.getUserAlertingSettings(edgeId);
-	}
-
-	@Override
-	public AlertingSetting getUserAlertingSettings(String edgeId, String userId) throws OpenemsException {
+	public UserAlertingSettings getUserAlertingSettings(String edgeId, String userId) throws OpenemsException {
 		return this.odooHandler.getUserAlertingSettings(edgeId, userId);
 	}
 
 	@Override
-	public void setUserAlertingSettings(User user, String edgeId, List<AlertingSetting> users) throws OpenemsException {
-		this.odooHandler.setUserAlertingSettings((MyUser) user, edgeId, users);
+	public List<UserAlertingSettings> getUserAlertingSettings(String edgeId) throws OpenemsException {
+		return this.odooHandler.getUserAlertingSettings(edgeId);
+	}
+
+	@Override
+	public List<OfflineEdgeAlertingSetting> getEdgeOfflineAlertingSettings(String edgeId) throws OpenemsException {
+		return this.odooHandler.getOfflineAlertingSettings(edgeId);
+	}
+
+	@Override
+	public List<SumStateAlertingSetting> getSumStateAlertingSettings(String edgeId) throws OpenemsException {
+		return this.odooHandler.getSumStateAlertingSettings(edgeId);
+	}
+
+	@Override
+	public void setUserAlertingSettings(User user, String edgeId, List<UserAlertingSettings> settings)
+			throws OpenemsException {
+		if (user instanceof MyUser odooUser) {
+			this.odooHandler.setUserAlertingSettings(odooUser, edgeId, settings);
+		} else {
+			throw new OpenemsException("User information is from foreign source!!");
+		}
 	}
 
 	@Override
@@ -558,4 +578,13 @@ public class MetadataOdoo extends AbstractMetadata implements AppCenterMetadata,
 		);
 	}
 
+	@Override
+	public Optional<Level> getSumState(String edgeId) {
+		try {
+			return Optional.of(this.odooHandler.getSumState(edgeId));
+		} catch (Exception e) {
+			this.log.warn(e.getMessage());
+			return Optional.empty();
+		}
+	}
 }

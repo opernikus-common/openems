@@ -20,13 +20,17 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
-import io.openems.backend.common.metadata.AlertingSetting;
+import io.openems.backend.common.alerting.OfflineEdgeAlertingSetting;
+import io.openems.backend.common.alerting.SumStateAlertingSetting;
+import io.openems.backend.common.alerting.UserAlertingSettings;
 import io.openems.backend.common.metadata.Edge;
 import io.openems.backend.common.metadata.EdgeUser;
 import io.openems.backend.common.metadata.User;
 import io.openems.backend.metadata.odoo.Config;
 import io.openems.backend.metadata.odoo.EdgeCache;
 import io.openems.backend.metadata.odoo.Field;
+import io.openems.backend.metadata.odoo.Field.AlertingSetting;
+import io.openems.backend.metadata.odoo.Field.EdgeDevice;
 import io.openems.backend.metadata.odoo.Field.Partner;
 import io.openems.backend.metadata.odoo.Field.SetupProtocol;
 import io.openems.backend.metadata.odoo.Field.SetupProtocolItem;
@@ -36,6 +40,7 @@ import io.openems.backend.metadata.odoo.MyUser;
 import io.openems.backend.metadata.odoo.odoo.Domain.Operator;
 import io.openems.backend.metadata.odoo.odoo.OdooUtils.SuccessResponseAndHeaders;
 import io.openems.common.OpenemsOEM;
+import io.openems.common.channel.Level;
 import io.openems.common.exceptions.OpenemsError.OpenemsNamedException;
 import io.openems.common.exceptions.OpenemsException;
 import io.openems.common.jsonrpc.request.GetEdgesRequest.PaginationOptions;
@@ -67,7 +72,7 @@ public class OdooHandler {
 	 */
 	public void writeEdge(MyEdge edge, FieldValue<?>... fieldValues) {
 		try {
-			OdooUtils.write(this.credentials, Field.EdgeDevice.ODOO_MODEL, new Integer[] { edge.getOdooId() },
+			OdooUtils.write(this.credentials, EdgeDevice.ODOO_MODEL, new Integer[] { edge.getOdooId() },
 					fieldValues);
 		} catch (OpenemsException e) {
 			this.parent.logError(this.log, "Unable to update Edge [" + edge.getId() + "] " //
@@ -104,7 +109,7 @@ public class OdooHandler {
 	 */
 	public void addChatterMessage(MyEdge edge, String message) {
 		try {
-			OdooUtils.addChatterMessage(this.credentials, Field.EdgeDevice.ODOO_MODEL, edge.getOdooId(), message);
+			OdooUtils.addChatterMessage(this.credentials, EdgeDevice.ODOO_MODEL, edge.getOdooId(), message);
 		} catch (OpenemsException e) {
 			this.parent.logError(this.log, "Unable to add Chatter Message to Edge [" + edge.getId() + "] " //
 					+ "Message [" + message + "]" //
@@ -119,18 +124,18 @@ public class OdooHandler {
 	 * @return Edge or empty {@link Optional}
 	 */
 	public Optional<String> getEdgeIdBySetupPassword(String setupPassword) {
-		var filter = new Domain(Field.EdgeDevice.SETUP_PASSWORD, Operator.EQ, setupPassword);
+		var filter = new Domain(EdgeDevice.SETUP_PASSWORD, Operator.EQ, setupPassword);
 
 		try {
-			var search = OdooUtils.search(this.credentials, Field.EdgeDevice.ODOO_MODEL, filter);
+			var search = OdooUtils.search(this.credentials, EdgeDevice.ODOO_MODEL, filter);
 			if (search.length == 0) {
 				return Optional.empty();
 			}
 
-			var read = OdooUtils.readOne(this.credentials, Field.EdgeDevice.ODOO_MODEL, search[0],
-					Field.EdgeDevice.NAME);
+			var read = OdooUtils.readOne(this.credentials, EdgeDevice.ODOO_MODEL, search[0],
+					EdgeDevice.NAME);
 
-			var name = (String) read.get(Field.EdgeDevice.NAME.id());
+			var name = (String) read.get(EdgeDevice.NAME.id());
 			if (name == null) {
 				return Optional.empty();
 			}
@@ -235,16 +240,16 @@ public class OdooHandler {
 	public Map<String, Object> getUserInformation(MyUser user) throws OpenemsNamedException {
 		var partnerId = this.getOdooPartnerId(user);
 
-		var odooPartner = OdooUtils.readOne(this.credentials, Field.Partner.ODOO_MODEL, partnerId,
-				Field.Partner.FIRSTNAME, //
-				Field.Partner.LASTNAME, //
-				Field.Partner.EMAIL, //
-				Field.Partner.PHONE, //
-				Field.Partner.STREET, //
-				Field.Partner.ZIP, //
-				Field.Partner.CITY, //
-				Field.Partner.COUNTRY, //
-				Field.Partner.COMPANY_NAME);
+		var odooPartner = OdooUtils.readOne(this.credentials, Partner.ODOO_MODEL, partnerId,
+				Partner.FIRSTNAME, //
+				Partner.LASTNAME, //
+				Partner.EMAIL, //
+				Partner.PHONE, //
+				Partner.STREET, //
+				Partner.ZIP, //
+				Partner.CITY, //
+				Partner.COUNTRY, //
+				Partner.COMPANY_NAME);
 
 		var odooCountryId = ObjectUtils.getAsObjectArrray(odooPartner.get("country_id"));
 		if (odooCountryId.length > 1) {
@@ -275,16 +280,16 @@ public class OdooHandler {
 		fieldValues.putAll(this.updateCompany(user, userJson));
 
 		JsonUtils.getAsOptionalString(userJson, "firstname") //
-				.ifPresent(firstname -> fieldValues.put(Field.Partner.FIRSTNAME.id(), firstname));
+				.ifPresent(firstname -> fieldValues.put(Partner.FIRSTNAME.id(), firstname));
 		JsonUtils.getAsOptionalString(userJson, "lastname") //
-				.ifPresent(lastname -> fieldValues.put(Field.Partner.LASTNAME.id(), lastname));
+				.ifPresent(lastname -> fieldValues.put(Partner.LASTNAME.id(), lastname));
 		JsonUtils.getAsOptionalString(userJson, "email") //
-				.ifPresent(email -> fieldValues.put(Field.Partner.EMAIL.id(), email.toLowerCase()));
+				.ifPresent(email -> fieldValues.put(Partner.EMAIL.id(), email.toLowerCase()));
 		JsonUtils.getAsOptionalString(userJson, "phone") //
-				.ifPresent(phone -> fieldValues.put(Field.Partner.PHONE.id(), phone));
+				.ifPresent(phone -> fieldValues.put(Partner.PHONE.id(), phone));
 
 		var odooPartnerId = this.getOdooPartnerId(user.getOdooId());
-		OdooUtils.write(this.credentials, Field.Partner.ODOO_MODEL, new Integer[] { odooPartnerId }, fieldValues);
+		OdooUtils.write(this.credentials, Partner.ODOO_MODEL, new Integer[] { odooPartnerId }, fieldValues);
 	}
 
 	/**
@@ -304,11 +309,11 @@ public class OdooHandler {
 		Map<String, Object> addressFields = new HashMap<>();
 		addressFields.put("type", "contact");
 		JsonUtils.getAsOptionalString(address, "street") //
-				.ifPresent(street -> addressFields.put(Field.Partner.STREET.id(), street));
+				.ifPresent(street -> addressFields.put(Partner.STREET.id(), street));
 		JsonUtils.getAsOptionalString(address, "zip") //
-				.ifPresent(zip -> addressFields.put(Field.Partner.ZIP.id(), zip));
+				.ifPresent(zip -> addressFields.put(Partner.ZIP.id(), zip));
 		JsonUtils.getAsOptionalString(address, "city") //
-				.ifPresent(city -> addressFields.put(Field.Partner.CITY.id(), city));
+				.ifPresent(city -> addressFields.put(Partner.CITY.id(), city));
 
 		var countryCodeOpt = JsonUtils.getAsOptionalString(address, "country");
 		if (countryCodeOpt.isPresent()) {
@@ -317,7 +322,7 @@ public class OdooHandler {
 			var countryFound = OdooUtils.search(this.credentials, Field.Country.ODOO_MODEL, //
 					new Domain(Field.Country.CODE, Operator.EQ, countryCode));
 			if (countryFound.length == 1) {
-				addressFields.put(Field.Partner.COUNTRY.id(), countryFound[0]);
+				addressFields.put(Partner.COUNTRY.id(), countryFound[0]);
 			} else {
 				this.log.info("Country with code [" + countryCode + "] not found");
 			}
@@ -362,12 +367,12 @@ public class OdooHandler {
 		var jCompanyName = companyNameOpt.get();
 
 		if (user != null) {
-			var odooPartner = OdooUtils.readOne(this.credentials, Field.Partner.ODOO_MODEL, //
+			var odooPartner = OdooUtils.readOne(this.credentials, Partner.ODOO_MODEL, //
 					this.getOdooPartnerId(user.getOdooId()), //
-					Field.Partner.COMPANY_NAME);
+					Partner.COMPANY_NAME);
 
 			var partnerCompanyNameOpt = ObjectUtils
-					.getAsOptionalString(odooPartner.get(Field.Partner.COMPANY_NAME.id()));
+					.getAsOptionalString(odooPartner.get(Partner.COMPANY_NAME.id()));
 			if (partnerCompanyNameOpt.isPresent()) {
 				if (jCompanyName.equals(partnerCompanyNameOpt.get())) {
 					return new HashMap<>();
@@ -375,18 +380,18 @@ public class OdooHandler {
 			}
 		}
 
-		var companyFound = OdooUtils.search(this.credentials, Field.Partner.ODOO_MODEL, //
-				new Domain(Field.Partner.IS_COMPANY, Operator.EQ, true),
-				new Domain(Field.Partner.COMPANY_NAME, Operator.EQ, jCompanyName));
+		var companyFound = OdooUtils.search(this.credentials, Partner.ODOO_MODEL, //
+				new Domain(Partner.IS_COMPANY, Operator.EQ, true),
+				new Domain(Partner.COMPANY_NAME, Operator.EQ, jCompanyName));
 
 		Map<String, Object> companyFields = new HashMap<>();
 		if (companyFound.length > 0) {
-			companyFields.put(Field.Partner.PARENT.id(), companyFound[0]);
+			companyFields.put(Partner.PARENT.id(), companyFound[0]);
 		} else {
-			var createdCompany = OdooUtils.create(this.credentials, Field.Partner.ODOO_MODEL, //
-					new FieldValue<>(Field.Partner.IS_COMPANY, true),
-					new FieldValue<>(Field.Partner.NAME, jCompanyName));
-			companyFields.put(Field.Partner.PARENT.id(), createdCompany);
+			var createdCompany = OdooUtils.create(this.credentials, Partner.ODOO_MODEL, //
+					new FieldValue<>(Partner.IS_COMPANY, true),
+					new FieldValue<>(Partner.NAME, jCompanyName));
+			companyFields.put(Partner.PARENT.id(), createdCompany);
 		}
 
 		return companyFields;
@@ -418,8 +423,8 @@ public class OdooHandler {
 		var oem = OpenemsOEM.Manufacturer.valueOf(JsonUtils.getAsString(setupProtocolJson, "oem").toUpperCase());
 
 		var edgeId = JsonUtils.getAsString(edgeJson, "id");
-		var foundEdge = OdooUtils.search(this.credentials, Field.EdgeDevice.ODOO_MODEL,
-				new Domain(Field.EdgeDevice.NAME, Operator.EQ, edgeId));
+		var foundEdge = OdooUtils.search(this.credentials, EdgeDevice.ODOO_MODEL,
+				new Domain(EdgeDevice.NAME, Operator.EQ, edgeId));
 		if (foundEdge.length != 1) {
 			throw new OpenemsException("Edge not found for id [" + edgeId + "]");
 		}
@@ -435,18 +440,18 @@ public class OdooHandler {
 
 		this.updateEdgeComment(userJson, edgeId, foundEdge[0]);
 
-		var installer = OdooUtils.readOne(this.credentials, Field.Partner.ODOO_MODEL, installerId,
-				Field.Partner.IS_COMPANY);
+		var installer = OdooUtils.readOne(this.credentials, Partner.ODOO_MODEL, installerId,
+				Partner.IS_COMPANY);
 		var isCompany = (boolean) installer.get("is_company");
 		if (!isCompany) {
 			Map<String, Object> fieldsToUpdate = new HashMap<>();
 			JsonUtils.getAsOptionalString(installerJson, "firstname") //
-					.ifPresent(firstname -> fieldsToUpdate.put(Field.Partner.FIRSTNAME.id(), firstname));
+					.ifPresent(firstname -> fieldsToUpdate.put(Partner.FIRSTNAME.id(), firstname));
 			JsonUtils.getAsOptionalString(installerJson, "lastname") //
-					.ifPresent(lastname -> fieldsToUpdate.put(Field.Partner.LASTNAME.id(), lastname));
+					.ifPresent(lastname -> fieldsToUpdate.put(Partner.LASTNAME.id(), lastname));
 
 			if (!fieldsToUpdate.isEmpty()) {
-				OdooUtils.write(this.credentials, Field.Partner.ODOO_MODEL, new Integer[] { installerId },
+				OdooUtils.write(this.credentials, Partner.ODOO_MODEL, new Integer[] { installerId },
 						fieldsToUpdate);
 			}
 		}
@@ -493,8 +498,8 @@ public class OdooHandler {
 		var comment = builder.toString();
 
 		// update comment for edge
-		OdooUtils.write(this.credentials, Field.EdgeDevice.ODOO_MODEL, new Integer[] { odooEdgeId },
-				new FieldValue<>(Field.EdgeDevice.COMMENT, comment));
+		OdooUtils.write(this.credentials, EdgeDevice.ODOO_MODEL, new Integer[] { odooEdgeId },
+				new FieldValue<>(EdgeDevice.COMMENT, comment));
 
 		// update edge cache
 		var edge = this.edgeCache.getEdgeFromEdgeId(edgeId);
@@ -537,15 +542,15 @@ public class OdooHandler {
 		customerFields.putAll(this.updateCompany(userJson));
 
 		JsonUtils.getAsOptionalString(userJson, "firstname") //
-				.ifPresent(firstname -> customerFields.put(Field.Partner.FIRSTNAME.id(), firstname));
+				.ifPresent(firstname -> customerFields.put(Partner.FIRSTNAME.id(), firstname));
 		JsonUtils.getAsOptionalString(userJson, "lastname") //
-				.ifPresent(lastname -> customerFields.put(Field.Partner.LASTNAME.id(), lastname));
+				.ifPresent(lastname -> customerFields.put(Partner.LASTNAME.id(), lastname));
 
 		var email = JsonUtils.getAsString(userJson, "email").toLowerCase();
-		customerFields.put(Field.Partner.EMAIL.id(), email);
+		customerFields.put(Partner.EMAIL.id(), email);
 
 		JsonUtils.getAsOptionalString(userJson, "phone") //
-				.ifPresent(phone -> customerFields.put(Field.Partner.PHONE.id(), phone));
+				.ifPresent(phone -> customerFields.put(Partner.PHONE.id(), phone));
 
 		var userFound = OdooUtils.search(this.credentials, Field.User.ODOO_MODEL,
 				new Domain(Field.User.LOGIN, Operator.EQ, email));
@@ -586,8 +591,8 @@ public class OdooHandler {
 
 		var partnerId = this.getOdooPartnerId(userId);
 
-		OdooUtils.write(this.credentials, Field.Partner.ODOO_MODEL, new Integer[] { partnerId },
-				new FieldValue<>(Field.Partner.CATEGORY_ID, new Integer[] { createdViaIbnTag, customerTag }));
+		OdooUtils.write(this.credentials, Partner.ODOO_MODEL, new Integer[] { partnerId },
+				new FieldValue<>(Partner.CATEGORY_ID, new Integer[] { createdViaIbnTag, customerTag }));
 	}
 
 	/**
@@ -612,24 +617,24 @@ public class OdooHandler {
 			locationFields.putAll(this.updateCompany(location));
 
 			JsonUtils.getAsOptionalString(location, "firstname") //
-					.ifPresent(firstname -> locationFields.put(Field.Partner.FIRSTNAME.id(), firstname));
+					.ifPresent(firstname -> locationFields.put(Partner.FIRSTNAME.id(), firstname));
 			JsonUtils.getAsOptionalString(location, "lastname") //
-					.ifPresent(lastname -> locationFields.put(Field.Partner.LASTNAME.id(), lastname));
+					.ifPresent(lastname -> locationFields.put(Partner.LASTNAME.id(), lastname));
 			JsonUtils.getAsOptionalString(location, "email") //
-					.ifPresent(mail -> locationFields.put(Field.Partner.EMAIL.id(), mail.toLowerCase()));
+					.ifPresent(mail -> locationFields.put(Partner.EMAIL.id(), mail.toLowerCase()));
 			JsonUtils.getAsOptionalString(location, "phone") //
-					.ifPresent(phone -> locationFields.put(Field.Partner.PHONE.id(), phone));
+					.ifPresent(phone -> locationFields.put(Partner.PHONE.id(), phone));
 
-			locationId = OdooUtils.create(this.credentials, Field.Partner.ODOO_MODEL, locationFields);
+			locationId = OdooUtils.create(this.credentials, Partner.ODOO_MODEL, locationFields);
 		}
 
 		Map<String, Object> setupProtocolFields = new HashMap<>();
-		setupProtocolFields.put(Field.SetupProtocol.CUSTOMER.id(), customerId);
-		setupProtocolFields.put(Field.SetupProtocol.DIFFERENT_LOCATION.id(), locationId);
-		setupProtocolFields.put(Field.SetupProtocol.INSTALLER.id(), installerId);
-		setupProtocolFields.put(Field.SetupProtocol.EDGE.id(), edgeId);
+		setupProtocolFields.put(SetupProtocol.CUSTOMER.id(), customerId);
+		setupProtocolFields.put(SetupProtocol.DIFFERENT_LOCATION.id(), locationId);
+		setupProtocolFields.put(SetupProtocol.INSTALLER.id(), installerId);
+		setupProtocolFields.put(SetupProtocol.EDGE.id(), edgeId);
 
-		var setupProtocolId = OdooUtils.create(this.credentials, Field.SetupProtocol.ODOO_MODEL, setupProtocolFields);
+		var setupProtocolId = OdooUtils.create(this.credentials, SetupProtocol.ODOO_MODEL, setupProtocolFields);
 
 		var lotsOpt = JsonUtils.getAsOptionalJsonArray(jsonObject, "lots");
 		if (lotsOpt.isPresent()) {
@@ -694,8 +699,8 @@ public class OdooHandler {
 			throws OpenemsException {
 		for (var i = 0; i < serialNumbers.size(); i++) {
 			Map<String, Object> setupProtocolItem = new HashMap<>();
-			setupProtocolItem.put(Field.SetupProtocolItem.SETUP_PROTOCOL.id(), setupProtocolId);
-			setupProtocolItem.put(Field.SetupProtocolItem.SEQUENCE.id(), i);
+			setupProtocolItem.put(SetupProtocolItem.SETUP_PROTOCOL.id(), setupProtocolId);
+			setupProtocolItem.put(SetupProtocolItem.SEQUENCE.id(), i);
 			setupProtocolItem.put("category", "Seriennummern wurden im System nicht gefunden");
 
 			var item = serialNumbers.get(i);
@@ -704,7 +709,7 @@ public class OdooHandler {
 			JsonUtils.getAsOptionalString(item, "serialNumber") //
 					.ifPresent(serialNumber -> setupProtocolItem.put("value", serialNumber));
 
-			OdooUtils.create(this.credentials, Field.SetupProtocolItem.ODOO_MODEL, setupProtocolItem);
+			OdooUtils.create(this.credentials, SetupProtocolItem.ODOO_MODEL, setupProtocolItem);
 		}
 	}
 
@@ -720,8 +725,8 @@ public class OdooHandler {
 			var item = items.get(i);
 
 			Map<String, Object> setupProtocolItem = new HashMap<>();
-			setupProtocolItem.put(Field.SetupProtocolItem.SETUP_PROTOCOL.id(), setupProtocolId);
-			setupProtocolItem.put(Field.SetupProtocolItem.SEQUENCE.id(), i);
+			setupProtocolItem.put(SetupProtocolItem.SETUP_PROTOCOL.id(), setupProtocolId);
+			setupProtocolItem.put(SetupProtocolItem.SEQUENCE.id(), i);
 
 			JsonUtils.getAsOptionalString(item, "category") //
 					.ifPresent(category -> setupProtocolItem.put("category", category));
@@ -734,7 +739,7 @@ public class OdooHandler {
 			JsonUtils.getAsOptionalString(item, "field") //
 					.ifPresent(field -> setupProtocolItem.put("field", field));
 
-			OdooUtils.create(this.credentials, Field.SetupProtocolItem.ODOO_MODEL, setupProtocolItem);
+			OdooUtils.create(this.credentials, SetupProtocolItem.ODOO_MODEL, setupProtocolItem);
 		}
 	}
 
@@ -791,7 +796,7 @@ public class OdooHandler {
 
 		Map<String, Object> userFields = new HashMap<>();
 		userFields.put(Field.User.LOGIN.id(), email);
-		userFields.put(Field.Partner.EMAIL.id(), email);
+		userFields.put(Partner.EMAIL.id(), email);
 		userFields.put(Field.User.GLOBAL_ROLE.id(), role.getOdooRole());
 		userFields.put(Field.User.GROUPS.id(), role.toOdooIds());
 		userFields.putAll(this.updateAddress(jsonObject));
@@ -911,16 +916,16 @@ public class OdooHandler {
 	 */
 	public Optional<String> getSerialNumberForEdge(Edge edge) {
 		try {
-			var edgeIds = OdooUtils.search(this.credentials, Field.EdgeDevice.ODOO_MODEL, //
-					new Domain(Field.EdgeDevice.NAME, Operator.EQ, edge.getId()));
+			var edgeIds = OdooUtils.search(this.credentials, EdgeDevice.ODOO_MODEL, //
+					new Domain(EdgeDevice.NAME, Operator.EQ, edge.getId()));
 			if (edgeIds.length == 0) {
 				return Optional.empty();
 			}
 
-			var serialNumberField = OdooUtils.readOne(this.credentials, Field.EdgeDevice.ODOO_MODEL, edgeIds[0],
-					Field.EdgeDevice.STOCK_PRODUCTION_LOT_ID);
+			var serialNumberField = OdooUtils.readOne(this.credentials, EdgeDevice.ODOO_MODEL, edgeIds[0],
+					EdgeDevice.STOCK_PRODUCTION_LOT_ID);
 
-			var serialNumber = serialNumberField.get(Field.EdgeDevice.STOCK_PRODUCTION_LOT_ID.id());
+			var serialNumber = serialNumberField.get(EdgeDevice.STOCK_PRODUCTION_LOT_ID.id());
 			if (serialNumber instanceof Object[] && ((Object[]) serialNumber).length > 1) {
 				return OdooUtils.getAsOptional(((Object[]) serialNumber)[1], String.class);
 			}
@@ -1118,7 +1123,7 @@ public class OdooHandler {
 	 * @return list of alerting settings
 	 * @throws OpenemsException on error
 	 */
-	public List<AlertingSetting> getUserAlertingSettings(String edgeId) throws OpenemsException {
+	public List<UserAlertingSettings> getUserAlertingSettings(String edgeId) throws OpenemsException {
 		return this.requestUserAlertingSettings(edgeId, null);
 	}
 
@@ -1130,63 +1135,118 @@ public class OdooHandler {
 	 * @return {@link AlertingSetting} or {@link null} if no settings are stored
 	 * @throws OpenemsException on error
 	 */
-	public AlertingSetting getUserAlertingSettings(String edgeId, String userId) throws OpenemsException {
+	public UserAlertingSettings getUserAlertingSettings(String edgeId, String userId) throws OpenemsException {
 		var settings = this.requestUserAlertingSettings(edgeId, userId);
 		return settings.isEmpty() ? null : settings.get(0);
 	}
 
-	private List<AlertingSetting> requestUserAlertingSettings(String edgeId, String userId) throws OpenemsException {
+	private List<UserAlertingSettings> requestUserAlertingSettings(String edgeName, String userLogin)
+			throws OpenemsException {
 		// Define Fields
-		var edgeUserFields = new Field[] { //
-				Field.EdgeDeviceUserRole.ID, //
-				Field.EdgeDeviceUserRole.USER_ODOO_ID, //
-				Field.EdgeDeviceUserRole.ROLE, //
-				Field.EdgeDeviceUserRole.TIME_TO_WAIT, //
-				Field.EdgeDeviceUserRole.LAST_NOTIFICATION //
-		};
-		// Define Domains
-		var edgeNameField = new Field[] { Field.EdgeDeviceUserRole.DEVICE_ODOO_ID, Field.EdgeDevice.NAME };
-		var edgeUserFilter = new Domain[] { //
-				new Domain(edgeNameField, Operator.EQ, edgeId), //
-				new Domain(Field.EdgeDeviceUserRole.USER_ODOO_ID, userId == null ? Operator.NE : Operator.EQ, userId) //
-		};
-		// Get all matching Edge Users
-		var edgeUsers = OdooUtils.searchRead(this.credentials, Field.EdgeDeviceUserRole.ODOO_MODEL, //
-				edgeUserFields, edgeUserFilter);
-		// Get all userIds
-		var userIds = Arrays.stream(edgeUsers) //
-				.map(e -> (Object[]) e.get(Field.EdgeDeviceUserRole.USER_ODOO_ID.id())) //
-				.map(e -> (Integer) e[0]) //
-				.toArray(Integer[]::new);
-		// read all login fields for the given user ids
-		var users = OdooUtils.readMany(this.credentials, Field.User.ODOO_MODEL, //
-				userIds, Field.User.LOGIN);
-		// map from OdooUserId to User
-		var usersMap = new HashMap<Integer, Map<String, Object>>(users.length);
-		for (var i = 0; i < users.length; i++) {
-			usersMap.put(userIds[i], users[i]);
-		}
-		// create result list;
-		var result = new ArrayList<AlertingSetting>(edgeUsers.length);
-		for (var edgeUser : edgeUsers) {
-			var userIdsArr = OdooUtils.getAs(Field.EdgeDeviceUserRole.USER_ODOO_ID, edgeUser, Object[].class);
-			if (userIdsArr.length != 2) {
-				this.parent.logWarn(this.log, "invalid dataset for EdgeUser[" + userIdsArr + ']');
-			} else {
-				var userOdooId = (Integer) userIdsArr[0];
+		final var fields = Field.getSqlQueryFields(AlertingSetting.class, AlertingSetting.USER_LOGIN,
+				AlertingSetting.DEVICE_NAME);
 
-				if (usersMap.containsKey(userOdooId)) {
-					var edgeUserId = OdooUtils.getAs(Field.EdgeDeviceUserRole.ID, edgeUser, Integer.class);
-					var login = OdooUtils.getAs(Field.User.LOGIN, usersMap.get(userOdooId), String.class);
-					var role = OdooUtils.getAs(Field.EdgeDeviceUserRole.ROLE, edgeUser, String.class);
-					var timeToWait = OdooUtils.getAs(Field.EdgeDeviceUserRole.TIME_TO_WAIT, edgeUser, Integer.class);
-					var lastNotificationStr = OdooUtils.getAsOrElse(Field.EdgeDeviceUserRole.LAST_NOTIFICATION,
-							edgeUser, String.class, null);
-					var lastNotification = OdooUtils.DateTime.stringToDateTime(lastNotificationStr);
-					result.add(
-							new AlertingSetting(edgeUserId, login, Role.getRole(role), lastNotification, timeToWait));
-				}
+		// Define Domains
+		final var edgeUserFilter = new Domain[] { //
+				new Domain(AlertingSetting.DEVICE_NAME, Operator.EQ, edgeName), //
+				new Domain(AlertingSetting.USER_LOGIN, userLogin == null ? Operator.NE : Operator.EQ, userLogin) //
+		};
+		// Get all matching Alerting settings
+		var alertingSettings = OdooUtils.searchRead(this.credentials, AlertingSetting.ODOO_MODEL, //
+				fields, edgeUserFilter);
+
+		// create result list;
+		var result = new ArrayList<UserAlertingSettings>(alertingSettings.length);
+		for (var setting : alertingSettings) {
+			var login = OdooUtils.getAs(AlertingSetting.USER_LOGIN, setting, String.class);
+			var role = OdooUtils.getAs(AlertingSetting.USER_ROLE, setting, String.class);
+			var deviceName = OdooUtils.getAs(AlertingSetting.DEVICE_NAME, setting, String.class);
+
+			var edgeOfflineDelay = OdooUtils.getAs(AlertingSetting.OFFLINE_DELAY, setting, Integer.class);
+			var edgeOfflineNotification = OdooUtils.getAsOrElse(AlertingSetting.OFFLINE_LAST_NOTIFICATION, setting,
+					ZonedDateTime.class, null);
+
+			var edgeFaultDelay = OdooUtils.getAs(AlertingSetting.FAULT_DELAY, setting, Integer.class);
+			var edgeWarningDelay = OdooUtils.getAs(AlertingSetting.WARNING_DELAY, setting, Integer.class);
+			var sumStateNotification = OdooUtils.getAsOrElse(AlertingSetting.SUM_STATE_LAST_NOTIFICATION, setting,
+					ZonedDateTime.class, null);
+
+			result.add(new UserAlertingSettings(deviceName, login, Role.getRole(role), edgeOfflineDelay, edgeFaultDelay,
+					edgeWarningDelay, edgeOfflineNotification, sumStateNotification));
+		}
+
+		return result;
+	}
+
+	/**
+	 * Get all offline-alerting specific settings for edge.
+	 *
+	 * @param edgeName unique name of Edge
+	 * @return List of {@link OfflineEdgeAlertingSetting} or {@link null} if no
+	 *         settings are stored
+	 * @throws OpenemsException on error
+	 */
+	public List<OfflineEdgeAlertingSetting> getOfflineAlertingSettings(String edgeName) throws OpenemsException {
+		final var fields = new Field[] { AlertingSetting.DEVICE_ODOO_ID, AlertingSetting.USER_ODOO_ID,
+				AlertingSetting.OFFLINE_DELAY, AlertingSetting.OFFLINE_LAST_NOTIFICATION, AlertingSetting.DEVICE_NAME,
+				AlertingSetting.USER_LOGIN };
+
+		final var filter = new Domain[] { //
+				new Domain(AlertingSetting.DEVICE_NAME, Operator.EQ_I_LIKE, edgeName) };
+
+		var alertingSettings = OdooUtils.searchRead(this.credentials, AlertingSetting.ODOO_MODEL, //
+				fields, filter);
+
+		var result = new ArrayList<OfflineEdgeAlertingSetting>(alertingSettings.length);
+		for (var setting : alertingSettings) {
+			var delay = OdooUtils.getAs(AlertingSetting.OFFLINE_DELAY, setting, Integer.class);
+			var lastNotification = OdooUtils.getAsOrElse(AlertingSetting.OFFLINE_LAST_NOTIFICATION, setting,
+					ZonedDateTime.class, null);
+
+			var deviceName = OdooUtils.getAs(AlertingSetting.DEVICE_NAME, setting, String.class);
+			var userLogin = OdooUtils.getAs(AlertingSetting.USER_LOGIN, setting, String.class);
+
+			if (deviceName == null || userLogin == null) {
+				this.log.error(
+						"Alerting settings for Device:" + deviceName + " and User:" + userLogin + " are invalid!!");
+				continue;
 			}
+
+			result.add(new OfflineEdgeAlertingSetting(deviceName, userLogin, delay, lastNotification));
+		}
+		return result;
+	}
+
+	/**
+	 * Get all sum-state-alerting specific settings for edge.
+	 *
+	 * @param edgeName unique name of Edge
+	 * @return List of {@link SumStateAlertingSetting} or {@link null} if no
+	 *         settings are stored
+	 * @throws OpenemsException on error
+	 */
+	public List<SumStateAlertingSetting> getSumStateAlertingSettings(String edgeName) throws OpenemsException {
+		final var fields = new Field[] { AlertingSetting.DEVICE_ODOO_ID, AlertingSetting.USER_ODOO_ID,
+				AlertingSetting.FAULT_DELAY, AlertingSetting.WARNING_DELAY, AlertingSetting.SUM_STATE_LAST_NOTIFICATION,
+				AlertingSetting.DEVICE_NAME, AlertingSetting.USER_LOGIN };
+
+		final var filter = new Domain[] { //
+				new Domain(AlertingSetting.DEVICE_NAME, Operator.EQ, edgeName) };
+
+		var alertingSettings = OdooUtils.searchRead(this.credentials, AlertingSetting.ODOO_MODEL, //
+				fields, filter);
+
+		var result = new ArrayList<SumStateAlertingSetting>(alertingSettings.length);
+		for (var setting : alertingSettings) {
+			var faultDelay = OdooUtils.getAs(AlertingSetting.FAULT_DELAY, setting, Integer.class);
+			var warningDelay = OdooUtils.getAs(AlertingSetting.WARNING_DELAY, setting, Integer.class);
+			var lastNotification = OdooUtils.getAsOrElse(AlertingSetting.SUM_STATE_LAST_NOTIFICATION, setting,
+					ZonedDateTime.class, null);
+
+			var deviceName = OdooUtils.getAs(AlertingSetting.DEVICE_NAME, setting, String.class);
+			var userLogin = OdooUtils.getAs(AlertingSetting.USER_LOGIN, setting, String.class);
+
+			result.add(new SumStateAlertingSetting(deviceName, userLogin, faultDelay, warningDelay, lastNotification));
 		}
 		return result;
 	}
@@ -1199,41 +1259,47 @@ public class OdooHandler {
 	 * @param userAlertingSettings list of users
 	 * @throws OpenemsException on error
 	 */
-	public void setUserAlertingSettings(MyUser user, String edgeId, List<AlertingSetting> userAlertingSettings)
+	public void setUserAlertingSettings(MyUser user, String edgeId, List<UserAlertingSettings> userAlertingSettings)
 			throws OpenemsException {
+
 		// search edge by id
-		var edgeIds = OdooUtils.search(this.credentials, Field.EdgeDevice.ODOO_MODEL,
-				new Domain(Field.EdgeDevice.NAME, Operator.EQ, edgeId));
+		var edgeIds = OdooUtils.search(this.credentials, EdgeDevice.ODOO_MODEL,
+				new Domain(EdgeDevice.NAME, Operator.EQ, edgeId));
 		if (edgeIds.length != 1) {
 			throw new OpenemsException("Unable to find edge [" + edgeId + "]");
 		}
+		var deviceId = edgeIds[0];
 
-		final Field[] user_login = { Field.EdgeDeviceUserRole.USER_ODOO_ID, Field.User.LOGIN };
 		for (var setting : userAlertingSettings) {
 
-			var edgeUsers = OdooUtils.search(this.credentials, Field.EdgeDeviceUserRole.ODOO_MODEL,
-					new Domain(Field.EdgeDeviceUserRole.DEVICE_ODOO_ID, Operator.EQ, edgeIds[0]),
-					new Domain(user_login, Operator.EQ, setting.getUserId()));
+			var alertingSettings = OdooUtils.search(this.credentials, AlertingSetting.ODOO_MODEL,
+					new Domain(AlertingSetting.DEVICE_ODOO_ID, Operator.EQ, deviceId),
+					new Domain(AlertingSetting.USER_LOGIN, Operator.EQ, setting.userLogin()));
 
-			if (edgeUsers.length > 0) {
-				// update founded record
-				OdooUtils.write(this.credentials, Field.EdgeDeviceUserRole.ODOO_MODEL, new Integer[] { edgeUsers[0] },
-						new FieldValue<>(Field.EdgeDeviceUserRole.TIME_TO_WAIT, setting.getDelayTime()));
+			if (alertingSettings.length > 0) {
+				// update found record
+				OdooUtils.write(this.credentials, AlertingSetting.ODOO_MODEL, new Integer[] { alertingSettings[0] },
+						new FieldValue<>(AlertingSetting.OFFLINE_DELAY, setting.edgeOfflineDelay()),
+						new FieldValue<>(AlertingSetting.FAULT_DELAY, setting.edgeFaultDelay()),
+						new FieldValue<>(AlertingSetting.WARNING_DELAY, setting.edgeWarningDelay()));
 			} else {
-				var globalRole = OdooUserRole.getRole(user.getGlobalRole());
-
-				OdooUtils.create(this.credentials, Field.EdgeDeviceUserRole.ODOO_MODEL, //
-						new FieldValue<>(Field.EdgeDeviceUserRole.DEVICE_ODOO_ID, edgeIds[0]), //
-						new FieldValue<>(Field.EdgeDeviceUserRole.USER_ODOO_ID, user.getOdooId()), //
-						new FieldValue<>(Field.EdgeDeviceUserRole.ROLE, globalRole.getOdooRole()), //
-						new FieldValue<>(Field.EdgeDeviceUserRole.TIME_TO_WAIT, setting.getDelayTime()));
+				OdooUtils.create(this.credentials, AlertingSetting.ODOO_MODEL, //
+						new FieldValue<>(AlertingSetting.DEVICE_ODOO_ID, deviceId), //
+						new FieldValue<>(AlertingSetting.USER_ODOO_ID, user.getOdooId()), //
+						new FieldValue<>(AlertingSetting.OFFLINE_DELAY, setting.edgeOfflineDelay()), //
+						new FieldValue<>(AlertingSetting.FAULT_DELAY, setting.edgeFaultDelay()), //
+						new FieldValue<>(AlertingSetting.WARNING_DELAY, setting.edgeWarningDelay()), //
+						new FieldValue<>(AlertingSetting.OFFLINE_LAST_NOTIFICATION,
+								setting.lastEdgeOfflineNotification()), //
+						new FieldValue<>(AlertingSetting.SUM_STATE_LAST_NOTIFICATION,
+								setting.lastSumStateNotification()));
 			}
 		}
 	}
 
 	/**
 	 * Gets the Edges of the given user matching the {@link PaginationOptions}.
-	 * 
+	 *
 	 * @param user              the current {@link MyUser}
 	 * @param paginationOptions the {@link PaginationOptions}
 	 * @return the edges
@@ -1273,6 +1339,27 @@ public class OdooHandler {
 		return JsonUtils.getAsJsonObject(
 				OdooUtils.sendJsonrpcRequest(this.credentials.getUrl() + "/openems_backend/get_edge_with_role",
 						"session_id=" + user.getToken(), request).result);
+	}
+
+	/**
+	 * Get the SumState of the edge with the given edgeId, via a ODOO-Request.
+	 *
+	 * @param edgeId to search for
+	 * @return sumState as {@link Level}
+	 */
+	public Level getSumState(String edgeId) throws OpenemsException {
+		// Define Fields
+		var fields = new Field[] { EdgeDevice.OPENEMS_SUM_STATE };
+		// Define Domains
+		var filter = new Domain[] { new Domain(EdgeDevice.NAME, Operator.EQ, edgeId) };
+		// Get all matching Edge Users
+		var edgeLevel = OdooUtils.searchRead(this.credentials, EdgeDevice.ODOO_MODEL, //
+				fields, filter);
+
+		if (edgeLevel.length == 1) {
+			return OdooUtils.getAsEnum(EdgeDevice.OPENEMS_SUM_STATE, edgeLevel[0], Level.class, Level.OK);
+		}
+		throw new OpenemsException("Expected 1 Edge as response, got: " + edgeLevel.length);
 	}
 
 }

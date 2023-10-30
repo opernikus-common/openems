@@ -3,18 +3,16 @@ import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { FormlyFieldConfig, FormlyFormOptions } from '@ngx-formly/core';
 import { TranslateService } from '@ngx-translate/core';
-import { SetUserAlertingConfigsRequest } from 'src/app/shared/jsonrpc/request/setUserAlertingConfigsRequest';
+import { SetUserAlertingConfigsRequest, UserSettingRequest } from 'src/app/shared/jsonrpc/request/setUserAlertingConfigsRequest';
 import { GetUserAlertingConfigsRequest } from 'src/app/shared/jsonrpc/request/getUserAlertingConfigsRequest';
 import { GetUserAlertingConfigsResponse, UserSettingResponse } from 'src/app/shared/jsonrpc/response/getUserAlertingConfigsResponse';
 import { User } from 'src/app/shared/jsonrpc/shared';
 import { Role } from 'src/app/shared/type/role';
 import { Edge, Service, Utils, Websocket } from 'src/app/shared/shared';
 
-export type UserSetting = { userId: string, delayTime: number }
-
 type Delay = { value: number, label: string }
-type UserSettingOptions = UserSetting & { options: Delay[] }
-type UserSettingRole = UserSetting & { role: Role };
+type UserSettingOptions = UserSettingRequest & { options: Delay[] }
+type UserSettingRole = UserSettingRequest & { role: Role };
 type RoleUsersSettings = { role: Role, form: FormGroup, settings: UserSettingOptions[] }
 
 @Component({
@@ -71,20 +69,20 @@ export class AlertingComponent implements OnInit {
   }
 
   private findRemoveAndSetCurrentUser(userSettings: UserSettingResponse[]) {
-    let currentUserIndex = userSettings.findIndex(setting => setting.userId === this.user.id);
+    let currentUserIndex = userSettings.findIndex(setting => setting.userLogin === this.user.id);
 
     if (currentUserIndex != -1) {
       this.currentUserInformation = userSettings.splice(currentUserIndex, 1)[0];
     } else {
-      this.currentUserInformation = { delayTime: 0, userId: this.user.id, role: Role.getRole(this.user.globalRole) };
+      this.currentUserInformation = { faultEdgeDelay: 0, warningEdgeDelay: 0, offlineEdgeDelay: 0, userLogin: this.user.id, role: Role.getRole(this.user.globalRole) };
     }
     this.currentUserForm = this.generateFormFor(this.currentUserInformation);
   }
 
   private generateFormFor(userSettings: UserSettingRole): { formGroup: FormGroup, model: any, fields: FormlyFieldConfig[], options: any } {
     let delays: Delay[] = this.Delays;
-    if (this.isInvalidDelay(userSettings.delayTime)) {
-      delays.push({ value: userSettings.delayTime, label: this.getLabelToDelay(userSettings.delayTime) });
+    if (this.isInvalidDelay(userSettings.offlineEdgeDelay)) {
+      delays.push({ value: userSettings.offlineEdgeDelay, label: this.getLabelToDelay(userSettings.offlineEdgeDelay) });
     }
     return {
       formGroup: new FormGroup({}),
@@ -94,8 +92,8 @@ export class AlertingComponent implements OnInit {
         }
       },
       model: {
-        isActivated: userSettings.delayTime > 0,
-        delayTime: userSettings.delayTime
+        isActivated: userSettings.offlineEdgeDelay > 0,
+        delayTime: userSettings.offlineEdgeDelay
       },
       fields: [{
         key: 'isActivated',
@@ -136,7 +134,7 @@ export class AlertingComponent implements OnInit {
 
   private sortedAlphabetically(userSettings: UserSettingResponse[]): UserSettingResponse[] {
     return userSettings.sort((userA, userB) => {
-      return userA.userId.localeCompare(userB.userId, undefined, { sensitivity: 'accent' });
+      return userA.userLogin.localeCompare(userB.userLogin, undefined, { sensitivity: 'accent' });
     });
   }
 
@@ -164,10 +162,16 @@ export class AlertingComponent implements OnInit {
    * @param roleSetting settings to add user to
    */
   private addUserToRoleUserSettings(userSetting: UserSettingResponse, roleSetting: RoleUsersSettings) {
-    let activated = userSetting.delayTime > 0;
-    let delay = userSetting.delayTime == 0 ? 15 : userSetting.delayTime;
-    roleSetting.settings.push({ userId: userSetting.userId, delayTime: userSetting.delayTime, options: this.getDelayOptions(delay) });
-    roleSetting.form.addControl(userSetting.userId, this.formBuilder.group({
+    let activated = userSetting.offlineEdgeDelay > 0;
+    let delay = userSetting.offlineEdgeDelay == 0 ? 15 : userSetting.offlineEdgeDelay;
+    roleSetting.settings.push({
+      userLogin: userSetting.userLogin,
+      offlineEdgeDelay: userSetting.offlineEdgeDelay,
+      faultEdgeDelay: userSetting.faultEdgeDelay,
+      warningEdgeDelay: userSetting.warningEdgeDelay,
+      options: this.getDelayOptions(delay)
+    });
+    roleSetting.form.addControl(userSetting.userLogin, this.formBuilder.group({
       isActivated: new FormControl(activated),
       delayTime: new FormControl(delay)
     }));
@@ -204,7 +208,7 @@ export class AlertingComponent implements OnInit {
     return AlertingComponent.DELAYS.map((delay) => { return { value: delay, label: this.getLabelToDelay(delay) }; });
   }
 
-  /**
+  /**buildEdge
    * get the label matching the given delay, with translated timeunits and
    * attention to writing differences and singular and plural.
    *
@@ -233,14 +237,16 @@ export class AlertingComponent implements OnInit {
     let edgeId: string = this.edge.id;
 
     let dirtyformGroups: FormGroup<any>[] = [];
-    let changedUserSettings: UserSetting[] = [];
+    let changedUserSettings: UserSettingRequest[] = [];
 
     if (this.currentUserForm.formGroup.dirty) {
       dirtyformGroups.push(this.currentUserForm.formGroup);
 
       changedUserSettings.push({
-        delayTime: this.currentUserForm.formGroup.controls['delayTime']?.value ?? 0,
-        userId: this.currentUserInformation.userId
+        userLogin: this.currentUserInformation.userLogin,
+        offlineEdgeDelay: this.currentUserForm.formGroup.controls['delayTime']?.value ?? 0,
+        faultEdgeDelay: this.currentUserInformation.faultEdgeDelay,
+        warningEdgeDelay: this.currentUserInformation.warningEdgeDelay
       });
     }
 
@@ -251,13 +257,15 @@ export class AlertingComponent implements OnInit {
           dirtyformGroups.push(setting.form);
 
           for (let user of setting.settings) {
-            let control = setting.form.controls[user.userId];
+            let control = setting.form.controls[user.userLogin];
             if (control.dirty) {
               let delayTime = control.value['delayTime'];
               let isActivated = control.value['isActivated'];
               changedUserSettings.push({
-                delayTime: isActivated ? delayTime : 0,
-                userId: user.userId
+                userLogin: user.userLogin,
+                offlineEdgeDelay: isActivated ? delayTime : 0,
+                warningEdgeDelay: user.warningEdgeDelay,
+                faultEdgeDelay: user.faultEdgeDelay
               });
               userOptions.push(user);
             }
@@ -273,7 +281,7 @@ export class AlertingComponent implements OnInit {
     var defaultSettingsCount = this.Delays.length;
     userOptions.forEach(user => {
       if (user.options.length > defaultSettingsCount) {
-        user.options = this.getDelayOptions(user.delayTime);
+        user.options = this.getDelayOptions(user.offlineEdgeDelay);
       }
     });
   }
