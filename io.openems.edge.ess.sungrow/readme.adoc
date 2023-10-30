@@ -1,0 +1,21 @@
+= Sungrow ESS
+
+
+
+
+== Compatibility
+
+?
+
+
+
+== Code Quality
+ 
+Production State: *pilot projects* 
+
+Development State: 
+
+** StartStop not yet implemented
+
+ 
+https://github.com/OpenEMS/openems/tree/develop/io.openems.edge.ess.sungrow[Source Code icon:github[]]
