@@ -1,4 +1,4 @@
-package io.openems.edge.io.revpi;
+package io.openems.edge.io.revpi.bsp.digitalio;
 
 import org.junit.Test;
 
@@ -10,7 +10,7 @@ public class IoRevolutionPiDigitalIoImplTest {
 
 	@Test
 	public void test() throws Exception {
-		new ComponentTest(new IoRevolutionPiDigitalIoImpl()) //
+		new ComponentTest(new IoRevPiDigitalIoDeviceImpl()) //
 		// .activate(MyConfig.create() //
 		// .setId(COMPONENT_ID) //
 		// .setInitOutputFromHardware(false) //

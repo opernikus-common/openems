@@ -1,4 +1,4 @@
-package io.openems.edge.io.revpi;
+package io.openems.edge.io.revpi.bsp.digitalio;
 
 import io.openems.common.test.AbstractComponentConfig;
 
@@ -44,7 +44,38 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 	}
 
 	@Override
-	public boolean initOutputFromHardware() {
-		return this.builder.initOutputFromHardware;
+	public ExpansionModule revpiType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String[] in() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String[] out() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean updateOutputFromHardware() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isSimulationMode() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public String simulationDataIn() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
