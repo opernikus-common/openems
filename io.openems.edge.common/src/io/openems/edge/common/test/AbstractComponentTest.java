@@ -29,7 +29,6 @@ import io.openems.common.exceptions.OpenemsError.OpenemsNamedException;
 import io.openems.common.exceptions.OpenemsException;
 import io.openems.common.function.ThrowingRunnable;
 import io.openems.common.test.AbstractComponentConfig;
-import io.openems.common.test.TimeLeapClock;
 import io.openems.common.types.ChannelAddress;
 import io.openems.common.types.OpenemsType;
 import io.openems.common.types.OptionsEnum;
