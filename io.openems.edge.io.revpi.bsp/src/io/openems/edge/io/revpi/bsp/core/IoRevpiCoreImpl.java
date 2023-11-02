@@ -3,8 +3,6 @@ package io.openems.edge.io.revpi.bsp.core;
 import java.io.IOException;
 import java.time.Instant;
 
-import io.openems.edge.common.channel.BooleanReadChannel;
-import io.openems.edge.io.api.DigitalInput;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
@@ -20,12 +18,14 @@ import org.slf4j.LoggerFactory;
 
 import io.openems.common.channel.Level;
 import io.openems.common.exceptions.OpenemsError.OpenemsNamedException;
+import io.openems.edge.common.channel.BooleanReadChannel;
 import io.openems.edge.common.channel.BooleanWriteChannel;
 import io.openems.edge.common.component.AbstractOpenemsComponent;
 import io.openems.edge.common.component.ComponentManager;
 import io.openems.edge.common.component.OpenemsComponent;
 import io.openems.edge.common.event.EdgeEventConstants;
 import io.openems.edge.common.sum.Sum;
+import io.openems.edge.io.api.DigitalInput;
 import io.openems.edge.io.api.DigitalOutput;
 import io.openems.edge.io.api.bsp.BoardSupportPackage;
 import io.openems.edge.io.api.bsp.LedState;
@@ -50,7 +50,7 @@ public class IoRevpiCoreImpl extends AbstractOpenemsComponent
 
 	private Config config;
 
-	private Instant systemStartTime;
+	private final Instant systemStartTime;
 
 	@Reference
 	private ComponentManager componentManager;
@@ -76,7 +76,7 @@ public class IoRevpiCoreImpl extends AbstractOpenemsComponent
 			this.board.setA1Red();
 			this.board.setA2Red();
 		} catch (IOException e) {
-			;
+			// ignore
 		}
 
 		this.logInfo(this.log, "activated");
@@ -87,6 +87,7 @@ public class IoRevpiCoreImpl extends AbstractOpenemsComponent
 		return this.digitalOutChannels;
 	}
 
+	@Override
 	@Deactivate
 	protected void deactivate() {
 		super.deactivate();
@@ -106,6 +107,8 @@ public class IoRevpiCoreImpl extends AbstractOpenemsComponent
 			// TODO implement LED A3
 			this.updateOnboardRelais();
 
+			// TODO Don't set state channel directly. Use Error-Channel in the component
+			// instead.
 			this.getStateChannel().setNextValue(Level.OK);
 		} catch (Exception e) {
 			this.getStateChannel().setNextValue(Level.FAULT);
@@ -126,11 +129,6 @@ public class IoRevpiCoreImpl extends AbstractOpenemsComponent
 		if (this.sum.getState().isAtLeast(Level.FAULT)) {
 			this.board.setA1Red();
 			this.setStatusLedEdgeValue(LedState.RED);
-
-			// }else if (this.sum.getState().isAtLeast(Level.WARNING)) {
-			// this.board.setA1Oragnge();
-			// this.setStatusLedEdgeValue(LedState.ORANGE);
-
 		} else {
 			this.board.setA1Green();
 			this.setStatusLedEdgeValue(LedState.GREEN);
@@ -138,7 +136,7 @@ public class IoRevpiCoreImpl extends AbstractOpenemsComponent
 	}
 
 	private void updateStatusLedBackend() throws IOException {
-		boolean cloudConnected = this.getCloudConnectionState();
+		var cloudConnected = this.getCloudConnectionState();
 		if (cloudConnected) {
 			this.board.setA2Green();
 			this.setStatusLedBackendValue(LedState.GREEN);
@@ -163,9 +161,10 @@ public class IoRevpiCoreImpl extends AbstractOpenemsComponent
 
 	/**
 	 * Toggles the Hardware watchdog.
-	 * 
+	 *
 	 * @throws IOException on any error
 	 */
+	@Override
 	public void toggleWatchdog() throws IOException {
 		this.getRevPiBoard().toggleWatchdog();
 	}

@@ -12,7 +12,7 @@ public interface IoRevpiWatchdog extends OpenemsComponent {
 
 		/**
 		 * Watchdog status bit.
-		 * 
+		 *
 		 * <ul>
 		 * <li>Type: Boolean
 		 * <li>Range: On/Off
@@ -30,6 +30,7 @@ public interface IoRevpiWatchdog extends OpenemsComponent {
 			this.doc = doc;
 		}
 
+		@Override
 		public Doc doc() {
 			return this.doc;
 		}

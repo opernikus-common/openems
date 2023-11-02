@@ -13,7 +13,7 @@ public class RevPiHardware {
 
 		/**
 		 * Gets the digital value of the corresponding digital channel.
-		 * 
+		 *
 		 * @param revPiIoName the channel alias
 		 * @return the digital value
 		 * @throws IOException on error
@@ -24,7 +24,7 @@ public class RevPiHardware {
 
 		/**
 		 * Closes the conntection.
-		 * 
+		 *
 		 * @throws IOException on error
 		 */
 		public void close() throws IOException;
@@ -52,14 +52,14 @@ public class RevPiHardware {
 
 			@Override
 			public void close() throws IOException {
-				; // we silently ignore a close request
+				// we silently ignore a close request
 			}
 		};
 	}
 
 	/**
 	 * Gets the instance of the {@link RevPiHardware}.
-	 * 
+	 *
 	 * @return the RevPiHardware
 	 */
 	public static synchronized RevPiHardware get() {

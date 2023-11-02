@@ -39,8 +39,8 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 	@AttributeDefinition(name = "Read Output", description = "Cyclically read hardware state and put it in output channels (must be false on REVPI DI)")
 	boolean updateOutputFromHardware() default true;
 
-	@AttributeDefinition(name = "Is Simulation", description = "Runs component in simulation mode (withou any real hardware)")
-	boolean isSimulationMode() default false;
+	@AttributeDefinition(name = "Is Simulation", description = "Runs component in simulation mode (without any real hardware)")
+	boolean simulationMode() default false;
 
 	@AttributeDefinition(name = "Simulation DataIn", description = "Provide 16 InputData (0, 1)")
 	String simulationDataIn() default "1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0";

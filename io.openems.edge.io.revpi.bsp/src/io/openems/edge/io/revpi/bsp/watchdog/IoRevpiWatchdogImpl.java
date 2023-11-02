@@ -52,6 +52,7 @@ public class IoRevpiWatchdogImpl extends AbstractOpenemsComponent
 		this.logInfo(this.log, "activated");
 	}
 
+	@Override
 	@Deactivate
 	protected void deactivate() {
 		super.deactivate();

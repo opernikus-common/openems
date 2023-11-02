@@ -33,7 +33,7 @@ import io.openems.edge.io.revpi.bsp.core.RevPiHardware.RevPiDigitalIo;
 @Component(//
 		name = "io.revpi.bsp.digitalio", //
 		immediate = true, //
-		configurationPolicy = ConfigurationPolicy.REQUIRE//
+		configurationPolicy = ConfigurationPolicy.REQUIRE //
 )
 @EventTopics({ //
 		EdgeEventConstants.TOPIC_CYCLE_BEFORE_PROCESS_IMAGE, //
@@ -61,7 +61,7 @@ public class IoRevPiDigitalIoDeviceImpl extends AbstractOpenemsComponent
 	/**
 	 * Note: On RevPi DIO only 14 are used, on RevPi DI and DO 16 channels are used.
 	 */
-	private Boolean[] hardwareOutputState = new Boolean[MAX_GPIO_OUTPUTS_DO];
+	private final Boolean[] hardwareOutputState = new Boolean[MAX_GPIO_OUTPUTS_DO];
 
 	public IoRevPiDigitalIoDeviceImpl() {
 		super(//
@@ -135,7 +135,7 @@ public class IoRevPiDigitalIoDeviceImpl extends AbstractOpenemsComponent
 		this.config = config;
 		this.channel(IoRevPiDigitalIoDevice.LAST_INVALIDATED_CHANNEL).setNextValue(-1);
 
-		if (this.config.isSimulationMode()) {
+		if (this.config.simulationMode()) {
 			return;
 		}
 		try {
@@ -151,14 +151,14 @@ public class IoRevPiDigitalIoDeviceImpl extends AbstractOpenemsComponent
 			throw new OpenemsException("Unable to activate ex: " + e.getMessage());
 		}
 	}
-	
-	
+
+	@Override
 	@Deactivate
 	protected void deactivate() {
 		this.setAllOutput(false);
 		super.deactivate();
 		try {
-			if (!this.config.isSimulationMode()) {
+			if (!this.config.simulationMode()) {
 				this.revPiDigitalIo.close();
 			}
 		} catch (IOException e) {
@@ -167,19 +167,19 @@ public class IoRevPiDigitalIoDeviceImpl extends AbstractOpenemsComponent
 		}
 		this.revPiDigitalIo = null;
 	}
-	
+
 	private void setAllOutput(boolean setOn) {
 		for (BooleanWriteChannel ch : this.channelOut) {
 			try {
 				ch.setNextWriteValue(setOn);
 			} catch (OpenemsNamedException e) {
-				; // ignore
+				// ignore
 			}
 		}
 	}
 
 	private void updateDataOutFromHardware() {
-		if (this.config.isSimulationMode()) {
+		if (this.config.simulationMode()) {
 			return;
 		}
 
@@ -196,11 +196,9 @@ public class IoRevPiDigitalIoDeviceImpl extends AbstractOpenemsComponent
 				if (this.hardwareOutputState[idx] == null) {
 					this.hardwareOutputState[idx] = in;
 					this.channelOut[idx].setNextWriteValue(in);
-				} else {
-					if (this.hardwareOutputState[idx].booleanValue() != in) {
-						this.hardwareOutputState[idx] = in;
-						this.channelOut[idx].setNextWriteValue(in);
-					}
+				} else if (this.hardwareOutputState[idx].booleanValue() != in) {
+					this.hardwareOutputState[idx] = in;
+					this.channelOut[idx].setNextWriteValue(in);
 				}
 
 			} catch (Exception e) {
@@ -282,8 +280,6 @@ public class IoRevPiDigitalIoDeviceImpl extends AbstractOpenemsComponent
 		return this.config.in()[idx];
 	}
 
-
-
 	private void validateConfig() throws OpenemsException {
 		if (this.config.revpiType().getTypeSelector() == ExpansionModule.REVPI_DIO.getTypeSelector()) {
 			if (this.config.in().length != MAX_GPIO_DIO) {
@@ -300,7 +296,7 @@ public class IoRevPiDigitalIoDeviceImpl extends AbstractOpenemsComponent
 			if (this.config.out().length > 1) {
 				throw new OpenemsException("REVPI DI must have 0 OUT aliases");
 			}
-			if (this.config.updateOutputFromHardware() == true) {
+			if (this.config.updateOutputFromHardware()) {
 				throw new OpenemsException("REVPI DI must have 'Read Output' set to false");
 			}
 		} else if (this.config.revpiType().getTypeSelector() == ExpansionModule.REVPI_DO.getTypeSelector()) {
@@ -313,7 +309,6 @@ public class IoRevPiDigitalIoDeviceImpl extends AbstractOpenemsComponent
 		}
 
 	}
-
 
 	@Override
 	public void handleEvent(Event event) {
@@ -351,27 +346,24 @@ public class IoRevPiDigitalIoDeviceImpl extends AbstractOpenemsComponent
 	/**
 	 * Reads the data either from the given DATA IN hardware port or from the
 	 * simulation data.
-	 * 
+	 *
 	 * @param idx the index
 	 * @return true, if the data could be read
 	 */
 	private boolean getData(int idx) throws Exception {
-		var in = false;
-		if (this.config.isSimulationMode()) {
+		if (this.config.simulationMode()) {
 			if (this.simInData == null) {
 				var sd = new boolean[this.channelIn.length];
 				var cnt = 0;
 				var st = new StringTokenizer(this.config.simulationDataIn());
 				while (st.hasMoreTokens()) {
-					sd[cnt++] = (Integer.parseInt(st.nextToken()) == 1 ? true : false);
+					sd[cnt++] = (Integer.parseInt(st.nextToken()) == 1);
 				}
 				this.simInData = sd;
 			}
 			return this.simInData[idx];
-		} else {
-			in = this.revPiDigitalIo.getDigital(this._getRevPiChannelAlias(false, idx));
 		}
-		return in;
+		return this.revPiDigitalIo.getDigital(this._getRevPiChannelAlias(false, idx));
 	}
 
 	private void appendBool(StringBuilder b, Optional<Boolean> val) {
@@ -396,7 +388,7 @@ public class IoRevPiDigitalIoDeviceImpl extends AbstractOpenemsComponent
 			for (var channel : this.channelIn) {
 				var valueOpt = channel.value().asOptional();
 				this.appendBool(b, valueOpt);
-				if ((i++) % 4 == 3) {
+				if (i++ % 4 == 3) {
 					b.append(" ");
 				}
 			}
@@ -410,7 +402,7 @@ public class IoRevPiDigitalIoDeviceImpl extends AbstractOpenemsComponent
 			for (var channel : this.channelOutDbg) {
 				var valueOpt = channel.value().asOptional();
 				this.appendBool(b, valueOpt);
-				if ((i++) % 4 == 3) {
+				if (i++ % 4 == 3) {
 					b.append(" ");
 				}
 			}

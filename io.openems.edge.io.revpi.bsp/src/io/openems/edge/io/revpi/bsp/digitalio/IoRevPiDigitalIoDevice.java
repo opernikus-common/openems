@@ -13,7 +13,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 
 	/**
 	 * Holds writes to ioX/Out1 for debugging.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -23,7 +23,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 	DEBUG_OUT1(Doc.of(OpenemsType.BOOLEAN)), //
 	/**
 	 * ioX/Out1.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -35,7 +35,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 			.onChannelSetNextWriteMirrorToDebugChannel(IoRevPiDigitalIoDevice.DEBUG_OUT1)), //
 	/**
 	 * Holds writes to ioX/Out2 for debugging.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -45,7 +45,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 	DEBUG_OUT2(Doc.of(OpenemsType.BOOLEAN)), //
 	/**
 	 * ioX/Out2.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -57,7 +57,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 			.onChannelSetNextWriteMirrorToDebugChannel(IoRevPiDigitalIoDevice.DEBUG_OUT2)), //
 	/**
 	 * Holds writes to ioX/Out3 for debugging.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -67,7 +67,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 	DEBUG_OUT3(Doc.of(OpenemsType.BOOLEAN)), //
 	/**
 	 * ioX/Out3.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -79,7 +79,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 			.onChannelSetNextWriteMirrorToDebugChannel(IoRevPiDigitalIoDevice.DEBUG_OUT3)), //
 	/**
 	 * Holds writes to ioX/Out4 for debugging.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -89,7 +89,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 	DEBUG_OUT4(Doc.of(OpenemsType.BOOLEAN)),
 	/**
 	 * ioX/Out4.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -101,7 +101,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 			.onChannelSetNextWriteMirrorToDebugChannel(IoRevPiDigitalIoDevice.DEBUG_OUT4)), //
 	/**
 	 * Holds writes to ioX/Out5 for debugging.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -111,7 +111,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 	DEBUG_OUT5(Doc.of(OpenemsType.BOOLEAN)), //
 	/**
 	 * ioX/Out5.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -123,7 +123,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 			.onChannelSetNextWriteMirrorToDebugChannel(IoRevPiDigitalIoDevice.DEBUG_OUT5)), //
 	/**
 	 * Holds writes to ioX/Out6 for debugging.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -133,7 +133,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 	DEBUG_OUT6(Doc.of(OpenemsType.BOOLEAN)), //
 	/**
 	 * ioX/Out6.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -145,7 +145,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 			.onChannelSetNextWriteMirrorToDebugChannel(IoRevPiDigitalIoDevice.DEBUG_OUT6)), //
 	/**
 	 * Holds writes to ioX/Out7 for debugging.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -155,7 +155,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 	DEBUG_OUT7(Doc.of(OpenemsType.BOOLEAN)), //
 	/**
 	 * ioX/Out7.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -167,7 +167,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 			.onChannelSetNextWriteMirrorToDebugChannel(IoRevPiDigitalIoDevice.DEBUG_OUT7)), //
 	/**
 	 * Holds writes to ioX/Out8 for debugging.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -177,7 +177,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 	DEBUG_OUT8(Doc.of(OpenemsType.BOOLEAN)), //
 	/**
 	 * ioX/Out8.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -189,7 +189,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 			.onChannelSetNextWriteMirrorToDebugChannel(IoRevPiDigitalIoDevice.DEBUG_OUT8)), //
 	/**
 	 * Holds writes to ioX/Out9 for debugging.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -199,7 +199,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 	DEBUG_OUT9(Doc.of(OpenemsType.BOOLEAN)), //
 	/**
 	 * ioX/Out9.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -211,7 +211,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 			.onChannelSetNextWriteMirrorToDebugChannel(IoRevPiDigitalIoDevice.DEBUG_OUT9)), //
 	/**
 	 * Holds writes to ioX/Out10 for debugging.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -221,7 +221,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 	DEBUG_OUT10(Doc.of(OpenemsType.BOOLEAN)), //
 	/**
 	 * ioX/Out10.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -233,7 +233,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 			.onChannelSetNextWriteMirrorToDebugChannel(IoRevPiDigitalIoDevice.DEBUG_OUT10)), //
 	/**
 	 * Holds writes to ioX/Out11 for debugging.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -243,7 +243,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 	DEBUG_OUT11(Doc.of(OpenemsType.BOOLEAN)), //
 	/**
 	 * ioX/Out11.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -255,7 +255,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 			.onChannelSetNextWriteMirrorToDebugChannel(IoRevPiDigitalIoDevice.DEBUG_OUT11)), //
 	/**
 	 * Holds writes to ioX/Out12 for debugging.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -265,7 +265,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 	DEBUG_OUT12(Doc.of(OpenemsType.BOOLEAN)), //
 	/**
 	 * ioX/Out12.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -277,7 +277,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 			.onChannelSetNextWriteMirrorToDebugChannel(IoRevPiDigitalIoDevice.DEBUG_OUT12)), //
 	/**
 	 * Holds writes to ioX/Out13 for debugging.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -287,7 +287,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 	DEBUG_OUT13(Doc.of(OpenemsType.BOOLEAN)), //
 	/**
 	 * ioX/Out13.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -299,7 +299,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 			.onChannelSetNextWriteMirrorToDebugChannel(IoRevPiDigitalIoDevice.DEBUG_OUT13)), //
 	/**
 	 * Holds writes to ioX/Out14 for debugging.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -310,7 +310,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 
 	/**
 	 * ioX/Out14.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -323,7 +323,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 
 	/**
 	 * Holds writes to ioX/Out15 for debugging.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -334,7 +334,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 
 	/**
 	 * ioX/Out15.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -347,7 +347,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 
 	/**
 	 * Holds writes to ioX/Out16 for debugging.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -358,7 +358,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 
 	/**
 	 * ioX/Out16.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -371,7 +371,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 
 	/**
 	 * ioX/In1.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -384,7 +384,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 
 	/**
 	 * ioX/In2.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -397,7 +397,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 
 	/**
 	 * ioX/In3.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -410,7 +410,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 
 	/**
 	 * ioX/In4.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -423,7 +423,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 
 	/**
 	 * ioX/In5.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -436,7 +436,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 
 	/**
 	 * ioX/In6.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -449,7 +449,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 
 	/**
 	 * ioX/In7.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -462,7 +462,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 
 	/**
 	 * ioX/In8.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -475,7 +475,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 
 	/**
 	 * ioX/In9.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -488,7 +488,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 
 	/**
 	 * ioX/In10.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -501,7 +501,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 
 	/**
 	 * ioX/In11.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -514,7 +514,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 
 	/**
 	 * ioX/In12.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -527,7 +527,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 
 	/**
 	 * ioX/In13.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -540,7 +540,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 
 	/**
 	 * ioX/In14.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -553,7 +553,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 
 	/**
 	 * ioX/In15.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -566,7 +566,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 
 	/**
 	 * ioX/In16.
-	 * 
+	 *
 	 * <ul>
 	 * <li>Interface: KunbusRevPiDataIOModule
 	 * <li>Type: Boolean
@@ -585,6 +585,7 @@ public enum IoRevPiDigitalIoDevice implements ChannelId {
 		this.doc = doc;
 	}
 
+	@Override
 	public Doc doc() {
 		return this.doc;
 	}

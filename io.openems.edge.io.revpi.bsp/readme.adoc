@@ -1,6 +1,6 @@
 = RevolutionPi Board Support Package
 
-This bundle provides board support package for Kunbus RevolutionPI Connect Plus and Connect S.
+This bundle provides board support package for Kunbus Revolution Pi Connect+ and Connect S.
 It also provides support to the digital IO enhancement boards.
 
 Implemented Natures:
@@ -10,20 +10,18 @@ Implemented Natures:
 
 == Compatibility 
 
-** Kunbus Connect Plus, access to
+** Kunbus Connect+ and Connect S, access to
 *** hardware watchdog 
-*** Leds A1, A2, A3
-*** integrated relais (Default Channel: `bsp0/OnBoardRelais`)
-** Kunbus Connect S, access to
-*** hardware watchdog 
-*** Leds A1, A2, A3
-*** integrated relais (Default Channel: `bsp0/OnBoardRelais`)
+*** LEDs A1, A2, A3
+*** integrated relais (Default Channel: `bsp0/DigitalOut1`)
 ** Kunbus Enhancement Board
 *** Digital Input/Output, access to
 **** 14 Digital Inputs  (Default Channels: `io0/In1 - io0/In14`)
 **** 14 Digital Outputs (Default Channels: `io0/Out1 - io0/Out14`)
 *** Digital Input, access to
 **** 16 Digital Inputs
+*** Digital Output, access to
+**** 16 Digital Outputs
 
 
 
