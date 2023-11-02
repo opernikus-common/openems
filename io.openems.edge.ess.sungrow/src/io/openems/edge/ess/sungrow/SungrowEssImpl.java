@@ -52,7 +52,7 @@ import io.openems.edge.ess.sungrow.enums.EmsMode;
 	immediate = true, //
 	configurationPolicy = ConfigurationPolicy.REQUIRE //
 )
-public class EssSungrowImpl extends AbstractOpenemsModbusComponent implements EssSungrow, SymmetricEss,
+public class SungrowEssImpl extends AbstractOpenemsModbusComponent implements SungrowEss, SymmetricEss,
 	ManagedSymmetricEss, HybridEss, StartStoppable, ModbusComponent, OpenemsComponent {
 
     private static final ElementToChannelConverter GRID_MODE_CONVERTER = new ElementToChannelConverter(value -> {
@@ -90,9 +90,9 @@ public class EssSungrowImpl extends AbstractOpenemsModbusComponent implements Es
 
     private Config config = null;
 
-    private int heartbeat = 1;
+	private int heartbeat = 500;
 
-    public EssSungrowImpl() {
+    public SungrowEssImpl() {
 	super(//
 		OpenemsComponent.ChannelId.values(), //
 		ModbusComponent.ChannelId.values(), //
@@ -100,7 +100,7 @@ public class EssSungrowImpl extends AbstractOpenemsModbusComponent implements Es
 		ManagedSymmetricEss.ChannelId.values(), //
 		HybridEss.ChannelId.values(), //
 		StartStoppable.ChannelId.values(), //
-		EssSungrow.ChannelId.values() //
+		SungrowEss.ChannelId.values() //
 	);
     }
 
@@ -112,180 +112,195 @@ public class EssSungrowImpl extends AbstractOpenemsModbusComponent implements Es
 	super.setModbus(modbus);
     }
 
-    @Activate
-    void activate(ComponentContext context, Config config) throws OpenemsException {
-	if (super.activate(context, config.id(), config.alias(), config.enabled(), config.modbusUnitId(), this.cm,
-		"Modbus", config.modbus_id())) {
-	    return;
+	@Activate
+	void activate(ComponentContext context, Config config) throws OpenemsException {
+		if (super.activate(context, config.id(), config.alias(), config.enabled(), config.modbusUnitId(), this.cm,
+				"Modbus", config.modbus_id())) {
+			return;
+		}
+		this.config = config;
+		//TODO These values shouldn't be hard coded, maybe derived from nominal output power
+		this._setAllowedChargePower(-8000);
+		this._setAllowedDischargePower(8000);
+		this._setMaxApparentPower(8000);
+		//NOTE: This should normally be read from the device
+		this._setGridMode(GridMode.ON_GRID);
+		
+		this.installPowerListener();
+		this.installEnergyListener();
 	}
-	this.config = config;
-	// TODO These values shouldn't be hard coded, maybe derived from nominal output
-	// power
-	this._setAllowedChargePower(-8000);
-	this._setAllowedDischargePower(8000);
-	this._setMaxApparentPower(8000);
-	// NOTE: This should normally be read from the device
-	this._setGridMode(GridMode.ON_GRID);
 
-	this.installListener();
-    }
+	@Deactivate
+	protected void deactivate() {
+		super.deactivate();
+	}
+	
+	private void installPowerListener() {
+		this.getBatteryPowerChannel().onUpdate(value -> {
+			if (!value.isDefined()) {
+				return;
+			}
+			var power = value.get();
+			if (this.isCharging()) {
+				this._setDcDischargePower(-power);
+			} else {
+				this._setDcDischargePower(power);
+			}
+		});
+	}
+	
+	private void installEnergyListener() {
+		final Consumer<Value<Long>> acChargeEnergy = (value) -> {
+			var dcChrg = this.getDcChargeEnergy();
+			var pvChrg = this.getTotalBatteryChargeEnergyFromPv();
+			if (dcChrg.isDefined() && pvChrg.isDefined()) {
+				var dcChargeEnergy = dcChrg.get();
+				var pvChargeEnergy = pvChrg.get();
+				this._setActiveChargeEnergy(dcChargeEnergy - pvChargeEnergy);
+			}
+		};
+		this.getDcChargeEnergyChannel().onUpdate(acChargeEnergy);
+		this.getTotalBatteryChargeEnergyFromPvChannel().onUpdate(acChargeEnergy);
+	}
+	
 
-    @Deactivate
-    protected void deactivate() {
-	super.deactivate();
-    }
-
-    private void installListener() {
-	final Consumer<Value<Long>> acChargeEnergy = (value) -> {
-	    var dcChrg = this.getDcChargeEnergy();
-	    var pvChrg = this.getTotalBatteryChargeEnergyFromPv();
-	    if (dcChrg.isDefined() && pvChrg.isDefined()) {
-		var dcChargeEnergy = dcChrg.get();
-		var pvChargeEnergy = pvChrg.get();
-		this._setActiveChargeEnergy(dcChargeEnergy - pvChargeEnergy);
-	    }
-	};
-	this.getDcChargeEnergyChannel().onUpdate(acChargeEnergy);
-	this.getTotalBatteryChargeEnergyFromPvChannel().onUpdate(acChargeEnergy);
-    }
 
     @Override
     protected ModbusProtocol defineModbusProtocol() throws OpenemsException {
 
 	return new ModbusProtocol(this, //
 		new FC4ReadInputRegistersTask(4989, Priority.HIGH, //
-			m(EssSungrow.ChannelId.SERIAL_NUMBER, new StringWordElement(4989, 10)), //
+			m(SungrowEss.ChannelId.SERIAL_NUMBER, new StringWordElement(4989, 10)), //
 			new DummyRegisterElement(4999), // Device type code
-			m(EssSungrow.ChannelId.NOMINAL_OUTPUT_POWER, new UnsignedWordElement(5000), //
+			m(SungrowEss.ChannelId.NOMINAL_OUTPUT_POWER, new UnsignedWordElement(5000), //
 				ElementToChannelConverter.SCALE_FACTOR_2), //
 			new DummyRegisterElement(5001), // Output type
-			m(EssSungrow.ChannelId.DAILY_OUTPUT_ENERGY, new UnsignedWordElement(5002), //
+			m(SungrowEss.ChannelId.DAILY_OUTPUT_ENERGY, new UnsignedWordElement(5002), //
 				ElementToChannelConverter.SCALE_FACTOR_2), //
 			m(SymmetricEss.ChannelId.ACTIVE_DISCHARGE_ENERGY, //
 				new UnsignedDoublewordElement(5003).wordOrder(WordOrder.LSWMSW), //
 				ElementToChannelConverter.SCALE_FACTOR_2), //
 			new DummyRegisterElement(5005, 5006), //
-			m(EssSungrow.ChannelId.INSIDE_TEMPERATURE, new SignedWordElement(5007)), //
+			m(SungrowEss.ChannelId.INSIDE_TEMPERATURE, new SignedWordElement(5007)), //
 			new DummyRegisterElement(5008, 5009), //
-			m(EssSungrow.ChannelId.MPPT1_VOLTAGE, new UnsignedWordElement(5010), //
+			m(SungrowEss.ChannelId.MPPT1_VOLTAGE, new UnsignedWordElement(5010), //
 				ElementToChannelConverter.SCALE_FACTOR_MINUS_1), //
-			m(EssSungrow.ChannelId.MPPT1_CURRENT, new UnsignedWordElement(5011), //
+			m(SungrowEss.ChannelId.MPPT1_CURRENT, new UnsignedWordElement(5011), //
 				ElementToChannelConverter.SCALE_FACTOR_MINUS_1), //
-			m(EssSungrow.ChannelId.MPPT2_VOLTAGE, new UnsignedWordElement(5012), //
+			m(SungrowEss.ChannelId.MPPT2_VOLTAGE, new UnsignedWordElement(5012), //
 				ElementToChannelConverter.SCALE_FACTOR_MINUS_1), //
-			m(EssSungrow.ChannelId.MPPT2_CURRENT, new UnsignedWordElement(5013), //
+			m(SungrowEss.ChannelId.MPPT2_CURRENT, new UnsignedWordElement(5013), //
 				ElementToChannelConverter.SCALE_FACTOR_MINUS_1), //
 			new DummyRegisterElement(5014, 5015), //
-			m(EssSungrow.ChannelId.TOTAL_DC_POWER, //
+			m(SungrowEss.ChannelId.TOTAL_DC_POWER, //
 				new UnsignedDoublewordElement(5016).wordOrder(WordOrder.LSWMSW)), //
-			m(EssSungrow.ChannelId.VOLTAGE_L1, new UnsignedWordElement(5018), //
+			m(SungrowEss.ChannelId.VOLTAGE_L1, new UnsignedWordElement(5018), //
 				ElementToChannelConverter.SCALE_FACTOR_2), //
-			m(EssSungrow.ChannelId.VOLTAGE_L2, new UnsignedWordElement(5019), //
+			m(SungrowEss.ChannelId.VOLTAGE_L2, new UnsignedWordElement(5019), //
 				ElementToChannelConverter.SCALE_FACTOR_2), //
-			m(EssSungrow.ChannelId.VOLTAGE_L3, new UnsignedWordElement(5020), //
+			m(SungrowEss.ChannelId.VOLTAGE_L3, new UnsignedWordElement(5020), //
 				ElementToChannelConverter.SCALE_FACTOR_2), //
 			new DummyRegisterElement(5021, 5031), //
 			m(SymmetricEss.ChannelId.REACTIVE_POWER, //
 				new SignedDoublewordElement(5032).wordOrder(WordOrder.LSWMSW)), //
-			m(EssSungrow.ChannelId.POWER_FACTOR, new SignedWordElement(5034)), //
-			m(EssSungrow.ChannelId.GRID_FREQUENCY, new UnsignedWordElement(5035), //
+			m(SungrowEss.ChannelId.POWER_FACTOR, new SignedWordElement(5034)), //
+			m(SungrowEss.ChannelId.GRID_FREQUENCY, new UnsignedWordElement(5035), //
 				ElementToChannelConverter.SCALE_FACTOR_2)), //
 
 		new FC4ReadInputRegistersTask(5621, Priority.LOW, //
-			m(EssSungrow.ChannelId.EXPORT_LIMIT_MIN, new UnsignedWordElement(5621), //
+			m(SungrowEss.ChannelId.EXPORT_LIMIT_MIN, new UnsignedWordElement(5621), //
 				ElementToChannelConverter.SCALE_FACTOR_1), //
-			m(EssSungrow.ChannelId.EXPORT_LIMIT_MAX, new UnsignedWordElement(5622), //
+			m(SungrowEss.ChannelId.EXPORT_LIMIT_MAX, new UnsignedWordElement(5622), //
 				ElementToChannelConverter.SCALE_FACTOR_1), //
 			new DummyRegisterElement(5623, 5626), //
-			m(EssSungrow.ChannelId.BDC_RATED_POWER, new UnsignedWordElement(5627), //
+			m(SungrowEss.ChannelId.BDC_RATED_POWER, new UnsignedWordElement(5627), //
 				ElementToChannelConverter.SCALE_FACTOR_2), //
 			new DummyRegisterElement(5628, 5633), //
-			m(EssSungrow.ChannelId.CHARGE_MAX_CURRENT, new UnsignedWordElement(5634)), //
-			m(EssSungrow.ChannelId.DISCHARGE_MAX_CURRENT, new UnsignedWordElement(5635)) //
+			m(SungrowEss.ChannelId.CHARGE_MAX_CURRENT, new UnsignedWordElement(5634)), //
+			m(SungrowEss.ChannelId.DISCHARGE_MAX_CURRENT, new UnsignedWordElement(5635)) //
 		), //
 
 		new FC4ReadInputRegistersTask(12999, Priority.HIGH, //
-			m(EssSungrow.ChannelId.SYSTEM_STATE, new UnsignedWordElement(12999)), //
+			m(SungrowEss.ChannelId.SYSTEM_STATE, new UnsignedWordElement(12999)), //
 			m(new BitsWordElement(13000, this) //
-				.bit(0, EssSungrow.ChannelId.POWER_GENERATED_FROM_PV) //
-				.bit(1, EssSungrow.ChannelId.BATTERY_CHARGING) //
-				.bit(2, EssSungrow.ChannelId.BATTERY_DISCHARGING) //
-				.bit(3, EssSungrow.ChannelId.POSITIVE_LOAD_POWER) //
-				.bit(4, EssSungrow.ChannelId.FEED_IN_POWER) //
-				.bit(5, EssSungrow.ChannelId.IMPORT_POWER_FROM_GRID) //
-				.bit(7, EssSungrow.ChannelId.NEGATIVE_LOAD_POWER) //
+				.bit(0, SungrowEss.ChannelId.POWER_GENERATED_FROM_PV) //
+				.bit(1, SungrowEss.ChannelId.BATTERY_CHARGING) //
+				.bit(2, SungrowEss.ChannelId.BATTERY_DISCHARGING) //
+				.bit(3, SungrowEss.ChannelId.POSITIVE_LOAD_POWER) //
+				.bit(4, SungrowEss.ChannelId.FEED_IN_POWER) //
+				.bit(5, SungrowEss.ChannelId.IMPORT_POWER_FROM_GRID) //
+				.bit(7, SungrowEss.ChannelId.NEGATIVE_LOAD_POWER) //
 			), //
-			m(EssSungrow.ChannelId.DAILY_PV_GENERATION, new UnsignedWordElement(13001), //
+			m(SungrowEss.ChannelId.DAILY_PV_GENERATION, new UnsignedWordElement(13001), //
 				ElementToChannelConverter.SCALE_FACTOR_2), //
-			m(EssSungrow.ChannelId.TOTAL_PV_GENERATION, //
+			m(SungrowEss.ChannelId.TOTAL_PV_GENERATION, //
 				new UnsignedDoublewordElement(13002).wordOrder(WordOrder.LSWMSW), //
 				ElementToChannelConverter.SCALE_FACTOR_2), //
-			m(EssSungrow.ChannelId.DAILY_EXPORT_POWER_FROM_PV, new UnsignedWordElement(13004), //
+			m(SungrowEss.ChannelId.DAILY_EXPORT_POWER_FROM_PV, new UnsignedWordElement(13004), //
 				ElementToChannelConverter.SCALE_FACTOR_2), //
-			m(EssSungrow.ChannelId.TOTAL_EXPORT_ENERGY_FROM_PV, //
+			m(SungrowEss.ChannelId.TOTAL_EXPORT_ENERGY_FROM_PV, //
 				new UnsignedDoublewordElement(13005).wordOrder(WordOrder.LSWMSW), //
 				ElementToChannelConverter.SCALE_FACTOR_2), //
-			m(EssSungrow.ChannelId.LOAD_POWER,
+			m(SungrowEss.ChannelId.LOAD_POWER,
 				new SignedDoublewordElement(13007).wordOrder(WordOrder.LSWMSW)), //
-			m(EssSungrow.ChannelId.EXPORT_POWER, //
+			m(SungrowEss.ChannelId.EXPORT_POWER, //
 				new SignedDoublewordElement(13009).wordOrder(WordOrder.LSWMSW)), //
-			m(EssSungrow.ChannelId.DAILY_BATTERY_CHARGE_ENERGY_FROM_PV, new UnsignedWordElement(13011), //
+			m(SungrowEss.ChannelId.DAILY_BATTERY_CHARGE_ENERGY_FROM_PV, new UnsignedWordElement(13011), //
 				ElementToChannelConverter.SCALE_FACTOR_2), //
-			m(EssSungrow.ChannelId.TOTAL_BATTERY_CHARGE_ENERGY_FROM_PV, //
+			m(SungrowEss.ChannelId.TOTAL_BATTERY_CHARGE_ENERGY_FROM_PV, //
 				new UnsignedDoublewordElement(13012).wordOrder(WordOrder.LSWMSW), //
 				ElementToChannelConverter.SCALE_FACTOR_2), //
-			m(EssSungrow.ChannelId.CO2_REDUCTION, //
+			m(SungrowEss.ChannelId.CO2_REDUCTION, //
 				new UnsignedDoublewordElement(13014).wordOrder(WordOrder.LSWMSW), //
 				ElementToChannelConverter.SCALE_FACTOR_MINUS_1), //
-			m(EssSungrow.ChannelId.DAILY_DIRECT_ENERGY_CONSUMPTION, new UnsignedWordElement(13016), //
+			m(SungrowEss.ChannelId.DAILY_DIRECT_ENERGY_CONSUMPTION, new UnsignedWordElement(13016), //
 				ElementToChannelConverter.SCALE_FACTOR_2), //
-			m(EssSungrow.ChannelId.TOTAL_DIRECT_ENERGY_CONSUMPTION, //
+			m(SungrowEss.ChannelId.TOTAL_DIRECT_ENERGY_CONSUMPTION, //
 				new UnsignedDoublewordElement(13017).wordOrder(WordOrder.LSWMSW), //
 				ElementToChannelConverter.SCALE_FACTOR_2), //
-			m(EssSungrow.ChannelId.BATTERY_VOLTAGE, new UnsignedWordElement(13019), //
+			m(SungrowEss.ChannelId.BATTERY_VOLTAGE, new UnsignedWordElement(13019), //
 				ElementToChannelConverter.SCALE_FACTOR_MINUS_1), //
-			m(EssSungrow.ChannelId.BATTERY_CURRENT, new UnsignedWordElement(13020), //
+			m(SungrowEss.ChannelId.BATTERY_CURRENT, new UnsignedWordElement(13020), //
 				ElementToChannelConverter.SCALE_FACTOR_MINUS_1), //
-			m(HybridEss.ChannelId.DC_DISCHARGE_POWER, new UnsignedWordElement(13021), //
-				ElementToChannelConverter.INVERT_IF_TRUE(this.isCharging())), //
+						m(SungrowEss.ChannelId.BATTERY_POWER, new UnsignedWordElement(13021)), //
 			m(SymmetricEss.ChannelId.SOC, new UnsignedWordElement(13022), //
 				ElementToChannelConverter.SCALE_FACTOR_MINUS_1), //
-			m(EssSungrow.ChannelId.SOH, new UnsignedWordElement(13023), //
+			m(SungrowEss.ChannelId.SOH, new UnsignedWordElement(13023), //
 				ElementToChannelConverter.SCALE_FACTOR_MINUS_1), //
-			m(EssSungrow.ChannelId.BATTERY_TEMPERATURE, new SignedWordElement(13024)), //
-			m(EssSungrow.ChannelId.DAILY_BATTERY_DISCHARGE_ENERGY, new UnsignedWordElement(13025), //
+			m(SungrowEss.ChannelId.BATTERY_TEMPERATURE, new SignedWordElement(13024)), //
+			m(SungrowEss.ChannelId.DAILY_BATTERY_DISCHARGE_ENERGY, new UnsignedWordElement(13025), //
 				ElementToChannelConverter.SCALE_FACTOR_2), //
 			m(HybridEss.ChannelId.DC_DISCHARGE_ENERGY, //
 				new UnsignedDoublewordElement(13026).wordOrder(WordOrder.LSWMSW), //
 				ElementToChannelConverter.SCALE_FACTOR_2), //
-			m(EssSungrow.ChannelId.SELF_CONSUMPTION_OF_TODAY, new UnsignedWordElement(13028), //
+			m(SungrowEss.ChannelId.SELF_CONSUMPTION_OF_TODAY, new UnsignedWordElement(13028), //
 				ElementToChannelConverter.SCALE_FACTOR_MINUS_1), //
 			m(SymmetricEss.ChannelId.GRID_MODE, new UnsignedWordElement(13029), //
 				GRID_MODE_CONVERTER), //
-			m(EssSungrow.ChannelId.CURRENT_L1, new SignedWordElement(13030), //
+			m(SungrowEss.ChannelId.CURRENT_L1, new SignedWordElement(13030), //
 				ElementToChannelConverter.SCALE_FACTOR_2), //
-			m(EssSungrow.ChannelId.CURRENT_L2, new SignedWordElement(13031), //
+			m(SungrowEss.ChannelId.CURRENT_L2, new SignedWordElement(13031), //
 				ElementToChannelConverter.SCALE_FACTOR_2), //
-			m(EssSungrow.ChannelId.CURRENT_L3, new SignedWordElement(13032), //
+			m(SungrowEss.ChannelId.CURRENT_L3, new SignedWordElement(13032), //
 				ElementToChannelConverter.SCALE_FACTOR_2), //
 			m(SymmetricEss.ChannelId.ACTIVE_POWER, new SignedDoublewordElement(13033))
 				.wordOrder(WordOrder.LSWMSW), //
-			m(EssSungrow.ChannelId.DAILY_IMPORT_ENERGY, new UnsignedWordElement(13035), //
+			m(SungrowEss.ChannelId.DAILY_IMPORT_ENERGY, new UnsignedWordElement(13035), //
 				ElementToChannelConverter.SCALE_FACTOR_2), //
-			m(EssSungrow.ChannelId.TOTAL_IMPORT_ENERGY,
+			m(SungrowEss.ChannelId.TOTAL_IMPORT_ENERGY,
 				new UnsignedDoublewordElement(13036).wordOrder(WordOrder.LSWMSW), //
 				ElementToChannelConverter.SCALE_FACTOR_2), //
 			m(SymmetricEss.ChannelId.CAPACITY, new UnsignedWordElement(13038), //
 				ElementToChannelConverter.SCALE_FACTOR_2), //
-			m(EssSungrow.ChannelId.DAILY_CHARGE_ENERGY, new UnsignedWordElement(13039), //
+			m(SungrowEss.ChannelId.DAILY_CHARGE_ENERGY, new UnsignedWordElement(13039), //
 				ElementToChannelConverter.SCALE_FACTOR_2), //
 			m(SymmetricEss.ChannelId.ACTIVE_CHARGE_ENERGY, //
 				new UnsignedDoublewordElement(13040).wordOrder(WordOrder.LSWMSW), //
 				ElementToChannelConverter.SCALE_FACTOR_2), //
 			new DummyRegisterElement(13042, 13043), //
-			m(EssSungrow.ChannelId.DAILY_EXPORT_ENERGY, new UnsignedWordElement(13044), //
+			m(SungrowEss.ChannelId.DAILY_EXPORT_ENERGY, new UnsignedWordElement(13044), //
 				ElementToChannelConverter.SCALE_FACTOR_2), //
-			m(EssSungrow.ChannelId.TOTAL_EXPORT_ENERGY,
+			m(SungrowEss.ChannelId.TOTAL_EXPORT_ENERGY,
 				new UnsignedDoublewordElement(13045).wordOrder(WordOrder.LSWMSW), //
 				ElementToChannelConverter.SCALE_FACTOR_2) //
 		), //
@@ -294,30 +309,30 @@ public class EssSungrowImpl extends AbstractOpenemsModbusComponent implements Es
 				START_STOP_CONVERTER) //
 		), //
 		new FC3ReadRegistersTask(13049, Priority.HIGH, //
-			m(EssSungrow.ChannelId.EMS_MODE, new UnsignedWordElement(13049)), //
-			m(EssSungrow.ChannelId.CHARGE_DISCHARGE_COMMAND, new UnsignedWordElement(13050)), //
-			m(EssSungrow.ChannelId.CHARGE_DISCHARGE_POWER, new UnsignedWordElement(13051)), //
+			m(SungrowEss.ChannelId.EMS_MODE, new UnsignedWordElement(13049)), //
+			m(SungrowEss.ChannelId.CHARGE_DISCHARGE_COMMAND, new UnsignedWordElement(13050)), //
+			m(SungrowEss.ChannelId.CHARGE_DISCHARGE_POWER, new UnsignedWordElement(13051)), //
 			new DummyRegisterElement(13052, 13056), //
-			m(EssSungrow.ChannelId.MAX_SOC, new UnsignedWordElement(13057), //
+			m(SungrowEss.ChannelId.MAX_SOC, new UnsignedWordElement(13057), //
 				ElementToChannelConverter.SCALE_FACTOR_MINUS_1), //
-			m(EssSungrow.ChannelId.MIN_SOC, new UnsignedWordElement(13058), //
+			m(SungrowEss.ChannelId.MIN_SOC, new UnsignedWordElement(13058), //
 				ElementToChannelConverter.SCALE_FACTOR_MINUS_1), //
 			new DummyRegisterElement(13059, 13078), //
-			m(EssSungrow.ChannelId.HEARTBEAT, new UnsignedWordElement(13079)), //
+			m(SungrowEss.ChannelId.HEARTBEAT, new UnsignedWordElement(13079)), //
 			new DummyRegisterElement(13080, 13084), //
-			m(EssSungrow.ChannelId.METER_COMM_DETECTION, new UnsignedWordElement(13085)), //
-			m(EssSungrow.ChannelId.EXPORT_POWER_LIMITATION, new UnsignedWordElement(13086)), //
+			m(SungrowEss.ChannelId.METER_COMM_DETECTION, new UnsignedWordElement(13085)), //
+			m(SungrowEss.ChannelId.EXPORT_POWER_LIMITATION, new UnsignedWordElement(13086)), //
 			new DummyRegisterElement(13087, 13098), //
-			m(EssSungrow.ChannelId.RESERVED_SOC_FOR_BACKUP, new UnsignedWordElement(13099)) //
+			m(SungrowEss.ChannelId.RESERVED_SOC_FOR_BACKUP, new UnsignedWordElement(13099)) //
 		), //
 
 		new FC16WriteRegistersTask(13049, //
-			m(EssSungrow.ChannelId.EMS_MODE, new UnsignedWordElement(13049)), //
-			m(EssSungrow.ChannelId.CHARGE_DISCHARGE_COMMAND, new UnsignedWordElement(13050)), //
-			m(EssSungrow.ChannelId.CHARGE_DISCHARGE_POWER, new UnsignedWordElement(13051)) //
+			m(SungrowEss.ChannelId.EMS_MODE, new UnsignedWordElement(13049)), //
+			m(SungrowEss.ChannelId.CHARGE_DISCHARGE_COMMAND, new UnsignedWordElement(13050)), //
+			m(SungrowEss.ChannelId.CHARGE_DISCHARGE_POWER, new UnsignedWordElement(13051)) //
 		), //
 		new FC6WriteRegisterTask(13079, //
-			m(EssSungrow.ChannelId.HEARTBEAT, new UnsignedWordElement(13079)) //
+			m(SungrowEss.ChannelId.HEARTBEAT, new UnsignedWordElement(13079)) //
 		) //
 
 	);
@@ -342,22 +357,27 @@ public class EssSungrowImpl extends AbstractOpenemsModbusComponent implements Es
     public void applyPower(int activePower, int reactivePower) throws OpenemsNamedException {
 	if (this.config.readOnly()) {
 	    this.getEmsModeChannel().setNextWriteValue(EmsMode.SELF_CONSUMPTION);
-	    return;
+			this.getHeartbeatChannel().setNextWriteValue(0);
+			return;
+		}
+		if (this.heartbeat == 500) {
+			this.heartbeat = 600;
+		} else {
+			this.heartbeat = 500;
+		}
+		this.getHeartbeatChannel().setNextWriteValue(this.heartbeat);
+		this.channel(SungrowEss.ChannelId.DEBUG_HEARTBEAT).setNextValue(this.heartbeat);
+	
+		this.getEmsModeChannel().setNextWriteValue(EmsMode.EXTERNAL_EMS_MODE);
+	
+		if (activePower > 0) {
+			this.getChargeDischargeCommandChannel().setNextWriteValue(ChargeDischargeCommand.DISCHARGE);
+			this.getChargeDischargePowerChannel().setNextWriteValue(activePower);
+		} else {
+			this.getChargeDischargeCommandChannel().setNextWriteValue(ChargeDischargeCommand.CHARGE);
+			this.getChargeDischargePowerChannel().setNextWriteValue(-activePower);
+		}
 	}
-	this.heartbeat++;
-	this.heartbeat = (this.heartbeat - 1) % 1000 + 1;
-	this.getHeartbeatChannel().setNextWriteValue(this.heartbeat);
-	this.channel(EssSungrow.ChannelId.DEBUG_HEARTBEAT).setNextValue(this.heartbeat);
-	this.getEmsModeChannel().setNextWriteValue(EmsMode.EXTERNAL_EMS_MODE);
-
-	if (activePower > 0) {
-	    this.getChargeDischargeCommandChannel().setNextWriteValue(ChargeDischargeCommand.DISCHARGE);
-	    this.getChargeDischargePowerChannel().setNextWriteValue(activePower);
-	} else {
-	    this.getChargeDischargeCommandChannel().setNextWriteValue(ChargeDischargeCommand.CHARGE);
-	    this.getChargeDischargePowerChannel().setNextWriteValue(-activePower);
-	}
-    }
 
     @Override
     public int getPowerPrecision() {

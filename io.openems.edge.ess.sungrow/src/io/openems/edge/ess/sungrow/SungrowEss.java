@@ -17,7 +17,7 @@ import io.openems.edge.ess.sungrow.enums.EmsMode;
 import io.openems.edge.ess.sungrow.enums.EnableDisable;
 import io.openems.edge.ess.sungrow.enums.SystemState;
 
-public interface EssSungrow extends OpenemsComponent {
+public interface SungrowEss extends OpenemsComponent {
 
     public enum ChannelId implements io.openems.edge.common.channel.ChannelId {
 	SERIAL_NUMBER(Doc.of(OpenemsType.STRING) //
@@ -280,6 +280,10 @@ public interface EssSungrow extends OpenemsComponent {
     public default LongReadChannel getTotalPvGenerationChannel() {
 	return this.channel(ChannelId.TOTAL_PV_GENERATION);
     }
+
+	public default IntegerReadChannel getBatteryPowerChannel() {
+		return this.channel(ChannelId.BATTERY_POWER);
+	}
 
     public default LongReadChannel getTotalImportEnergyChannel() {
 	return this.channel(ChannelId.TOTAL_IMPORT_ENERGY);

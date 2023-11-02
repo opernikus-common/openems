@@ -7,7 +7,7 @@ import io.openems.edge.bridge.modbus.test.DummyModbusBridge;
 import io.openems.edge.common.test.ComponentTest;
 import io.openems.edge.common.test.DummyConfigurationAdmin;
 
-public class EssSungrowEssTest {
+public class MyModbusDeviceTest {
 
     private static final String COMPONENT_ID = "ess0";
     private static final String MODBUS_ID = "modbus0";

@@ -16,7 +16,7 @@ import io.openems.common.exceptions.OpenemsError.OpenemsNamedException;
 import io.openems.common.exceptions.OpenemsException;
 import io.openems.edge.common.component.AbstractOpenemsComponent;
 import io.openems.edge.common.component.OpenemsComponent;
-import io.openems.edge.ess.sungrow.EssSungrow;
+import io.openems.edge.ess.sungrow.SungrowEss;
 import io.openems.edge.meter.api.MeterType;
 import io.openems.edge.meter.api.ElectricityMeter;
 
@@ -35,7 +35,7 @@ public class SungrowVirtualGridMeter extends AbstractOpenemsComponent
 	private ConfigurationAdmin cm;
 
 	@Reference(policy = ReferencePolicy.STATIC, policyOption = ReferencePolicyOption.GREEDY, cardinality = ReferenceCardinality.MANDATORY)
-	private EssSungrow ess;
+	private SungrowEss ess;
 
 	public SungrowVirtualGridMeter() {
 		super(//

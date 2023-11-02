@@ -17,7 +17,7 @@ import io.openems.common.exceptions.OpenemsException;
 import io.openems.edge.common.component.AbstractOpenemsComponent;
 import io.openems.edge.common.component.OpenemsComponent;
 import io.openems.edge.ess.dccharger.api.EssDcCharger;
-import io.openems.edge.ess.sungrow.EssSungrow;
+import io.openems.edge.ess.sungrow.SungrowEss;
 
 @Designate(ocd = Config.class, factory = true)
 @Component(//
@@ -34,7 +34,7 @@ public class SungrowVirtualDcCharger extends AbstractOpenemsComponent
 	private ConfigurationAdmin cm;
 
 	@Reference(policy = ReferencePolicy.STATIC, policyOption = ReferencePolicyOption.GREEDY, cardinality = ReferenceCardinality.MANDATORY)
-	private EssSungrow ess;
+	private SungrowEss ess;
 
 	public SungrowVirtualDcCharger() {
 		super(//
