@@ -133,7 +133,6 @@
 	bnd.identity;id='io.openems.edge.io.filipowski',\
 	bnd.identity;id='io.openems.edge.io.kmtronic',\
 	bnd.identity;id='io.openems.edge.io.offgridswitch',\
-	bnd.identity;id='io.openems.edge.io.revpi',\
 	bnd.identity;id='io.openems.edge.io.shelly',\
 	bnd.identity;id='io.openems.edge.io.wago',\
 	bnd.identity;id='io.openems.edge.io.weidmueller',\
@@ -295,7 +294,6 @@
 	io.openems.edge.io.filipowski;version=snapshot,\
 	io.openems.edge.io.kmtronic;version=snapshot,\
 	io.openems.edge.io.offgridswitch;version=snapshot,\
-	io.openems.edge.io.revpi;version=snapshot,\
 	io.openems.edge.io.shelly;version=snapshot,\
 	io.openems.edge.io.wago;version=snapshot,\
 	io.openems.edge.io.weidmueller;version=snapshot,\
