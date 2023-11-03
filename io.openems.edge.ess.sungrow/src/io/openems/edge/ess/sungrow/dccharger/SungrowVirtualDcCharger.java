@@ -25,8 +25,7 @@ import io.openems.edge.ess.sungrow.SungrowEss;
 		immediate = true, //
 		configurationPolicy = ConfigurationPolicy.REQUIRE //
 )
-public class SungrowVirtualDcCharger extends AbstractOpenemsComponent
-		implements EssDcCharger, OpenemsComponent {
+public class SungrowVirtualDcCharger extends AbstractOpenemsComponent implements EssDcCharger, OpenemsComponent {
 
 	protected Config config = null;
 
@@ -40,7 +39,7 @@ public class SungrowVirtualDcCharger extends AbstractOpenemsComponent
 		super(//
 				OpenemsComponent.ChannelId.values(), //
 				EssDcCharger.ChannelId.values() //
-				);
+		);
 	}
 
 	@Activate
@@ -55,18 +54,19 @@ public class SungrowVirtualDcCharger extends AbstractOpenemsComponent
 		this.mapChannelValues();
 	}
 
+	@Override
 	@Deactivate
 	protected void deactivate() {
 		super.deactivate();
 	}
 
 	private void mapChannelValues() throws OpenemsException {
-		this.ess.getTotalDcPowerChannel().onUpdate((newValue) -> {			
-				if (newValue.isDefined()) {
-					this._setActualPower(newValue.get());
-				}
+		this.ess.getTotalDcPowerChannel().onUpdate(newValue -> {
+			if (newValue.isDefined()) {
+				this._setActualPower(newValue.get());
+			}
 		});
-		this.ess.getTotalPvGenerationChannel().onUpdate((newValue) -> {
+		this.ess.getTotalPvGenerationChannel().onUpdate(newValue -> {
 			if (newValue.isDefined()) {
 				this._setActualEnergy(newValue.get());
 			}

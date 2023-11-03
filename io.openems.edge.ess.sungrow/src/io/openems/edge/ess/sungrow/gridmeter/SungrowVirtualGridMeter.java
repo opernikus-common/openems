@@ -17,8 +17,8 @@ import io.openems.common.exceptions.OpenemsException;
 import io.openems.edge.common.component.AbstractOpenemsComponent;
 import io.openems.edge.common.component.OpenemsComponent;
 import io.openems.edge.ess.sungrow.SungrowEss;
-import io.openems.edge.meter.api.MeterType;
 import io.openems.edge.meter.api.ElectricityMeter;
+import io.openems.edge.meter.api.MeterType;
 
 @Designate(ocd = Config.class, factory = true)
 @Component(//
@@ -26,8 +26,7 @@ import io.openems.edge.meter.api.ElectricityMeter;
 		immediate = true, //
 		configurationPolicy = ConfigurationPolicy.REQUIRE //
 )
-public class SungrowVirtualGridMeter extends AbstractOpenemsComponent
-		implements ElectricityMeter, OpenemsComponent {
+public class SungrowVirtualGridMeter extends AbstractOpenemsComponent implements ElectricityMeter, OpenemsComponent {
 
 	protected Config config = null;
 
@@ -41,7 +40,7 @@ public class SungrowVirtualGridMeter extends AbstractOpenemsComponent
 		super(//
 				OpenemsComponent.ChannelId.values(), //
 				ElectricityMeter.ChannelId.values() //
-				);
+		);
 	}
 
 	@Activate
@@ -56,28 +55,29 @@ public class SungrowVirtualGridMeter extends AbstractOpenemsComponent
 		this.mapChannelValues();
 	}
 
+	@Override
 	@Deactivate
 	protected void deactivate() {
 		super.deactivate();
 	}
 
 	private void mapChannelValues() throws OpenemsException {
-		this.ess.getExportPowerChannel().onUpdate((newValue) -> {			
-				if (newValue.isDefined()) {
-					this._setActivePower(-newValue.get());
-				}
+		this.ess.getExportPowerChannel().onUpdate(newValue -> {
+			if (newValue.isDefined()) {
+				this._setActivePower(-newValue.get());
+			}
 		});
-		this.ess.getTotalExportEnergyChannel().onUpdate((newValue) -> {
+		this.ess.getTotalExportEnergyChannel().onUpdate(newValue -> {
 			if (newValue.isDefined()) {
 				this._setActiveConsumptionEnergy(newValue.get());
 			}
 		});
-		this.ess.getTotalImportEnergyChannel().onUpdate((newValue) -> {
+		this.ess.getTotalImportEnergyChannel().onUpdate(newValue -> {
 			if (newValue.isDefined()) {
 				this._setActiveProductionEnergy(newValue.get());
 			}
 		});
-		this.ess.getGridFrequencyChannel().onUpdate((newValue) -> {
+		this.ess.getGridFrequencyChannel().onUpdate(newValue -> {
 			if (newValue.isDefined()) {
 				this._setFrequency(newValue.get());
 			}

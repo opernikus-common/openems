@@ -1,3 +1,13 @@
-= io.openems.edge.ess.sungrow
+= Sungrow Hybrid ESS
+
+Implemented Natures::
+- SymmetricEss
+- ManagedSymmetricEss
+- HybridEss
+
+== Application notes
+
+Additionally to the ESS, a virtual grid meter and a virtual DC charger may be activated to see the corresponding
+data in the UI.
 
 https://github.com/OpenEMS/openems/tree/develop/io.openems.edge.ess.sungrow[Source Code icon:github[]]

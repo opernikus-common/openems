@@ -19,7 +19,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 	@AttributeDefinition(name = "Core ID", description = "ID of the Sungrow Ess Component.")
 	String core_id() default "ess0";
-	
+
 	String webconsole_configurationFactory_nameHint() default "Ess Sungrow Virtual DC charger [{id}]";
 
 }
