@@ -1,0 +1,25 @@
+= Alfen Evcs
+
+Implementation of the Alfen electric vehicle charging station.
+
+== Compatibility
+
+** Eve Single S-line
+** Eve Single Pro-line
+** Eve Double Pro-line
+
+
+
+== Code Quality
+ 
+Production State: *pilot projects* 
+
+Development State: 
+
+https://en.wikipedia.org/wiki/Software_release_life_cycle[Software release life cycle]: BETA
+
+This implementation is not yet fully feature tested.
+ Please consider it BETA quality
+
+
+https://github.com/OpenEMS/openems/tree/develop/io.openems.edge.evcs.alfen[Source Code icon:github[]]
