@@ -41,15 +41,6 @@ public interface EvcsWebastoUnite extends OpenemsComponent {
 				.accessMode(AccessMode.READ_ONLY)), //
 		EVSE_FAULT_CODE(Doc.of(OpenemsType.INTEGER) //
 				.accessMode(AccessMode.READ_ONLY)), //
-		CURRENT_L1(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.MILLIAMPERE) //
-				.accessMode(AccessMode.READ_ONLY)), //
-		CURRENT_L2(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.MILLIAMPERE) //
-				.accessMode(AccessMode.READ_ONLY)), //
-		CURRENT_L3(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.MILLIAMPERE) //
-				.accessMode(AccessMode.READ_ONLY)), //
 		VOLTAGE_L1(Doc.of(OpenemsType.INTEGER) //
 				.unit(Unit.VOLT) //
 				.accessMode(AccessMode.READ_ONLY)), //

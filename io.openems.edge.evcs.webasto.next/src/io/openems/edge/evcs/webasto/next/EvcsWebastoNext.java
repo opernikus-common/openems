@@ -31,16 +31,6 @@ public interface EvcsWebastoNext extends OpenemsComponent {
 
 		EVSE_ERROR_CODE(Doc.of(EvseErrorCode.values())), //
 
-		CURRENT_L1(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.MILLIAMPERE) //
-				.accessMode(AccessMode.READ_ONLY)), //
-
-		CURRENT_L2(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.MILLIAMPERE) //
-				.accessMode(AccessMode.READ_ONLY)), //
-
-		CURRENT_L3(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.MILLIAMPERE)), //
 
 		POWER_L1(Doc.of(OpenemsType.INTEGER) //
 				.unit(Unit.WATT)), //

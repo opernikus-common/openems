@@ -169,9 +169,9 @@ public class ReadHandler implements Consumer<String> {
 					this.setInt(EvcsKebaKeContact.ChannelId.VOLTAGE_L1, jsonMessage, "U1");
 					this.setInt(EvcsKebaKeContact.ChannelId.VOLTAGE_L2, jsonMessage, "U2");
 					this.setInt(EvcsKebaKeContact.ChannelId.VOLTAGE_L3, jsonMessage, "U3");
-					this.setInt(EvcsKebaKeContact.ChannelId.CURRENT_L1, jsonMessage, "I1");
-					this.setInt(EvcsKebaKeContact.ChannelId.CURRENT_L2, jsonMessage, "I2");
-					this.setInt(EvcsKebaKeContact.ChannelId.CURRENT_L3, jsonMessage, "I3");
+					this.setInt(EvcsKebaKeContact.ChannelId.KEBA_CURRENT_L1, jsonMessage, "I1");
+					this.setInt(EvcsKebaKeContact.ChannelId.KEBA_CURRENT_L2, jsonMessage, "I2");
+					this.setInt(EvcsKebaKeContact.ChannelId.KEBA_CURRENT_L3, jsonMessage, "I3");
 					this.setInt(EvcsKebaKeContact.ChannelId.ACTUAL_POWER, jsonMessage, "P");
 					this.setInt(EvcsKebaKeContact.ChannelId.COS_PHI, jsonMessage, "PF");
 
@@ -181,9 +181,9 @@ public class ReadHandler implements Consumer<String> {
 					this.parent._setActiveConsumptionEnergy(totalEnergy);
 
 					// Set the count of the Phases that are currently used
-					Channel<Integer> currentL1 = this.parent.channel(EvcsKebaKeContact.ChannelId.CURRENT_L1);
-					Channel<Integer> currentL2 = this.parent.channel(EvcsKebaKeContact.ChannelId.CURRENT_L2);
-					Channel<Integer> currentL3 = this.parent.channel(EvcsKebaKeContact.ChannelId.CURRENT_L3);
+					Channel<Integer> currentL1 = this.parent.channel(EvcsKebaKeContact.ChannelId.KEBA_CURRENT_L1);
+					Channel<Integer> currentL2 = this.parent.channel(EvcsKebaKeContact.ChannelId.KEBA_CURRENT_L2);
+					Channel<Integer> currentL3 = this.parent.channel(EvcsKebaKeContact.ChannelId.KEBA_CURRENT_L3);
 					var currentSum = currentL1.getNextValue().orElse(0) + currentL2.getNextValue().orElse(0)
 							+ currentL3.getNextValue().orElse(0);
 
