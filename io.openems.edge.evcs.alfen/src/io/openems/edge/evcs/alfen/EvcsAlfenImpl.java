@@ -241,12 +241,8 @@ public class EvcsAlfenImpl extends AbstractOpenemsModbusComponent
 			this._setStatus(Status.NOT_READY_FOR_CHARGING);
 			return;
 		}
-		if (mode3State.startsWith("B")) {
+		if (mode3State.startsWith("B") || (mode3State.equals("C1")) || (mode3State.equals("D1"))) {
 			this._setStatus(Status.READY_FOR_CHARGING);
-			return;
-		}
-		if (mode3State.endsWith("1")) {
-			this._setStatus(Status.CHARGING_FINISHED);
 			return;
 		}
 		if (mode3State.endsWith("2")) {
