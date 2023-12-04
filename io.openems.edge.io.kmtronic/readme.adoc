@@ -1,8 +1,42 @@
-= KMtronic Modbus Relay Board
+= KMtronic 
+
+== Modbus Relay Board
 
 This bundle implements the Kmtronic Modbus Relay board. Relay outputs can be used to turn ON/OFF lights, motors and signal alarms. Implementations are for 4 and 8 relais.
 
-Implemented Natures::
-- DigitalOutput
+
+== Compatibility
+* Modbus RTU 8 Channel Relays Controller 
+* Modbus/TCP 8 Channel Relay board
+
+
+== Application Notes
+
+see https://info.kmtronic.com/modbus-relays.html
+
+
+=== Maturity
+Production State: *-pilot projects-* 
+
+Open Issues:
+* DIP switches do not work to change Modbus Unit ID in the Modbus RTU Controller 
+
+
+== LAN Temperature Monitoring 
+
+Implementation of the Kmtronic LAN Temperature Monitoring.
+
+
+== Compatibility
+* LAN DS 1810 Tiny Temperature Monitoring  
+
+== Application Notes
+
+see https://info.kmtronic.com/temperature.html
+
+
+=== Maturity
+Production State: *-experimental-* 
+
 
 https://github.com/OpenEMS/openems/tree/develop/io.openems.edge.io.kmtronic[Source Code icon:github[]]
