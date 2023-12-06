@@ -5,19 +5,19 @@ import io.openems.edge.common.component.OpenemsComponent;
 
 public interface KmtronicTempCore extends OpenemsComponent {
 
-    public enum ChannelId implements io.openems.edge.common.channel.ChannelId {
-	;
+	public enum ChannelId implements io.openems.edge.common.channel.ChannelId {
+		;
 
-	private final Doc doc;
+		private final Doc doc;
 
-	private ChannelId(Doc doc) {
-	    this.doc = doc;
+		private ChannelId(Doc doc) {
+			this.doc = doc;
+		}
+
+		@Override
+		public Doc doc() {
+			return this.doc;
+		}
 	}
-
-	@Override
-	public Doc doc() {
-	    return this.doc;
-	}
-    }
 
 }

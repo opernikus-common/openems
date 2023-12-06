@@ -24,77 +24,77 @@ import io.openems.edge.common.modbusslave.ModbusSlaveTable;
 
 @Designate(ocd = Config.class, factory = true)
 @Component(//
-	name = "IO.KMtronic.Temperature.Core", //
-	immediate = true, //
-	configurationPolicy = ConfigurationPolicy.REQUIRE //
+		name = "IO.KMtronic.Temperature.Core", //
+		immediate = true, //
+		configurationPolicy = ConfigurationPolicy.REQUIRE //
 )
 @EventTopics({ //
-	EdgeEventConstants.TOPIC_CYCLE_BEFORE_PROCESS_IMAGE //
+		EdgeEventConstants.TOPIC_CYCLE_BEFORE_PROCESS_IMAGE //
 })
 
 public class KmtronicTempCoreImpl extends AbstractOpenemsComponent
-	implements KmtronicTempCore, EventHandler, ModbusSlave, OpenemsComponent {
+		implements KmtronicTempCore, EventHandler, ModbusSlave, OpenemsComponent {
 
-    @Reference
-    protected ConfigurationAdmin cm;
+	@Reference
+	protected ConfigurationAdmin cm;
 
-    private final KmtronicTempReadWorker readWorker = new KmtronicTempReadWorker(this);
+	private final KmtronicTempReadWorker readWorker = new KmtronicTempReadWorker(this);
 
-    private String ipAdress;
+	private String ipAdress;
 
-    protected int numberOfSensors;
+	protected int numberOfSensors;
 
-    public KmtronicTempCoreImpl() {
-	super(OpenemsComponent.ChannelId.values());
-    }
-
-    @Activate
-    protected void activate(ComponentContext context, Config config) throws OpenemsException {
-	super.activate(context, config.id(), config.alias(), config.enabled());
-	this.ipAdress = config.ip() + ":" + config.port();
-	this.numberOfSensors = config.numberOfSensors();
-	this.addDynamicChannels(config.numberOfSensors());
-	this.readWorker.activate(this.id() + "query");
-    }
-
-    @Override
-    @Deactivate
-    protected void deactivate() {
-	super.deactivate();
-	this.readWorker.deactivate();
-    }
-
-    @Override
-    public void handleEvent(Event event) {
-	if (!this.isEnabled()) {
-	    return;
+	public KmtronicTempCoreImpl() {
+		super(OpenemsComponent.ChannelId.values());
 	}
-	switch (event.getTopic()) {
-	case EdgeEventConstants.TOPIC_CYCLE_BEFORE_PROCESS_IMAGE:
-	    this.readWorker.triggerNextRun();
+
+	@Activate
+	protected void activate(ComponentContext context, Config config) throws OpenemsException {
+		super.activate(context, config.id(), config.alias(), config.enabled());
+		this.ipAdress = config.ip() + ":" + config.port();
+		this.numberOfSensors = config.numberOfSensors();
+		this.addDynamicChannels(config.numberOfSensors());
+		this.readWorker.activate(this.id() + "query");
 	}
-    }
 
-    private void addDynamicChannels(int numberOfSensors) {
-	for (var i = 0; i < numberOfSensors; i++) {
-	    var channelIdId = new ChannelIdImpl("ID_SENSOR_" + i, Doc.of(OpenemsType.STRING));
-	    this.addChannel(channelIdId);
-	    var channelIdName = new ChannelIdImpl("NAME_SENSOR_" + i, Doc.of(OpenemsType.STRING));
-	    this.addChannel(channelIdName);
-	    var channelIdTemp = new ChannelIdImpl("TEMP_SENSOR_" + i, Doc.of(OpenemsType.FLOAT));
-	    this.addChannel(channelIdTemp);
+	@Override
+	@Deactivate
+	protected void deactivate() {
+		super.deactivate();
+		this.readWorker.deactivate();
 	}
-    }
 
-    public String getIpAdress() {
-	return this.ipAdress;
-    }
+	@Override
+	public void handleEvent(Event event) {
+		if (!this.isEnabled()) {
+			return;
+		}
+		switch (event.getTopic()) {
+		case EdgeEventConstants.TOPIC_CYCLE_BEFORE_PROCESS_IMAGE:
+			this.readWorker.triggerNextRun();
+		}
+	}
 
-    @Override
-    public ModbusSlaveTable getModbusSlaveTable(AccessMode accessMode) {
-	return new ModbusSlaveTable(//
-		OpenemsComponent.getModbusSlaveNatureTable(accessMode) //
-	);
-    }
+	private void addDynamicChannels(int numberOfSensors) {
+		for (var i = 0; i < numberOfSensors; i++) {
+			var channelIdId = new ChannelIdImpl("ID_SENSOR_" + i, Doc.of(OpenemsType.STRING));
+			this.addChannel(channelIdId);
+			var channelIdName = new ChannelIdImpl("NAME_SENSOR_" + i, Doc.of(OpenemsType.STRING));
+			this.addChannel(channelIdName);
+			var channelIdTemp = new ChannelIdImpl("TEMP_SENSOR_" + i, Doc.of(OpenemsType.FLOAT));
+			this.addChannel(channelIdTemp);
+		}
+	}
+
+	public String getIpAdress() {
+		return this.ipAdress;
+	}
+
+	@Override
+	public ModbusSlaveTable getModbusSlaveTable(AccessMode accessMode) {
+		return new ModbusSlaveTable(//
+				OpenemsComponent.getModbusSlaveNatureTable(accessMode) //
+		);
+	}
 
 }

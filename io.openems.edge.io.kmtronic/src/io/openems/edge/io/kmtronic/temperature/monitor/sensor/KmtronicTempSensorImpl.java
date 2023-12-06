@@ -21,53 +21,53 @@ import io.openems.edge.thermometer.api.Thermometer;
 
 @Designate(ocd = Config.class, factory = true)
 @Component(//
-	name = "IO.KMtronic.Temperature.Sensor", //
-	immediate = true, //
-	configurationPolicy = ConfigurationPolicy.REQUIRE //
+		name = "IO.KMtronic.Temperature.Sensor", //
+		immediate = true, //
+		configurationPolicy = ConfigurationPolicy.REQUIRE //
 )
 
 public class KmtronicTempSensorImpl extends AbstractOpenemsComponent
-	implements KmtronicTempSensor, Thermometer, OpenemsComponent {
+		implements KmtronicTempSensor, Thermometer, OpenemsComponent {
 
-    @Reference
-    private ConfigurationAdmin cm;
+	@Reference
+	private ConfigurationAdmin cm;
 
-    @Reference(policy = ReferencePolicy.STATIC, policyOption = ReferencePolicyOption.GREEDY, cardinality = ReferenceCardinality.MANDATORY)
-    private KmtronicTempCore core;
+	@Reference(policy = ReferencePolicy.STATIC, policyOption = ReferencePolicyOption.GREEDY, cardinality = ReferenceCardinality.MANDATORY)
+	private KmtronicTempCore core;
 
-    public KmtronicTempSensorImpl() {
-	super(OpenemsComponent.ChannelId.values(), KmtronicTempSensor.ChannelId.values(),
-		Thermometer.ChannelId.values());
-    }
+	public KmtronicTempSensorImpl() {
+		super(OpenemsComponent.ChannelId.values(), KmtronicTempSensor.ChannelId.values(),
+				Thermometer.ChannelId.values());
+	}
 
-    @Activate
-    protected void activate(ComponentContext context, Config config) throws OpenemsException, OpenemsNamedException {
-	super.activate(context, config.id(), config.alias(), config.enabled());
-	this.installListeners(config.sensorNumber() - 1);
-    }
+	@Activate
+	protected void activate(ComponentContext context, Config config) throws OpenemsException, OpenemsNamedException {
+		super.activate(context, config.id(), config.alias(), config.enabled());
+		this.installListeners(config.sensorNumber() - 1);
+	}
 
-    @Override
-    @Deactivate
-    protected void deactivate() {
-	super.deactivate();
-    }
+	@Override
+	@Deactivate
+	protected void deactivate() {
+		super.deactivate();
+	}
 
-    private void installListeners(int sensorNumber) {
-	this.core.channel("IdSensor" + sensorNumber).onUpdate(newValue -> {
-	    this._setSensorId((String) newValue.get());
-	});
-	this.core.channel("NameSensor" + sensorNumber).onUpdate(newValue -> {
-	    this._setSensorName((String) newValue.get());
-	});
-	this.core.channel("TempSensor" + sensorNumber).onUpdate(newValue -> {
-	    try {
-		var floatValue = (Float) newValue.get();
-		Integer intValue = Math.round(floatValue * 10);
-		this._setTemperature(intValue);
-	    } catch (Exception e) {
-		this._setTemperature(null);
-	    }
-	});
-    }
+	private void installListeners(int sensorNumber) {
+		this.core.channel("IdSensor" + sensorNumber).onUpdate(newValue -> {
+			this._setSensorId((String) newValue.get());
+		});
+		this.core.channel("NameSensor" + sensorNumber).onUpdate(newValue -> {
+			this._setSensorName((String) newValue.get());
+		});
+		this.core.channel("TempSensor" + sensorNumber).onUpdate(newValue -> {
+			try {
+				var floatValue = (Float) newValue.get();
+				Integer intValue = Math.round(floatValue * 10);
+				this._setTemperature(intValue);
+			} catch (Exception e) {
+				this._setTemperature(null);
+			}
+		});
+	}
 
 }
