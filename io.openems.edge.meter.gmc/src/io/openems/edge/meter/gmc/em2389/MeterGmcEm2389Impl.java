@@ -145,8 +145,6 @@ public class MeterGmcEm2389Impl extends AbstractOpenemsModbusComponent
 
 		var modbusProtocol = new ModbusProtocol(this);
 
-		// TODO replace logger with infostate error channel
-
 		ModbusUtils.readInputElementOnce(modbusProtocol, new SignedWordElement(12), true).thenAccept(result -> { //
 			var converter = new ElementToChannelScaleFactorConverter(result + 3); // converting from V to mV
 			try {
@@ -165,8 +163,7 @@ public class MeterGmcEm2389Impl extends AbstractOpenemsModbusComponent
 								ElementToChannelConverter.SCALE_FACTOR_1),
 						this.m(MeterGmcEm2389.ChannelId.VOLTAGE_SF, new SignedWordElement(12))));
 			} catch (OpenemsException e) {
-				this.logError(this.log, "Unable to read Voltage Scale factor.");
-				e.printStackTrace();
+				this.channel("ReadError").setNextValue(true);
 			}
 		});
 
@@ -182,8 +179,7 @@ public class MeterGmcEm2389Impl extends AbstractOpenemsModbusComponent
 						new DummyRegisterElement(105, 107), //
 						this.m(MeterGmcEm2389.ChannelId.CURRENT_SF, new SignedWordElement(108))));
 			} catch (OpenemsException e) {
-				this.logError(this.log, "Unable to read Current Scale factor.");
-				e.printStackTrace();
+				this.channel("ReadError").setNextValue(true);
 			}
 		});
 		if (!this.config.alternativePowerCalculation()) {
@@ -206,8 +202,7 @@ public class MeterGmcEm2389Impl extends AbstractOpenemsModbusComponent
 							this.m(MeterGmcEm2389.ChannelId.POWER_SF, new SignedWordElement(212))));
 
 				} catch (OpenemsException e) {
-					this.logError(this.log, "Unable to read Power Scale factor.");
-					e.printStackTrace();
+					this.channel("ReadError").setNextValue(true);
 				}
 			});
 		} else {
@@ -235,8 +230,7 @@ public class MeterGmcEm2389Impl extends AbstractOpenemsModbusComponent
 						this.m(MeterGmcEm2389.ChannelId.PRIMARY_ENERGY_FACTOR, new UnsignedDoublewordElement(308)),
 						this.m(MeterGmcEm2389.ChannelId.ENERGY_SF, new SignedWordElement(310))));
 			} catch (OpenemsException e) {
-				this.logError(this.log, "Unable to read Energy Scale factor.");
-				e.printStackTrace();
+				this.channel("ReadError").setNextValue(true);
 			}
 		});
 

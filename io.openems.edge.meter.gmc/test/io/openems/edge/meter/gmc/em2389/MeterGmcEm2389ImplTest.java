@@ -13,12 +13,12 @@ public class MeterGmcEm2389ImplTest {
 	private static final String MODBUS_ID = "modbus0";
 	private static final int UNIT_ID = 1;
 
-    @Test
-    public void test() throws Exception {
-	new ComponentTest(new MeterGmcEm2389Impl()) //
-		.addReference("cm", new DummyConfigurationAdmin()) //
-		.addReference("setModbus", new DummyModbusBridge(MODBUS_ID)) //
-		.activate(MyConfig.create() //
+	@Test
+	public void test() throws Exception {
+		new ComponentTest(new MeterGmcEm2389Impl()) //
+				.addReference("cm", new DummyConfigurationAdmin()) //
+				.addReference("setModbus", new DummyModbusBridge(MODBUS_ID)) //
+				.activate(MyConfig.create() //
 						.setId(METER_ID) //
 						.setModbusId(MODBUS_ID) //
 						.setModbusUnitId(UNIT_ID) //
