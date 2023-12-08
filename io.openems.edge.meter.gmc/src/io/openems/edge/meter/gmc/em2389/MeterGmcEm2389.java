@@ -2,6 +2,7 @@ package io.openems.edge.meter.gmc.em2389;
 
 import io.openems.common.channel.AccessMode;
 import io.openems.common.channel.Level;
+import io.openems.common.channel.PersistencePriority;
 import io.openems.common.channel.Unit;
 import io.openems.common.types.OpenemsType;
 import io.openems.edge.bridge.modbus.api.ElementToChannelConverter;
@@ -108,7 +109,8 @@ public interface MeterGmcEm2389 extends ElectricityMeter, OpenemsComponent {
 				.unit(Unit.HOUR) //
 				.accessMode(AccessMode.READ_ONLY) //
 		), //
-		READ_ERROR(Doc.of(Level.FAULT) //
+		READ_ONCE_ERROR(Doc.of(Level.FAULT) //
+				.persistencePriority(PersistencePriority.HIGH) //
 				.text("Could not read Scale Factor. Restart the component or check the meter for errors.") //
 		);
 
