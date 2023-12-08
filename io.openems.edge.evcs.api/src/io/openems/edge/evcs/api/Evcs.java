@@ -76,6 +76,132 @@ public interface Evcs extends OpenemsComponent {
 				.persistencePriority(PersistencePriority.HIGH)), //
 
 		/**
+		 * Current.
+		 *
+		 * <p>
+		 * The current for all three phases in mA.
+		 * 
+		 * <p>
+		 * See Evcs.initializeCurrentSumChannels() also.
+		 *
+		 * <ul>
+		 * <li>Interface: Evcs
+		 * <li>Readable
+		 * <li>Type: Integer
+		 * <li>Unit: Milliampere
+		 * </ul>
+		 */
+
+
+/*  TODO CURRENT rausschmeissen?
+
+		CURRENT(Doc.of(OpenemsType.INTEGER) //
+				.unit(Unit.MILLIAMPERE) //
+				.accessMode(AccessMode.READ_ONLY) //
+				.persistencePriority(PersistencePriority.HIGH)),
+				
+				*/
+
+		/**
+		 * CurrentL1.
+		 *
+		 * <p>
+		 * The current for phase L1.
+		 * 
+		 * <p>
+		 * In charge parks the phases of chargepoints are rotated when installed. Thus a
+		 * chargepoint measures current on L1 but it may actually be connected to L2 or
+		 * L3.
+		 * 
+		 * <p>
+		 * CurrentL1 needs to reflect the real phase L1, thus the driver is responsible
+		 * to rotating the phases before updating this channel. Thus the controller
+		 * using this channel can always trust that CURRENT_L1 reflects the current on
+		 * Phase 1.
+		 * 
+		 * <p>
+		 * chargepoint driver developer may use the following helper method:
+		 * this.getPhaseRotation().getFirstPhase()
+		 * 
+		 * <ul>
+		 * <li>Interface: Evcs
+		 * <li>Readable
+		 * <li>Type: Integer
+		 * <li>Unit: Milliampere
+		 * </ul>
+		 */
+		CURRENT_L1(Doc.of(OpenemsType.INTEGER) //
+				.unit(Unit.MILLIAMPERE) //
+				.accessMode(AccessMode.READ_ONLY) //
+				.persistencePriority(PersistencePriority.HIGH)),
+
+		/**
+		 * CurrentL2.
+		 *
+		 * <p>
+		 * The current for phase L2.
+		 * 
+		 * <p>
+		 * In charge parks the phases of chargepoints are rotated when installed. Thus a
+		 * chargepoint measures current on L2 but it may actually be connected to L2 or
+		 * L3.
+		 * 
+		 * <p>
+		 * CurrentL2 needs to reflect the real phase L2, thus the driver is responsible
+		 * to rotating the phases before updating this channel. Thus the controller
+		 * using this channel can always trust that CURRENT_L2 reflects the current on
+		 * Phase 1.
+		 * 
+		 * <p>
+		 * chargepoint driver developer may use the following helper method:
+		 * this.getPhaseRotation().getFirstPhase()
+		 * 
+		 * <ul>
+		 * <li>Interface: Evcs
+		 * <li>Readable
+		 * <li>Type: Integer
+		 * <li>Unit: Milliampere
+		 * </ul>
+		 */
+		CURRENT_L2(Doc.of(OpenemsType.INTEGER) //
+				.unit(Unit.MILLIAMPERE) //
+				.accessMode(AccessMode.READ_ONLY) //
+				.persistencePriority(PersistencePriority.HIGH)),
+
+		/**
+		 * CurrentL3.
+		 *
+		 * <p>
+		 * The current for phase L3.
+		 * 
+		 * <p>
+		 * In charge parks the phases of chargepoints are rotated when installed. Thus a
+		 * chargepoint measures current on L3 but it may actually be connected to L3 or
+		 * L3.
+		 * 
+		 * <p>
+		 * CurrentL3 needs to reflect the real phase L3, thus the driver is responsible
+		 * to rotating the phases before updating this channel. Thus the controller
+		 * using this channel can always trust that CURRENT_L3 reflects the current on
+		 * Phase 1.
+		 * 
+		 * <p>
+		 * chargepoint driver developer may use the following helper method:
+		 * this.getPhaseRotation().getFirstPhase()
+		 * 
+		 * <ul>
+		 * <li>Interface: Evcs
+		 * <li>Readable
+		 * <li>Type: Integer
+		 * <li>Unit: Milliampere
+		 * </ul>
+		 */
+		CURRENT_L3(Doc.of(OpenemsType.INTEGER) //
+				.unit(Unit.MILLIAMPERE) //
+				.accessMode(AccessMode.READ_ONLY) //
+				.persistencePriority(PersistencePriority.HIGH)),
+
+		/**
 		 * Count of phases, the EV is charging with.
 		 *
 		 * <p>
@@ -91,6 +217,25 @@ public interface Evcs extends OpenemsComponent {
 		 */
 		PHASES(Doc.of(Phases.values()) //
 				.debounce(5) //
+				.accessMode(AccessMode.READ_ONLY) //
+				.persistencePriority(PersistencePriority.HIGH)), //
+
+		/**
+		 * Phase Rotation.
+		 * 
+		 * <p>
+		 * In charge parks the phases of chargepoints are rotated when installed. This
+		 * reduces phase shifting load when the majority of vehicles charge with only
+		 * 2phase or less. Channel provides information on the phase rotation of this
+		 * chargepoint.
+		 *
+		 * <ul>
+		 * <li>Interface: Evcs
+		 * <li>Readable
+		 * <li>Type: PhaseRotation @see {@link PhaseRotation}
+		 * </ul>
+		 */
+		PHASE_ROTATION(Doc.of(PhaseRotation.values()) //
 				.accessMode(AccessMode.READ_ONLY) //
 				.persistencePriority(PersistencePriority.HIGH)), //
 
@@ -372,6 +517,117 @@ public interface Evcs extends OpenemsComponent {
 	}
 
 	/**
+	 * Gets the Channel for {@link ChannelId#CURRENT}.
+	 *
+	 * @return the Channel
+	 */
+	public default IntegerReadChannel getCurrentChannel() {
+		return this.channel(ChannelId.CURRENT);
+	}
+
+	/**
+	 * Gets the Current. See {@link ChannelId#MINIMUM_POWER}.
+	 *
+	 * @return the Channel {@link Value}
+	 */
+	public default Value<Integer> getCurrent() {
+		return this.getCurrentChannel().value();
+	}
+
+	/**
+	 * Internal method to set the 'nextValue' on {@link ChannelId#CURRENT} Channel.
+	 *
+	 * @param value the next value
+	 */
+	public default void _setCurrent(Integer value) {
+		this.getCurrentChannel().setNextValue(value);
+	}
+
+	/**
+	 * Gets the Channel for {@link ChannelId#CURRENT_L1}.
+	 *
+	 * @return the Channel
+	 */
+	public default IntegerReadChannel getCurrentL1Channel() {
+		return this.channel(ChannelId.CURRENT_L1);
+	}
+
+	/**
+	 * Gets the Current. See {@link ChannelId#CURRENT_L1}.
+	 *
+	 * @return the Channel {@link Value}
+	 */
+	public default Value<Integer> getCurrentL1() {
+		return this.getCurrentL1Channel().value();
+	}
+
+	/**
+	 * Internal method to set the 'nextValue' on {@link ChannelId#CURRENT_L1}
+	 * Channel.
+	 *
+	 * @param value the next value
+	 */
+	public default void _setCurrentL1(Integer value) {
+		this.getCurrentL1Channel().setNextValue(value);
+	}
+
+	/**
+	 * Gets the Channel for {@link ChannelId#CURRENT_L2}.
+	 *
+	 * @return the Channel
+	 */
+	public default IntegerReadChannel getCurrentL2Channel() {
+		return this.channel(ChannelId.CURRENT_L2);
+	}
+
+	/**
+	 * Gets the Current. See {@link ChannelId#CURRENT_L2}.
+	 *
+	 * @return the Channel {@link Value}
+	 */
+	public default Value<Integer> getCurrentL2() {
+		return this.getCurrentL2Channel().value();
+	}
+
+	/**
+	 * Internal method to set the 'nextValue' on {@link ChannelId#CURRENT_L3}
+	 * Channel.
+	 *
+	 * @param value the next value
+	 */
+	public default void _setCurrentL2(Integer value) {
+		this.getCurrentL2Channel().setNextValue(value);
+	}
+
+	/**
+	 * Gets the Channel for {@link ChannelId#CURRENT_L3}.
+	 *
+	 * @return the Channel
+	 */
+	public default IntegerReadChannel getCurrentL3Channel() {
+		return this.channel(ChannelId.CURRENT_L3);
+	}
+
+	/**
+	 * Gets the Current. See {@link ChannelId#CURRENT_L3}.
+	 *
+	 * @return the Channel {@link Value}
+	 */
+	public default Value<Integer> getCurrentL3() {
+		return this.getCurrentL3Channel().value();
+	}
+
+	/**
+	 * Internal method to set the 'nextValue' on {@link ChannelId#CURRENT_L3}
+	 * Channel.
+	 *
+	 * @param value the next value
+	 */
+	public default void _setCurrentL3(Integer value) {
+		this.getCurrentL3Channel().setNextValue(value);
+	}
+
+	/**
 	 * Gets the Channel for {@link ChannelId#PHASES}.
 	 *
 	 * @return the Channel
@@ -431,6 +687,33 @@ public interface Evcs extends OpenemsComponent {
 		default:
 			throw new IllegalArgumentException("Value [" + value + "] for _setPhases is invalid");
 		}
+	}
+
+	/**
+	 * Gets the Channel for {@link ChannelId#PHASE_ROTATION}.
+	 *
+	 * @return the Channel
+	 */
+	public default EnumReadChannel getPhaseRotationChannel() {
+		return this.channel(ChannelId.PHASE_ROTATION);
+	}
+
+	/**
+	 * Gets the current PhaseRotation. See {@link ChannelId#PHASE_ROTATION}.
+	 *
+	 * @return the Channel {@link Value}
+	 */
+	public default PhaseRotation getPhaseRotation() {
+		return this.getPhaseRotationChannel().value().asEnum();
+	}
+
+	/**
+	 * Internal method to set the 'nextValue' on {@link ChannelId#PHASES} Channel.
+	 *
+	 * @param value the next value
+	 */
+	public default void _setPhaseRotation(PhaseRotation value) {
+		this.getPhaseRotationChannel().setNextValue(value);
 	}
 
 	/**
