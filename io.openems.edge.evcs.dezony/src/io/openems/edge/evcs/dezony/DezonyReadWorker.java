@@ -58,6 +58,9 @@ public class DezonyReadWorker extends AbstractCycleWorker {
 
 		this.parent._setActiveConsumptionEnergy(this.getValueByKey(activeConsumptionEnergyArray, "etotal"));
 		this.parent._setChargePower(this.getValueByKey(activeConsumptionEnergyArray, "ptotal"));
+		this.parent._setCurrentL1(this.getValueByKey(activeConsumptionEnergyArray, "currl1"));
+		this.parent._setCurrentL2(this.getValueByKey(activeConsumptionEnergyArray, "currl2"));
+		this.parent._setCurrentL3(this.getValueByKey(activeConsumptionEnergyArray, "currl3"));
 		this.parent._setSetChargePowerLimit(this.getValueByKey(activeConsumptionEnergyArray, "curlhm")
 				* Phases.THREE_PHASE.getValue() * Evcs.DEFAULT_VOLTAGE);
 		this.parent._setPhases(this.calculatePhases(activeConsumptionEnergyArray));

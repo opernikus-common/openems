@@ -228,6 +228,9 @@ public class EvcsClusterPeakShavingImpl extends AbstractOpenemsComponent
 		final var minFixedHardwarePower = new CalculateIntegerSum();
 		final var maxFixedHardwarePower = new CalculateIntegerSum();
 		final var minPower = new CalculateIntegerSum();
+		final var currentL1 = new CalculateIntegerSum();
+		final var currentL2 = new CalculateIntegerSum();
+		final var currentL3 = new CalculateIntegerSum();
 		final var evcsClusterStatus = new CalculateEvcsClusterStatus();
 
 		for (Evcs evcs : this.getSortedEvcss()) {
@@ -252,6 +255,9 @@ public class EvcsClusterPeakShavingImpl extends AbstractOpenemsComponent
 			minFixedHardwarePower.addValue(evcs.getFixedMinimumHardwarePowerChannel());
 			maxFixedHardwarePower.addValue(evcs.getFixedMaximumHardwarePowerChannel());
 			minPower.addValue(evcs.getMinimumPowerChannel());
+			currentL1.addValue(evcs.getCurrentL1Channel());
+			currentL2.addValue(evcs.getCurrentL2Channel());
+			currentL3.addValue(evcs.getCurrentL3Channel());
 			if (evcs instanceof ManagedEvcs) {
 				evcsClusterStatus.addValue(((ManagedEvcs) evcs).getChargeState().asEnum());
 			}
@@ -262,6 +268,9 @@ public class EvcsClusterPeakShavingImpl extends AbstractOpenemsComponent
 		this._setFixedMinimumHardwarePower(minFixedHardwarePower.calculate());
 		this._setFixedMaximumHardwarePower(maxFixedHardwarePower.calculate());
 		this.channel(Evcs.ChannelId.MINIMUM_HARDWARE_POWER).setNextValue(minHardwarePower.calculate());
+		this._setCurrentL1(currentL1.calculate());
+		this._setCurrentL2(currentL2.calculate());
+		this._setCurrentL3(currentL3.calculate());
 		var maximalUsedHardwarePower = maxHardwarePowerOfAll.calculate();
 		if (maximalUsedHardwarePower == null) {
 			maximalUsedHardwarePower = this.getMaximumPowerToDistribute();

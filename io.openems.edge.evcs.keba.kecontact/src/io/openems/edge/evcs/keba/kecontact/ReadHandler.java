@@ -12,6 +12,7 @@ import com.google.gson.JsonObject;
 import io.openems.common.exceptions.OpenemsError.OpenemsNamedException;
 import io.openems.common.utils.JsonUtils;
 import io.openems.edge.common.channel.Channel;
+import io.openems.edge.common.channel.ChannelId;
 import io.openems.edge.evcs.api.Evcs;
 import io.openems.edge.evcs.api.Phases;
 import io.openems.edge.evcs.api.Status;
@@ -383,23 +384,19 @@ public class ReadHandler implements Consumer<String> {
 		return binaryString;
 	}
 
-	private void set(EvcsKebaKeContact.ChannelId channelId, Object value) {
+	private void set(ChannelId channelId, Object value) {
 		this.parent.channel(channelId).setNextValue(value);
 	}
 
-	private void setString(EvcsKebaKeContact.ChannelId channelId, JsonObject jMessage, String name) {
+	private void setString(ChannelId channelId, JsonObject jMessage, String name) {
 		this.set(channelId, JsonUtils.getAsOptionalString(jMessage, name).orElse(null));
 	}
 
-	private void setInt(EvcsKebaKeContact.ChannelId channelId, JsonObject jMessage, String name) {
+	private void setInt(ChannelId channelId, JsonObject jMessage, String name) {
 		this.set(channelId, JsonUtils.getAsOptionalInt(jMessage, name).orElse(null));
 	}
 
-	private void setInt(Evcs.ChannelId channelId, JsonObject jMessage, String name) {
-		this.parent.channel(channelId).setNextValue(JsonUtils.getAsOptionalInt(jMessage, name).orElse(null));
-	}
-
-	private void setBoolean(EvcsKebaKeContact.ChannelId channelId, JsonObject jMessage, String name) {
+	private void setBoolean(ChannelId channelId, JsonObject jMessage, String name) {
 		var enableSysOpt = JsonUtils.getAsOptionalInt(jMessage, name);
 		if (enableSysOpt.isPresent()) {
 			this.set(channelId, enableSysOpt.get() == 1);

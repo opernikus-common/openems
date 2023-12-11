@@ -631,6 +631,24 @@ public class TypeUtils {
 		}
 		return dividend / divisor;
 	}
+	
+	/**
+	 * Safely divides Doubles.
+	 *
+	 * <ul>
+	 * <li>if dividend is null -&gt; result is null
+	 * </ul>
+	 *
+	 * @param dividend the dividend of the division
+	 * @param divisor  the divisor of the division
+	 * @return the result, possibly null
+	 */
+	public static Double divide(Double dividend, double divisor) {
+		if (dividend == null) {
+			return null;
+		}
+		return dividend / divisor;
+	}
 
 	/**
 	 * Safely finds the max value of all values.

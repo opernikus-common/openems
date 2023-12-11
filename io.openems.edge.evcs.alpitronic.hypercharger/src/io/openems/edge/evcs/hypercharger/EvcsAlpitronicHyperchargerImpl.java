@@ -253,6 +253,9 @@ public class EvcsAlpitronicHyperchargerImpl extends AbstractOpenemsModbusCompone
 
 		// Calculates charge power by existing Channels.
 		this.addCalculatePowerListeners();
+		
+		// Calculates phase currents from total current
+		this.addCurrentListener();
 
 		// Map raw status to evcs status.
 		this.addStatusListener();
@@ -275,6 +278,14 @@ public class EvcsAlpitronicHyperchargerImpl extends AbstractOpenemsModbusCompone
 		};
 		this.getChargingVoltageChannel().onSetNextValue(calculatePower);
 		this.getChargingCurrentChannel().onSetNextValue(calculatePower);
+	}
+	
+	private void addCurrentListener() {
+		this.getChargingCurrentChannel().onSetNextValue(value -> {
+			this._setCurrentL1(TypeUtils.getAsType(OpenemsType.INTEGER, TypeUtils.divide(value.get(), 3d)));
+			this._setCurrentL2(TypeUtils.getAsType(OpenemsType.INTEGER, TypeUtils.divide(value.get(), 3d)));
+			this._setCurrentL3(TypeUtils.getAsType(OpenemsType.INTEGER, TypeUtils.divide(value.get(), 3d)));
+		});
 	}
 
 	private void addStatusListener() {

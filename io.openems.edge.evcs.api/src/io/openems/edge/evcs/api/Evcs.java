@@ -221,25 +221,6 @@ public interface Evcs extends OpenemsComponent {
 				.persistencePriority(PersistencePriority.HIGH)), //
 
 		/**
-		 * Phase Rotation.
-		 * 
-		 * <p>
-		 * In charge parks the phases of chargepoints are rotated when installed. This
-		 * reduces phase shifting load when the majority of vehicles charge with only
-		 * 2phase or less. Channel provides information on the phase rotation of this
-		 * chargepoint.
-		 *
-		 * <ul>
-		 * <li>Interface: Evcs
-		 * <li>Readable
-		 * <li>Type: PhaseRotation @see {@link PhaseRotation}
-		 * </ul>
-		 */
-		PHASE_ROTATION(Doc.of(PhaseRotation.values()) //
-				.accessMode(AccessMode.READ_ONLY) //
-				.persistencePriority(PersistencePriority.HIGH)), //
-
-		/**
 		 * Fixed minimum power allowed by the hardware in W.
 		 * 
 		 * <p>
@@ -516,32 +497,32 @@ public interface Evcs extends OpenemsComponent {
 		this.getChargingTypeChannel().setNextValue(value);
 	}
 
-	/**
-	 * Gets the Channel for {@link ChannelId#CURRENT}.
-	 *
-	 * @return the Channel
-	 */
-	public default IntegerReadChannel getCurrentChannel() {
-		return this.channel(ChannelId.CURRENT);
-	}
-
-	/**
-	 * Gets the Current. See {@link ChannelId#MINIMUM_POWER}.
-	 *
-	 * @return the Channel {@link Value}
-	 */
-	public default Value<Integer> getCurrent() {
-		return this.getCurrentChannel().value();
-	}
-
-	/**
-	 * Internal method to set the 'nextValue' on {@link ChannelId#CURRENT} Channel.
-	 *
-	 * @param value the next value
-	 */
-	public default void _setCurrent(Integer value) {
-		this.getCurrentChannel().setNextValue(value);
-	}
+//	/**
+//	 * Gets the Channel for {@link ChannelId#CURRENT}.
+//	 *
+//	 * @return the Channel
+//	 */
+//	public default IntegerReadChannel getCurrentChannel() {
+//		return this.channel(ChannelId.CURRENT);
+//	}
+//
+//	/**
+//	 * Gets the Current. See {@link ChannelId#MINIMUM_POWER}.
+//	 *
+//	 * @return the Channel {@link Value}
+//	 */
+//	public default Value<Integer> getCurrent() {
+//		return this.getCurrentChannel().value();
+//	}
+//
+//	/**
+//	 * Internal method to set the 'nextValue' on {@link ChannelId#CURRENT} Channel.
+//	 *
+//	 * @param value the next value
+//	 */
+//	public default void _setCurrent(Integer value) {
+//		this.getCurrentChannel().setNextValue(value);
+//	}
 
 	/**
 	 * Gets the Channel for {@link ChannelId#CURRENT_L1}.
@@ -687,33 +668,6 @@ public interface Evcs extends OpenemsComponent {
 		default:
 			throw new IllegalArgumentException("Value [" + value + "] for _setPhases is invalid");
 		}
-	}
-
-	/**
-	 * Gets the Channel for {@link ChannelId#PHASE_ROTATION}.
-	 *
-	 * @return the Channel
-	 */
-	public default EnumReadChannel getPhaseRotationChannel() {
-		return this.channel(ChannelId.PHASE_ROTATION);
-	}
-
-	/**
-	 * Gets the current PhaseRotation. See {@link ChannelId#PHASE_ROTATION}.
-	 *
-	 * @return the Channel {@link Value}
-	 */
-	public default PhaseRotation getPhaseRotation() {
-		return this.getPhaseRotationChannel().value().asEnum();
-	}
-
-	/**
-	 * Internal method to set the 'nextValue' on {@link ChannelId#PHASES} Channel.
-	 *
-	 * @param value the next value
-	 */
-	public default void _setPhaseRotation(PhaseRotation value) {
-		this.getPhaseRotationChannel().setNextValue(value);
 	}
 
 	/**

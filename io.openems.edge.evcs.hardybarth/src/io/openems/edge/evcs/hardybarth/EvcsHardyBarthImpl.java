@@ -19,10 +19,12 @@ import com.google.gson.JsonElement;
 
 import io.openems.common.exceptions.OpenemsError.OpenemsNamedException;
 import io.openems.common.exceptions.OpenemsException;
+import io.openems.common.types.OpenemsType;
 import io.openems.common.utils.JsonUtils;
 import io.openems.edge.common.channel.StringReadChannel;
 import io.openems.edge.common.component.OpenemsComponent;
 import io.openems.edge.common.event.EdgeEventConstants;
+import io.openems.edge.common.type.TypeUtils;
 import io.openems.edge.evcs.api.AbstractManagedEvcsComponent;
 import io.openems.edge.evcs.api.ChargingType;
 import io.openems.edge.evcs.api.Evcs;
@@ -85,6 +87,8 @@ public class EvcsHardyBarthImpl extends AbstractManagedEvcsComponent
 			this.readWorker.activate(config.id());
 			this.readWorker.triggerNextRun();
 		}
+		
+		this.installCurrentListeners();
 	}
 
 	@Override
@@ -95,6 +99,21 @@ public class EvcsHardyBarthImpl extends AbstractManagedEvcsComponent
 		if (this.readWorker != null) {
 			this.readWorker.deactivate();
 		}
+	}
+	
+	private void installCurrentListeners() {
+		this.channel(EvcsHardyBarth.ChannelId.RAW_ACTIVE_CURRENT_L1).onSetNextValue(value -> {
+			var intValue = TypeUtils.getAsType(OpenemsType.INTEGER, value);
+			this._setCurrentL1((Integer) intValue);
+		});
+		this.channel(EvcsHardyBarth.ChannelId.RAW_ACTIVE_CURRENT_L2).onSetNextValue(value -> {
+			var intValue = TypeUtils.getAsType(OpenemsType.INTEGER, value);
+			this._setCurrentL2((Integer) intValue);
+		});
+		this.channel(EvcsHardyBarth.ChannelId.RAW_ACTIVE_CURRENT_L3).onSetNextValue(value -> {
+			var intValue = TypeUtils.getAsType(OpenemsType.INTEGER, value);
+			this._setCurrentL3((Integer) intValue);
+		});
 	}
 
 	@Override
