@@ -163,7 +163,7 @@ public class MeterGmcEm2389Impl extends AbstractOpenemsModbusComponent
 								ElementToChannelConverter.SCALE_FACTOR_1),
 						this.m(MeterGmcEm2389.ChannelId.VOLTAGE_SF, new SignedWordElement(12))));
 			} catch (OpenemsException e) {
-				this.channel("ReadOnceError").setNextValue(true);
+				this.channel(MeterGmcEm2389.ChannelId.READ_ONCE_ERROR).setNextValue(true);
 			}
 		});
 
@@ -179,7 +179,7 @@ public class MeterGmcEm2389Impl extends AbstractOpenemsModbusComponent
 						new DummyRegisterElement(105, 107), //
 						this.m(MeterGmcEm2389.ChannelId.CURRENT_SF, new SignedWordElement(108))));
 			} catch (OpenemsException e) {
-				this.channel("ReadOnceError").setNextValue(true);
+				this.channel(MeterGmcEm2389.ChannelId.READ_ONCE_ERROR).setNextValue(true);
 			}
 		});
 		if (!this.config.alternativePowerCalculation()) {
@@ -202,7 +202,7 @@ public class MeterGmcEm2389Impl extends AbstractOpenemsModbusComponent
 							this.m(MeterGmcEm2389.ChannelId.POWER_SF, new SignedWordElement(212))));
 
 				} catch (OpenemsException e) {
-					this.channel("ReadOnceError").setNextValue(true);
+					this.channel(MeterGmcEm2389.ChannelId.READ_ONCE_ERROR).setNextValue(true);
 				}
 			});
 		} else {
@@ -230,7 +230,7 @@ public class MeterGmcEm2389Impl extends AbstractOpenemsModbusComponent
 						this.m(MeterGmcEm2389.ChannelId.PRIMARY_ENERGY_FACTOR, new UnsignedDoublewordElement(308)),
 						this.m(MeterGmcEm2389.ChannelId.ENERGY_SF, new SignedWordElement(310))));
 			} catch (OpenemsException e) {
-				this.channel("ReadOnceError").setNextValue(true);
+				this.channel(MeterGmcEm2389.ChannelId.READ_ONCE_ERROR).setNextValue(true);
 			}
 		});
 
