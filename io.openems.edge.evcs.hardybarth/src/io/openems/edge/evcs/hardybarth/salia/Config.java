@@ -1,10 +1,10 @@
-package io.openems.edge.evcs.hardybarth;
+package io.openems.edge.evcs.hardybarth.salia;
 
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 @ObjectClassDefinition(//
-		name = "EVCS Hardy Barth", //
+		name = "EVCS Hardy Barth Salia", //
 		description = "Implements the Hardy Barth - Salia electric vehicle charging station.")
 @interface Config {
 
@@ -28,7 +28,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 	@AttributeDefinition(name = "Maximum hardware current", description = "Maximum current of the Charger in mA.", required = true)
 	int maxHwCurrent() default 32000;
-
-	String webconsole_configurationFactory_nameHint() default "EVCS Hardy Barth [{id}]";
+	
+	String webconsole_configurationFactory_nameHint() default "EVCS Hardy Barth Salia [{id}]";
 
 }

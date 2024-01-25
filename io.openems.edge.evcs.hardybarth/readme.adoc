@@ -1,9 +1,66 @@
-= Hardy Barth Charging Station (Salia)
+= Hardy Barth Charging Station 
 
-This component implements the Salia charging station by the manufacturer Hardy Barth: https://www.echarge.de/de/home
+== Salia based
+
+This component implements Salia based charging station by the manufacturer Hardy Barth: https://www.echarge.de/
+
+Implemented Natures:
+- Evcs (Electric Vehicle Charging Station)
+- ManagedEvcs
+
+
+Supported devices:
+- cPP1
+
+
+
+
+== eCB1 based
+
+This component implements eCB1 protocol based charging stations by the manufacturer Hardy Barth: https://www.echarge.de/
+
+
+Should work on Hardy Barth models
+* cPu1
+* cPH1
+
+Is tested on 
+* Type: LM
+* Type: PV
+
+
+Supported and tested FW version
+* eCB1 V1.13, V1.46
+* EVCC Firmware V1.3.1
+
+
+Note that Type MP+ can't be controlled by OpenEMS. 
+
+
 
 Implemented Natures:
 * Evcs (Electric Vehicle Charging Station)
 * ManagedEvcs
+
+
+
+
+=== Configuration Hint
+* Open Website on the charging station
+* Switch Website -> Configuration -> Base Settings -> Hausanschluss 
+    -> Messpunkt to "Pseudo Messpunkt für 0 M..." or to "kein Messpunkt"
+* Switch Website -> Configuration -> Base Settings -> Ladeanschluss 1
+    -> Messpunkt to "dieses eCB1"
+    -> EVCC to "Phoenix (RTU) -> set correct Bus ID
+* Uncouple Ladeanschluss 2..4    
+
+    -> Save and restart
+    
+After the charging station has been restarted you should have access to it.     
+* configure the OpenEMS bundle: configure IP, port
+* set meter-Index "1" and charge-control index "0".
+
+
+
 
 https://github.com/OpenEMS/openems/tree/develop/io.openems.edge.evcs.hardybarth[Source Code icon:github[]]

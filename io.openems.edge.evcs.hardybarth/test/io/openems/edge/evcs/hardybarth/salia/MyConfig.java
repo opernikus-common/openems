@@ -1,4 +1,4 @@
-package io.openems.edge.evcs.hardybarth;
+package io.openems.edge.evcs.hardybarth.salia;
 
 import io.openems.common.test.AbstractComponentConfig;
 

@@ -1,22 +1,22 @@
-package io.openems.edge.evcs.hardybarth;
+package io.openems.edge.evcs.hardybarth.salia;
 
 import org.junit.Test;
 
 import io.openems.edge.common.test.AbstractComponentTest.TestCase;
 import io.openems.edge.common.test.ComponentTest;
 
-public class EvcsHardyBarthImplTest {
+public class MyDeviceTest {
 
 	private static final String COMPONENT_ID = "evcs0";
 
 	@Test
 	public void test() throws Exception {
-		new ComponentTest(new EvcsHardyBarthImpl()) //
+		new ComponentTest(new HardyBarthImpl()) //
 				.activate(MyConfig.create() //
 						.setId(COMPONENT_ID) //
 						.setIp("192.168.8.101") //
-						.setMaxHwCurrent(32_000) //
-						.setMinHwCurrent(6_000) //
+						.setMaxHwCurrent(32) //
+						.setMinHwCurrent(6) //
 						.build())
 				.next(new TestCase());
 	}
