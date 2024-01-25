@@ -3,7 +3,7 @@ export namespace DateUtils {
 
   /**
    * Filters for the biggest date
-   * 
+   *
    * @param dates the dates to be compared
    * @returns the max date
    */
@@ -20,7 +20,7 @@ export namespace DateUtils {
 
   /**
    * Filters for the smallest date
-   * 
+   *
    * @param dates the dates to be compared
    * @returns the min date
    */
@@ -37,7 +37,7 @@ export namespace DateUtils {
 
   /**
    * Converts string to date
-   * 
+   *
    * @param date the date
    * @returns the date if valid, else null
    */
@@ -45,13 +45,12 @@ export namespace DateUtils {
     return isNaN(new Date(date)?.getTime()) ? null : new Date(date);
   }
 
-
   /**
    * Converts a date into a local date string
    * @description should be used for mutating dates
-   * 
+   *
    * @todo use locales for formatting
-   * 
+   *
    * @param date the date
    * @param service the service
    * @returns a formateted date string
@@ -63,9 +62,9 @@ export namespace DateUtils {
   /**
    * Converts a date into a local date string
    * @description should be used for mutating dates
-   * 
+   *
    * @todo use locales for formatting
-   * 
+   *
    * @param date the date
    * @param service the service
    * @returns a formateted date string
