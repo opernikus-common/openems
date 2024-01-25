@@ -1,0 +1,6 @@
+= EVCS Vehicle Battery Symmetric
+
+Mixture of EVCS Charge controller and battery controller, which uses a bidirectional chargestation
+to charge or discharge an electric vehicle.
+
+https://github.com/OpenEMS/openems/tree/develop/io.openems.edge.controller.evcs.vehiclebatterysymmetric[Source Code icon:github[]]

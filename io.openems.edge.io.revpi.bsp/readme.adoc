@@ -1,0 +1,42 @@
+= RevolutionPi Board Support Package
+
+This bundle provides board support package for Kunbus Revolution Pi Connect+ and Connect S.
+It also provides support to the digital IO enhancement boards.
+
+Implemented Natures:
+- DigitalOutput
+- DigitalInput
+- BoardSupportPackage
+
+== Compatibility 
+
+** Kunbus Connect+ and Connect S, access to
+*** hardware watchdog 
+*** LEDs A1, A2, A3
+*** integrated relais (Default Channel: `bsp0/DigitalOut1`)
+** Kunbus Enhancement Board
+*** Digital Input/Output, access to
+**** 14 Digital Inputs  (Default Channels: `io0/In1 - io0/In14`)
+**** 14 Digital Outputs (Default Channels: `io0/Out1 - io0/Out14`)
+*** Digital Input, access to
+**** 16 Digital Inputs
+*** Digital Output, access to
+**** 16 Digital Outputs
+
+
+
+
+== Additional application notes
+=== Configuration
+Kunbus has an internal configuration website, where one can map an 'alias name' to each pin of multiple enhancement boards.
+You need to provide this 'alias name' in OpenEMS to get access to the hardware pin.
+
+=== Dependencies
+* The RevolutionPi Digital IO OpenEms Bundle depends on the library project `librevpi-dio-java` (Branch: `V0_3_0`). A binary version of this library is already included in this OpenEMS Bundle. See https://github.com/clehne/librevpi-dio-java for more information.
+* External library was compiled with Java 17 (probably not backwards compatible)
+
+== Code Quality
+Production State: *pilot projects* 
+
+Development State:
+-

@@ -1,0 +1,19 @@
+Bundle-Name: RevolutionPi board support package
+Bundle-Vendor: opernikus GmbH
+Bundle-License: https://opensource.org/licenses/EPL-2.0
+Bundle-Version: 1.0.0.${tstamp}
+
+-includeresource.librevpi: \
+	@lib/librevpi-dio-java.jar; lib:=true
+
+-buildpath: \
+	${buildpath},\
+	com.google.guava,\
+	io.openems.common,\
+	io.openems.edge.common,\
+	io.openems.edge.io.api,\
+	lib/librevpi-dio-java.jar;version=file
+
+-testpath: \
+	${testpath}
+

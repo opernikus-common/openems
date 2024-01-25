@@ -95,9 +95,13 @@ public class SimulatorEvcsImpl extends AbstractManagedEvcsComponent
 
 		/*
 		 * Set Simulated "meter" Active Power
-		 */
-		this._setChargePower(chargePowerLimit);
 
+		this._setActivePower(chargePowerLimit);
+		var simulatedActivePowerByThree = TypeUtils.divide(chargePowerLimit, 3);
+		this._setActivePowerL1(simulatedActivePowerByThree);
+		this._setActivePowerL2(simulatedActivePowerByThree);
+		this._setActivePowerL3(simulatedActivePowerByThree);
+		*/
 		/*
 		 * Set calculated energy
 		 */
@@ -109,6 +113,7 @@ public class SimulatorEvcsImpl extends AbstractManagedEvcsComponent
 
 		this.lastUpdate = LocalDateTime.now();
 	}
+
 
 	@Override
 	public String debugLog() {
@@ -157,4 +162,5 @@ public class SimulatorEvcsImpl extends AbstractManagedEvcsComponent
 	public boolean applyDisplayText(String text) throws OpenemsException {
 		return false;
 	}
+
 }
