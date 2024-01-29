@@ -12,6 +12,7 @@ import io.openems.edge.evcs.api.Evcs;
 import io.openems.edge.evcs.api.EvcsPower;
 import io.openems.edge.evcs.api.ManagedEvcs;
 import io.openems.edge.evcs.api.Status;
+import io.openems.edge.evcs.api.WriteHandler;
 
 public class DummyManagedEvcs extends AbstractManagedEvcsComponent
 		implements Evcs, ManagedEvcs, OpenemsComponent, EventHandler {
@@ -20,13 +21,51 @@ public class DummyManagedEvcs extends AbstractManagedEvcsComponent
 	private int minimumHardwarePower = Evcs.DEFAULT_MINIMUM_HARDWARE_POWER;
 	private int maximumHardwarePower = Evcs.DEFAULT_MAXIMUM_HARDWARE_POWER;
 
+	private final WriteHandler writeHandler = new WriteHandler(this);
+	private final boolean ignoreChargeState;
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param id        id
+	 * @param evcsPower evcs power
+	 */
 	public DummyManagedEvcs(String id, EvcsPower evcsPower) {
+		this(id, evcsPower, false);
+	}
+
+	public DummyManagedEvcs(String id, EvcsPower evcsPower, boolean ignoreChargeStateHandler) {
 		super(//
 				OpenemsComponent.ChannelId.values(), //
 				ManagedEvcs.ChannelId.values(), //
 				Evcs.ChannelId.values() //
 		);
+		this.ignoreChargeState = ignoreChargeStateHandler;
 		this.evcsPower = evcsPower;
+		for (Channel<?> channel : this.channels()) {
+			channel.nextProcessImage();
+		}
+		super.activate(null, id, "", true);
+	}
+
+	/**
+	 * Constructor.
+	 * 
+	 * @param id                   id
+	 * @param evcsPower            evcs power
+	 * @param minimumHardwarePower minimum hardware power
+	 * @param maximumHardwarePower minimum hardware power
+	 */
+	public DummyManagedEvcs(String id, EvcsPower evcsPower, int minimumHardwarePower, int maximumHardwarePower) {
+		super(//
+				OpenemsComponent.ChannelId.values(), //
+				ManagedEvcs.ChannelId.values(), //
+				Evcs.ChannelId.values() //
+		);
+		this.ignoreChargeState = false;
+		this.evcsPower = evcsPower;
+		this.minimumHardwarePower = minimumHardwarePower;
+		this.maximumHardwarePower = maximumHardwarePower;
 		for (Channel<?> channel : this.channels()) {
 			channel.nextProcessImage();
 		}
@@ -38,8 +77,20 @@ public class DummyManagedEvcs extends AbstractManagedEvcsComponent
 		super.handleEvent(event);
 		switch (event.getTopic()) {
 		// Results of the written limits are checked after write in the Dummy Component
-		case EdgeEventConstants.TOPIC_CYCLE_AFTER_WRITE:
-			this.updateCurrentState();
+		case EdgeEventConstants.TOPIC_CYCLE_AFTER_WRITE -> this.updateCurrentState();
+		case EdgeEventConstants.TOPIC_CYCLE_EXECUTE_WRITE -> this.writeHandler.run();
+		}
+
+	}
+
+	/**
+	 * Runs the writeHandler and triggers the nextProcessImage of the DummyEvcs.
+	 */
+	public void writeHandlerRun() {
+		this.writeHandler.run();
+		this.updateCurrentState();
+		for (Channel<?> channel : this.channels()) {
+			channel.nextProcessImage();
 		}
 	}
 
@@ -117,4 +168,20 @@ public class DummyManagedEvcs extends AbstractManagedEvcsComponent
 	public int getConfiguredMaximumHardwarePower() {
 		return this.maximumHardwarePower;
 	}
+
+	@Override
+	public int getWriteInterval() {
+		return 0;
+	}
+
+	@Override
+	public boolean ignoreChargeState() {
+		return this.ignoreChargeState;
+	}
+
+	@Override
+	public void logDebug(String message) {
+		// System.out.println("sysout: " + this.id() + " " + message);
+	}
+
 }
