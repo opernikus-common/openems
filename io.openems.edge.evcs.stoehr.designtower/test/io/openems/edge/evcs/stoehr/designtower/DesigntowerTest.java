@@ -1,5 +1,6 @@
 package io.openems.edge.evcs.stoehr.designtower;
 
+import io.openems.edge.evcs.api.Priority;
 import org.junit.Test;
 
 import io.openems.edge.bridge.modbus.test.DummyModbusBridge;
@@ -25,6 +26,7 @@ public class DesigntowerTest {
 			.setMinCurrent(6) //
 			.setMaxHwCurrent(32) //
 			.setPhaseRotation(PhaseRotation.L1_L2_L3) //
+			.setPriority(Priority.LOW) //
 			.setDebugMode(false) //
 			.build()) //
 		.next(new TestCase());

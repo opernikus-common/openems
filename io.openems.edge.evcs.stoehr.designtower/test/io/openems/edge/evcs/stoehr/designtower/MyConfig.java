@@ -3,6 +3,7 @@ package io.openems.edge.evcs.stoehr.designtower;
 import io.openems.common.test.AbstractComponentConfig;
 import io.openems.common.utils.ConfigUtils;
 import io.openems.edge.evcs.api.PhaseRotation;
+import io.openems.edge.evcs.api.Priority;
 
 @SuppressWarnings("all")
 public class MyConfig extends AbstractComponentConfig implements Config {
@@ -14,6 +15,7 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 	private int minHwCurrent;
 	private int maxHwCurrent;
 	private PhaseRotation phaseRotation;
+	private Priority priority;
 	private boolean debugMode;
 
 	private Builder() {
@@ -48,6 +50,11 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 	    this.phaseRotation = rot;
 	    return this;
 	}
+
+		public Builder setPriority(Priority priority) {
+			this.priority = priority;
+			return this;
+		}
 
 	public Builder setDebugMode(boolean debugMode) {
 	    this.debugMode = debugMode;
@@ -105,7 +112,12 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 	return this.builder.phaseRotation;
     }
 
-    @Override
+	@Override
+	public Priority priority() {
+		return this.builder.priority;
+	}
+
+	@Override
     public boolean debugMode() {
 	return this.builder.debugMode;
     }
