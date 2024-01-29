@@ -160,7 +160,7 @@ public interface EvcsAlfen extends OpenemsComponent {
 				.text("Modbus slave max current")), //
 		ACTIVE_LOAD_BALANCING_SAFE_CURRENT(Doc.of(OpenemsType.FLOAT).unit(Unit.AMPERE) //
 				.persistencePriority(PersistencePriority.LOW) //
-				.text("Active load balamcing safe current")), //
+				.text("Active load balancing safe current")), //
 		MODBUS_SLAVE_RECEIVED_SETPOINT_ACCOUNTED_FOR(Doc.of(OpenemsType.BOOLEAN) //
 				.persistencePriority(PersistencePriority.LOW) //
 				.text("Modbus slave received setpoint accounted for")), //
