@@ -163,6 +163,16 @@ public interface ManagedEvcs extends Evcs {
 	 */
 	public void logDebug(String message);
 
+	/**
+	 * Ignore ChargeStateHandler, used to immediately apply chargePowerLimit,
+	 * without asking ChargeStateHandler for acceptance.
+	 * 
+	 * @return true to ignore the ChargeState handler.
+	 */
+	public default boolean ignoreChargeState() {
+		return false;
+	}
+
 	public enum ChannelId implements io.openems.edge.common.channel.ChannelId {
 
 		/**
@@ -178,6 +188,7 @@ public interface ManagedEvcs extends Evcs {
 		 *
 		 * <p>
 		 * <ul>
+		 * :
 		 * <li>Interface: ManagedEvcs
 		 * <li>Writable
 		 * <li>Type: Integer
@@ -187,6 +198,19 @@ public interface ManagedEvcs extends Evcs {
 		POWER_PRECISION(Doc.of(OpenemsType.DOUBLE) //
 				.unit(Unit.WATT) //
 				.accessMode(AccessMode.READ_ONLY) //
+				.persistencePriority(PersistencePriority.HIGH)), //
+
+		/**
+		 * Priority of this EVCS.
+		 *
+		 * <ul>
+		 * <li>Interface: ManagedEvcs
+		 * <li>Writable
+		 * <li>Type: Priority @see {@link Priority}
+		 * </ul>
+		 */
+		PRIORITY(Doc.of(Priority.values()) //
+				.accessMode(AccessMode.READ_WRITE) //
 				.persistencePriority(PersistencePriority.HIGH)), //
 
 		/**
@@ -342,7 +366,8 @@ public interface ManagedEvcs extends Evcs {
 		 */
 		SET_ENERGY_LIMIT(Doc.of(OpenemsType.INTEGER) //
 				.unit(Unit.WATT_HOURS) //
-				.accessMode(AccessMode.READ_WRITE)),
+				.accessMode(AccessMode.READ_WRITE) //
+				.persistencePriority(PersistencePriority.HIGH)), //
 
 		/**
 		 * Charge Status.
@@ -571,6 +596,34 @@ public interface ManagedEvcs extends Evcs {
 	}
 
 	/**
+	 * Gets the Channel for {@link ChannelId#PRIORITY}.
+	 *
+	 * @return the Channel
+	 */
+	public default Channel<Priority> getPriorityChannel() {
+		return this.channel(ChannelId.PRIORITY);
+	}
+
+	/**
+	 * Gets the Priority of the Managed EVCS charging station. See
+	 * {@link ChannelId#PRIORITY}.
+	 *
+	 * @return the Channel {@link Value}
+	 */
+	public default Priority getPriority() {
+		return this.getPriorityChannel().value().asEnum();
+	}
+
+	/**
+	 * Internal method to set the 'nextValue' on {@link ChannelId#PRIORITY} Channel.
+	 *
+	 * @param value the next value
+	 */
+	public default void _setPriority(Priority value) {
+		this.getPriorityChannel().setNextValue(value);
+	}
+
+	/**
 	 * Gets the Channel for {@link ChannelId#SET_DISPLAY_TEXT}.
 	 *
 	 * @return the Channel
@@ -740,7 +793,7 @@ public interface ManagedEvcs extends Evcs {
 				.channel(0, ChannelId.SET_CHARGE_POWER_LIMIT, ModbusType.UINT16) //
 				.channel(1, ChannelId.SET_DISPLAY_TEXT, ModbusType.STRING16) //
 				.channel(17, ChannelId.SET_ENERGY_LIMIT, ModbusType.UINT16) //
-				// TODO: Add remaining channels
+				.channel(18, ChannelId.PRIORITY, ModbusType.ENUM16) //
 				.build();
 	}
 }

@@ -16,7 +16,7 @@ public interface ManagedVehicleBattery extends ManagedEvcs, SocEvcs {
 	public enum ChannelId implements io.openems.edge.common.channel.ChannelId {
 		/**
 		 * Determines if the ManagedVehicleBattery is used as a battery or an Evcs.
-		 *
+		 * 
 		 * <ul>
 		 * <li>Interface: ManagedVehicleBattery
 		 * <li>Readable
@@ -24,21 +24,25 @@ public interface ManagedVehicleBattery extends ManagedEvcs, SocEvcs {
 		 * <li>Unit: on/offO
 		 * </ul>
 		 */
-		BATTERY_MODE(Doc.of(OpenemsType.BOOLEAN).unit(Unit.ON_OFF).persistencePriority(PersistencePriority.HIGH)),
+		BATTERY_MODE(Doc.of(OpenemsType.BOOLEAN) //
+				.unit(Unit.ON_OFF) //
+				.persistencePriority(PersistencePriority.HIGH)),
 
 		// TODO Should be the other way round: Negative for charge, positive for
 		// discharge, in accordance with Ess?
 		/**
 		 * Active Power. Negative for discharge, positive for charge.
-		 *
+		 * 
 		 * <ul>
-		 * <li>Interface: Evcs
+		 * <li>Interface: ManagedVehicleBattery
 		 * <li>Readable
 		 * <li>Type: Integer
 		 * <li>Unit: W
 		 * </ul>
 		 */
-		ACTIVE_POWER(Doc.of(OpenemsType.INTEGER).unit(Unit.WATT).persistencePriority(PersistencePriority.LOW)),
+		ACTIVE_POWER(Doc.of(OpenemsType.INTEGER) //
+				.unit(Unit.WATT) //
+				.persistencePriority(PersistencePriority.HIGH)),
 
 		/**
 		 * If Battery mode is on, the requested active power is set via this channel.
@@ -52,7 +56,10 @@ public interface ManagedVehicleBattery extends ManagedEvcs, SocEvcs {
 		 * *
 		 */
 
-		SET_ACTIVE_POWER(Doc.of(OpenemsType.INTEGER).unit(Unit.WATT).accessMode(AccessMode.READ_WRITE));
+		SET_ACTIVE_POWER(Doc.of(OpenemsType.INTEGER) //
+				.unit(Unit.WATT) //
+				.accessMode(AccessMode.READ_WRITE) //
+				.persistencePriority(PersistencePriority.HIGH));
 
 		private final Doc doc;
 
@@ -117,7 +124,7 @@ public interface ManagedVehicleBattery extends ManagedEvcs, SocEvcs {
 	 * Gets the Active Power in [W]. Negative values for Consumption (power that is
 	 * 'leaving the system', e.g. feed-to-grid); positive for Production (power that
 	 * is 'entering the system'). See {@link ChannelId#ACTIVE_POWER}.
-	 *
+	 * 
 	 * @return the Channel {@link Value}
 	 */
 	public default Value<Integer> getActivePower() {
@@ -185,7 +192,7 @@ public interface ManagedVehicleBattery extends ManagedEvcs, SocEvcs {
 	/**
 	 * Sets the active power request of the vehicle battery in [W]. See
 	 * {@link ChannelId#SET_ACTIVE_POWER}.
-	 *
+	 * 
 	 * @param value the next write value
 	 * @throws OpenemsNamedException on error
 	 */

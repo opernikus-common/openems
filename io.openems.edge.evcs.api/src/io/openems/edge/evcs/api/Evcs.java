@@ -52,7 +52,7 @@ public interface Evcs extends OpenemsComponent {
 		 * <ul>
 		 * <li>Interface: Evcs
 		 * <li>Readable
-		 * <li>Type: Integer
+		 * <li>Type: int
 		 * <li>Unit: W
 		 * </ul>
 		 */
@@ -332,7 +332,8 @@ public interface Evcs extends OpenemsComponent {
 				.persistencePriority(PersistencePriority.HIGH)), //
 
 		/**
-		 * Maximum Power defined by software.
+		 * oEMS: Not used by Evcs-Cluster.
+		 * Maximum Power defined by Controller EVCS.
 		 *
 		 * <ul>
 		 * <li>Interface: Evcs
@@ -347,7 +348,8 @@ public interface Evcs extends OpenemsComponent {
 				.persistencePriority(PersistencePriority.HIGH)), //
 
 		/**
-		 * Minimum Power defined by software.
+		 * oEMS: Not used by Evcs-Cluster.
+		 * Minimum Power defined by Controller EVCS.
 		 *
 		 * <ul>
 		 * <li>Interface: Evcs
@@ -1011,11 +1013,12 @@ public interface Evcs extends OpenemsComponent {
 	public default void _setChargingstationCommunicationFailed(boolean value) {
 		this.getChargingstationCommunicationFailedChannel().setNextValue(value);
 	}
-	
+
 	/**
-	 * Adds listeners mapping meter channels into respective evcs channels in case an Evcs is measured by an external meter.
+	 * Adds listeners mapping meter channels into respective evcs channels in case
+	 * an Evcs is measured by an external meter.
 	 * 
-	 * @param evcs the {@link Evcs}
+	 * @param evcs  the {@link Evcs}
 	 * @param meter the {@link ElectricityMeter} measuring the Evcs
 	 */
 	public static void addMeterListeners(Evcs evcs, ElectricityMeter meter) {
@@ -1034,7 +1037,7 @@ public interface Evcs extends OpenemsComponent {
 		meter.getCurrentL3Channel().onSetNextValue(newValue -> {
 			evcs.getCurrentL3Channel().setNextValue(newValue);
 		});
-		meter.getActiveConsumptionEnergyChannel().onSetNextValue(newValue -> {
+		meter.getActiveProductionEnergyChannel().onSetNextValue(newValue -> {
 			evcs.getActiveConsumptionEnergyChannel().setNextValue(newValue);
 		});
 	}

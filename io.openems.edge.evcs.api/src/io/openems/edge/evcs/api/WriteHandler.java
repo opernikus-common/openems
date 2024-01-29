@@ -36,13 +36,13 @@ public class WriteHandler implements Runnable {
 	@Override
 	public void run() {
 		if (this.parent.getChargingstationCommunicationFailed().orElse(true)) {
-			this.setChargeStatus();
+			this.setChargeState();
 			return;
 		}
 
 		this.setEnergyLimit();
 		this.setPower();
-		this.setChargeStatus();
+		this.setChargeState();
 		this.setDisplay();
 	}
 
@@ -105,6 +105,9 @@ public class WriteHandler implements Runnable {
 
 				} else if (target < this.lastTarget - DEFAULT_INCREASE_BUFFER) {
 					newStateAccepted = this.parent.getChargeStateHandler().applyNewChargeState(ChargeState.DECREASING);
+				}
+				if (this.parent.ignoreChargeState()) {
+					newStateAccepted = true;
 				}
 
 				target = newStateAccepted ? target : this.lastTarget;
@@ -218,15 +221,15 @@ public class WriteHandler implements Runnable {
 	}
 
 	/**
-	 * Set the current ChargeStatus depending on the Evcs Status.
+	 * Set the current ChargeState depending on the Evcs Status.
 	 */
-	private void setChargeStatus() {
-		ChargeState chargeStatus = ChargeState.UNDEFINED;
+	private void setChargeState() {
+		ChargeState chargeState = ChargeState.UNDEFINED;
 		Status status = this.parent.getStatusChannel().getNextValue().asEnum();
 
 		switch (status) {
 		case CHARGING:
-			chargeStatus = ChargeState.CHARGING;
+			chargeState = ChargeState.CHARGING;
 			break;
 		case CHARGING_FINISHED:
 		case CHARGING_REJECTED:
@@ -235,13 +238,13 @@ public class WriteHandler implements Runnable {
 		case STARTING:
 		case READY_FOR_CHARGING:
 		case NOT_READY_FOR_CHARGING:
-			chargeStatus = ChargeState.NOT_CHARGING;
+			chargeState = ChargeState.NOT_CHARGING;
 			break;
 		case UNDEFINED:
-			chargeStatus = ChargeState.UNDEFINED;
+			chargeState = ChargeState.UNDEFINED;
 			break;
 		}
-		this.parent.getChargeStateHandler().applyNewChargeState(chargeStatus);
+		this.parent.getChargeStateHandler().applyNewChargeState(chargeState);
 	}
 
 	private void logDebug(String message) {

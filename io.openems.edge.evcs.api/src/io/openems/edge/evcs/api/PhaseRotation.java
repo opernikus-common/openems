@@ -11,9 +11,9 @@ public enum PhaseRotation implements OptionsEnum {
      * L1 is connect to L1,...
      */
     L1_L2_L3(1, "L1_L2_L3", //
-	    ChannelId.CURRENT_L1, //
-	    ChannelId.CURRENT_L2, //
-	    ChannelId.CURRENT_L3), //
+	    Evcs.ChannelId.CURRENT_L1, //
+	    Evcs.ChannelId.CURRENT_L2, //
+	    Evcs.ChannelId.CURRENT_L3), //
     /**
      * EVCS which use a rotated hardware connection configuration.
      * 
@@ -21,9 +21,9 @@ public enum PhaseRotation implements OptionsEnum {
      * L1 is connect to L2,...
      */
     L2_L3_L1(2, "L2_L3_L1", //
-	    ChannelId.CURRENT_L2, //
-	    ChannelId.CURRENT_L3, //
-	    ChannelId.CURRENT_L1), //
+	    Evcs.ChannelId.CURRENT_L2, //
+	    Evcs.ChannelId.CURRENT_L3, //
+	    Evcs.ChannelId.CURRENT_L1), //
     /**
      * EVCS which use a rotated hardware connection configuration.
      * 
@@ -31,9 +31,9 @@ public enum PhaseRotation implements OptionsEnum {
      * L1 is connect to L3,...
      */
     L3_L1_L2(3, "L3_L1_L2", //
-	    ChannelId.CURRENT_L3, //
-	    ChannelId.CURRENT_L1, //
-	    ChannelId.CURRENT_L2);
+	    Evcs.ChannelId.CURRENT_L3, //
+	    Evcs.ChannelId.CURRENT_L1, //
+	    Evcs.ChannelId.CURRENT_L2);
 
     private final int value;
     private final String name;
