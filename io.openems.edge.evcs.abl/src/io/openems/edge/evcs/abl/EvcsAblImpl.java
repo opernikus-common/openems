@@ -120,7 +120,7 @@ public class EvcsAblImpl extends AbstractOpenemsModbusComponent
 		var offset = 0x0100;
 		int plug = this.config.plug().plug;
 		/*
-		 * The Webasto Unite does not support reading Multiple Registers in one task
+		 * The ABL EMH4 does not support reading Multiple Registers in one task
 		 * with "gaps" in between. Therefore, this modbus protocol consists of many
 		 * small Tasks to compensate.
 		 */
