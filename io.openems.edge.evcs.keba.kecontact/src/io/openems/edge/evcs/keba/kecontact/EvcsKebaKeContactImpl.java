@@ -78,6 +78,7 @@ public class EvcsKebaKeContactImpl extends AbstractManagedEvcsComponent
 		this.ip = InetAddress.getByName(config.ip().trim());
 
 		this.config = config;
+		this._setPriority(config.priority());
 		this._setPowerPrecision(0.23);
 		this._setChargingType(ChargingType.AC);
 		this._setFixedMinimumHardwarePower(this.getConfiguredMinimumHardwarePower());

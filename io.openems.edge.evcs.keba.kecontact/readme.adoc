@@ -7,4 +7,16 @@ Implemented Natures:
 * Evcs (Electric Vehicle Charging Station)
 * ManagedEvcs
 
+== Compatibility 
+* Keba X-Series
+* Keba C-Series
+
+== Application Notes
+
+* Note that Keba is connected via a UDP protocol.
+* Note that Consolinno has an implementation to use Keba with the TCP protocol.  
+
+=== Maturity
+Production State: *-highly scalable-* 
+
 https://github.com/OpenEMS/openems/tree/develop/io.openems.edge.evcs.keba.kecontact[Source Code icon:github[]]

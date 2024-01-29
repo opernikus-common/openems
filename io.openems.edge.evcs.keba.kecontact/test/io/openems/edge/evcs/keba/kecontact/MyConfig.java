@@ -1,6 +1,7 @@
 package io.openems.edge.evcs.keba.kecontact;
 
 import io.openems.common.test.AbstractComponentConfig;
+import io.openems.edge.evcs.api.Priority;
 
 @SuppressWarnings("all")
 public class MyConfig extends AbstractComponentConfig implements Config {
@@ -8,8 +9,11 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 	protected static class Builder {
 		private String id = null;
 		private int minHwCurrent;
+		private Priority priority;
 		private String ip;
 		private boolean debugMode;
+
+		private boolean dipSwitchInfo;
 		private boolean useDisplay;
 
 		private Builder() {
@@ -25,6 +29,11 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 			return this;
 		}
 
+		public Builder setPriority(Priority priority) {
+			this.priority = priority;
+			return this;
+		}
+
 		public Builder setIp(String ip) {
 			this.ip = ip;
 			return this;
@@ -32,6 +41,11 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 
 		public Builder setDebugMode(boolean debugMode) {
 			this.debugMode = debugMode;
+			return this;
+		}
+
+		public Builder setDipSwitchInfo(boolean dipSwitchInfo) {
+			this.dipSwitchInfo = dipSwitchInfo;
 			return this;
 		}
 
@@ -64,6 +78,16 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 	@Override
 	public boolean debugMode() {
 		return this.builder.debugMode;
+	}
+
+	@Override
+	public boolean dipSwitchInfo() {
+		return this.builder.dipSwitchInfo;
+	}
+
+	@Override
+	public Priority priority() {
+		return this.builder.priority;
 	}
 
 	@Override

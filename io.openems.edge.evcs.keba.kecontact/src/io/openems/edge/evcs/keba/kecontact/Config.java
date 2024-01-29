@@ -1,5 +1,6 @@
 package io.openems.edge.evcs.keba.kecontact;
 
+import io.openems.edge.evcs.api.Priority;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
@@ -18,6 +19,13 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 	@AttributeDefinition(name = "Debug Mode", description = "Activates the debug mode")
 	boolean debugMode() default false;
+
+	// oEMS added
+	@AttributeDefinition(name = "Dip Switch Info", description = "Hides the info about Dip Switch Settings.")
+	boolean dipSwitchInfo() default true;
+
+	@AttributeDefinition(name = "Charge Priority", description = "Priority in comparison to other chargepoints.")
+	Priority priority() default Priority.LOW;
 
 	@AttributeDefinition(name = "IP-Address", description = "The IP address of the charging station.", required = true)
 	String ip() default "192.168.25.11";
