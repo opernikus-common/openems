@@ -1,5 +1,6 @@
 package io.openems.edge.evcs.keba.kecontact;
 
+import io.openems.edge.evcs.api.Priority;
 import org.junit.Test;
 
 import io.openems.edge.common.test.ComponentTest;
@@ -18,6 +19,7 @@ public class EvcsKebaKeContactImplTest {
 				.activate(MyConfig.create() //
 						.setId(COMPONENT_ID) //
 						.setDebugMode(false) //
+						.setPriority(Priority.LOW) //
 						.setIp("172.0.0.1") //
 						.setMinHwCurrent(6000) //
 						.setUseDisplay(false) //
