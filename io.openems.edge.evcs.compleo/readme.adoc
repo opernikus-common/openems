@@ -1,0 +1,30 @@
+= Compleo/Wallbe Eco2.0/Pro/Duo
+
+Implementation of a Compleo/Wallbe Eco 2.0/Pro/Duo charging station.
+
+== Compatibility 
+* Compleo Eco2.0
+* Wallbe Eco2.0
+* Compleo Pro
+* Wallbe Pro
+* Compleo Duo
+
+== Application Notes
+
+* Charge process will be stopped when a request is below 3.45kW. Nevertheless, it will always charge with min hw power.
+(e.g. config.minHwCurrent() = 10 A (6.9kW), if 4kW is requested, it charges with 6.9kW, if 3kW is requested it goes off).
+* The chargion station may be activated with an integrated meter, with an external meter or without a meter. In the last
+case, the power and energy values will be simulated assuming that the set charge power is applied.
+ 
+
+=== Dependencies
+* this requires a Compleo/Wallbe EVCS with FW being at least Version 1.12.
+
+=== Maturity
+Production State: *-pilot projects-* 
+
+== Open Issues:
+* this implementation is not tested with a Wallbe EVCS with integrated meter. It is tested with meter simulation mode only.
+		
+
+https://github.com/OpenEMS/openems/tree/develop/io.openems.edge.evcs.compleo[Source Code icon:github[]]
