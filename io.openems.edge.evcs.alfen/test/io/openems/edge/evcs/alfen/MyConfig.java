@@ -3,6 +3,7 @@ package io.openems.edge.evcs.alfen;
 import io.openems.common.test.AbstractComponentConfig;
 import io.openems.common.utils.ConfigUtils;
 import io.openems.edge.evcs.api.PhaseRotation;
+import io.openems.edge.evcs.api.Priority;
 
 @SuppressWarnings("all")
 public class MyConfig extends AbstractComponentConfig implements Config {
@@ -14,6 +15,7 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 		private int minHwPower;
 		private int maxHwPower;
 		private PhaseRotation phaseRotation;
+		private Priority priority;
 		private boolean debugMode;
 
 		private Builder() {
@@ -46,6 +48,11 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 
 		public Builder setPhaseRotation(PhaseRotation rot) {
 			this.phaseRotation = rot;
+			return this;
+		}
+
+		public Builder setPriority(Priority priority) {
+			this.priority = priority;
 			return this;
 		}
 
@@ -103,6 +110,11 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 	@Override
 	public PhaseRotation phaseRotation() {
 		return this.builder.phaseRotation;
+	}
+
+	@Override
+	public Priority priority() {
+		return this.builder.priority;
 	}
 
 	@Override
