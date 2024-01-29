@@ -17,6 +17,7 @@ import com.ghgande.j2mod.modbus.procimg.Register;
 import io.openems.common.exceptions.OpenemsException;
 import io.openems.edge.bridge.modbus.api.element.ModbusRegisterElement;
 import io.openems.edge.bridge.modbus.api.task.FC3ReadRegistersTask;
+import io.openems.edge.bridge.modbus.api.task.FC4ReadInputRegistersTask;
 import io.openems.edge.bridge.modbus.api.task.Task;
 import io.openems.edge.common.taskmanager.Priority;
 
@@ -197,5 +198,43 @@ public class ModbusUtils {
 		return Arrays.stream(registers) //
 				.map(r -> intToHexString(fnct.apply(r))) //
 				.collect(Collectors.joining(" "));
+	}
+
+	/**
+	 * Reads given Element once from Modbus.
+	 *
+	 * @param <T>             the Type of the element
+	 * @param modbusProtocol  the {@link ModbusProtocol}, that is linked with a
+	 *                        {@link BridgeModbus}
+	 * @param element         the {@link AbstractModbusElement}
+	 * @param tryAgainOnError if true, tries to read till it receives a value; if
+	 *                        false, stops after first try and possibly return null
+	 * @return a future value, e.g. a Integer or null (if tryAgainOnError is false)
+	 * @throws OpenemsException on error with the {@link ModbusProtocol} object
+	 */
+	public static <T> CompletableFuture<T> readInputElementOnce(ModbusProtocol modbusProtocol,
+			ModbusRegisterElement<?, T> element, boolean tryAgainOnError) throws OpenemsException {
+
+		// Prepare result
+		final var result = new CompletableFuture<T>();
+
+		// Activate task
+		final Task task = new FC4ReadInputRegistersTask(element.startAddress, Priority.HIGH, element);
+		modbusProtocol.addTask(task);
+
+		// Register listener for element
+		element.onUpdateCallback(value -> {
+			if (value == null) {
+				if (tryAgainOnError) {
+					return;
+				}
+				result.complete(null);
+			}
+			// do not try again
+			modbusProtocol.removeTask(task);
+			result.complete(value);
+		});
+
+		return result;
 	}
 }
