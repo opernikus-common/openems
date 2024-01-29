@@ -69,24 +69,74 @@ public interface EvcsAlfen extends OpenemsComponent {
 		CHARGE_POWER_L3(Doc.of(OpenemsType.FLOAT).unit(Unit.WATT) //
 				.persistencePriority(PersistencePriority.HIGH) //
 				.text("Charge Power L3")), //
+		APPARENT_POWER_L1(Doc.of(OpenemsType.FLOAT).unit(Unit.VOLT_AMPERE) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Apparent Power L1")), //
+		APPARENT_POWER_L2(Doc.of(OpenemsType.FLOAT).unit(Unit.VOLT_AMPERE) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Apparent Power L2")), //
+		APPARENT_POWER_L3(Doc.of(OpenemsType.FLOAT).unit(Unit.VOLT_AMPERE) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Apparent Power L3")), //
 		APPARENT_POWER_SUM(Doc.of(OpenemsType.FLOAT).unit(Unit.VOLT_AMPERE) //
 				.persistencePriority(PersistencePriority.LOW) //
 				.text("Apparent Power sum")), //
+		REACTIVE_POWER_L1(Doc.of(OpenemsType.FLOAT).unit(Unit.VOLT_AMPERE_REACTIVE) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Reactive Power L1")), //
+		REACTIVE_POWER_L2(Doc.of(OpenemsType.FLOAT).unit(Unit.VOLT_AMPERE_REACTIVE) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Reactive Power L2")), //
+		REACTIVE_POWER_L3(Doc.of(OpenemsType.FLOAT).unit(Unit.VOLT_AMPERE_REACTIVE) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Reactive Power L3")), //
 		REACTIVE_POWER_SUM(Doc.of(OpenemsType.FLOAT).unit(Unit.VOLT_AMPERE_REACTIVE) //
 				.persistencePriority(PersistencePriority.LOW) //
 				.text("Reactive Power sum")), //
-
+		ENERGY_DELIVERED_L1(Doc.of(OpenemsType.FLOAT).unit(Unit.WATT_HOURS) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Real energy delivered L1")), //
+		ENERGY_DELIVERED_L2(Doc.of(OpenemsType.FLOAT).unit(Unit.WATT_HOURS) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Real energy delivered L2")), //
+		ENERGY_DELIVERED_L3(Doc.of(OpenemsType.FLOAT).unit(Unit.WATT_HOURS) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Real energy delivered L3")), //
 		ENERGY_DELIVERED_SUM(Doc.of(OpenemsType.FLOAT).unit(Unit.WATT_HOURS) //
 				.persistencePriority(PersistencePriority.LOW).text("Real energy delivered sum")), //
-
+		ENERGY_CONSUMED_L1(Doc.of(OpenemsType.FLOAT).unit(Unit.WATT_HOURS) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Real energy consumed L1")), //
+		ENERGY_CONSUMED_L2(Doc.of(OpenemsType.FLOAT).unit(Unit.WATT_HOURS) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Real energy consumed L2")), //
+		ENERGY_CONSUMED_L3(Doc.of(OpenemsType.FLOAT).unit(Unit.WATT_HOURS) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Real energy consumed L3")), //
 		ENERGY_CONSUMED_SUM(Doc.of(OpenemsType.FLOAT).unit(Unit.WATT_HOURS) //
 				.persistencePriority(PersistencePriority.LOW) //
 				.text("Real energy consumed sum")), //
-
+		APPARENT_ENERGY_L1(Doc.of(OpenemsType.FLOAT).unit(Unit.VOLT_AMPERE_HOURS) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Apparent Power L1")), //
+		APPARENT_ENERGY_L2(Doc.of(OpenemsType.FLOAT).unit(Unit.VOLT_AMPERE_HOURS) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Apparent Power L2")), //
+		APPARENT_ENERGY_L3(Doc.of(OpenemsType.FLOAT).unit(Unit.VOLT_AMPERE_HOURS) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Apparent Power L3")), //
 		APPARENT_ENERGY_SUM(Doc.of(OpenemsType.FLOAT).unit(Unit.VOLT_AMPERE_HOURS) //
 				.persistencePriority(PersistencePriority.LOW) //
 				.text("Apparent Power sum")), //
-
+		REACTIVE_ENERGY_L1(Doc.of(OpenemsType.FLOAT).unit(Unit.VOLT_AMPERE_REACTIVE_HOURS) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Reactive Power L1")), //
+		REACTIVE_ENERGY_L2(Doc.of(OpenemsType.FLOAT).unit(Unit.VOLT_AMPERE_REACTIVE_HOURS) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Reactive Power L2")), //
+		REACTIVE_ENERGY_L3(Doc.of(OpenemsType.FLOAT).unit(Unit.VOLT_AMPERE_REACTIVE_HOURS) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Reactive Power L3")), //
 		REACTIVE_ENERGY_SUM(Doc.of(OpenemsType.FLOAT).unit(Unit.VOLT_AMPERE_REACTIVE_HOURS) //
 				.persistencePriority(PersistencePriority.LOW) //
 				.text("Reactive Power sum")), //
@@ -110,7 +160,7 @@ public interface EvcsAlfen extends OpenemsComponent {
 				.text("Modbus slave max current")), //
 		ACTIVE_LOAD_BALANCING_SAFE_CURRENT(Doc.of(OpenemsType.FLOAT).unit(Unit.AMPERE) //
 				.persistencePriority(PersistencePriority.LOW) //
-				.text("Active load balancing safe current")), //
+				.text("Active load balamcing safe current")), //
 		MODBUS_SLAVE_RECEIVED_SETPOINT_ACCOUNTED_FOR(Doc.of(OpenemsType.BOOLEAN) //
 				.persistencePriority(PersistencePriority.LOW) //
 				.text("Modbus slave received setpoint accounted for")), //

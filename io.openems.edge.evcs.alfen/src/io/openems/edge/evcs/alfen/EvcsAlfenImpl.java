@@ -115,6 +115,7 @@ public class EvcsAlfenImpl extends AbstractOpenemsModbusComponent
 		}
 
 		this._setPhaseRotation(config.phaseRotation());
+		this._setPriority(config.priority());
 		this._setFixedMaximumHardwarePower(Evcs.DEFAULT_MAXIMUM_HARDWARE_POWER);
 		this._setFixedMinimumHardwarePower(Evcs.DEFAULT_MINIMUM_HARDWARE_POWER);
 
@@ -301,9 +302,13 @@ public class EvcsAlfenImpl extends AbstractOpenemsModbusComponent
 						this.m(EvcsAlfen.ChannelId.CHARGE_POWER_L2, new FloatDoublewordElement(340)), //
 						this.m(EvcsAlfen.ChannelId.CHARGE_POWER_L3, new FloatDoublewordElement(342)), //
 						this.m(Evcs.ChannelId.CHARGE_POWER, new FloatDoublewordElement(344)), //
-						new DummyRegisterElement(346, 351), //
+						this.m(EvcsAlfen.ChannelId.APPARENT_POWER_L1, new FloatDoublewordElement(346)), //
+						this.m(EvcsAlfen.ChannelId.APPARENT_POWER_L2, new FloatDoublewordElement(348)), //
+						this.m(EvcsAlfen.ChannelId.APPARENT_POWER_L3, new FloatDoublewordElement(350)), //
 						this.m(EvcsAlfen.ChannelId.APPARENT_POWER_SUM, new FloatDoublewordElement(352)), //
-						new DummyRegisterElement(354, 359), //
+						this.m(EvcsAlfen.ChannelId.REACTIVE_POWER_L1, new FloatDoublewordElement(354)), //
+						this.m(EvcsAlfen.ChannelId.REACTIVE_POWER_L2, new FloatDoublewordElement(356)), //
+						this.m(EvcsAlfen.ChannelId.REACTIVE_POWER_L3, new FloatDoublewordElement(358)), //
 						this.m(EvcsAlfen.ChannelId.REACTIVE_POWER_SUM, new FloatDoublewordElement(360))), //
 
 				new FC3ReadRegistersTask(374, Priority.LOW, //
