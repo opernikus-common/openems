@@ -22,7 +22,7 @@ public class ChargeStateHandler {
 	 * <p>
 	 * Set the ChargeState, if there is no pause active (for increasing and
 	 * reducing). The Pause will be ignored and reset, if the given ChargeState is
-	 * changing from INCREASING to REDUCING.
+	 * changing from INCREASING to DECREASING.
 	 * 
 	 * @param reqChargeState ChargeState
 	 * @return true when the requiredChargeState is taken
@@ -33,17 +33,17 @@ public class ChargeStateHandler {
 		// immediately)
 		if (this.chargeState == ChargeState.INCREASING && reqChargeState == ChargeState.DECREASING) {
 			this.setChargeState(reqChargeState);
-			this.startPause();
+			this.startTimer();
 			return true;
 		}
 
 		// Set the charge state - Start the pause when the power is increasing or
 		// reducing
-		if (!this.isPauseActive()) {
+		if (!this.isTimerActive()) {
 			switch (reqChargeState) {
 			case INCREASING:
 			case DECREASING:
-				this.startPause();
+				this.startTimer();
 				break;
 			default:
 				break;
@@ -56,10 +56,7 @@ public class ChargeStateHandler {
 		}
 	}
 
-	/**
-	 * Start pause.
-	 */
-	private void startPause() {
+	private void startTimer() {
 		this.lastChargeStateTime = Instant.now();
 	}
 
@@ -68,7 +65,7 @@ public class ChargeStateHandler {
 	 * 
 	 * @return boolean
 	 */
-	private boolean isPauseActive() {
+	private boolean isTimerActive() {
 		// Pause not started
 		if (Instant.MIN.equals(this.lastChargeStateTime)) {
 			return false;
