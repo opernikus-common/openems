@@ -17,6 +17,7 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.openems.common.exceptions.OpenemsError.OpenemsNamedException;
 import io.openems.common.exceptions.OpenemsException;
 import io.openems.edge.bridge.modbus.api.AbstractOpenemsModbusComponent;
 import io.openems.edge.bridge.modbus.api.BridgeModbus;
@@ -44,7 +45,6 @@ import io.openems.edge.evcs.api.ManagedEvcs;
 import io.openems.edge.evcs.api.ManagedVehicleBattery;
 import io.openems.edge.evcs.api.SocEvcs;
 import io.openems.edge.evcs.api.Status;
-import io.openems.edge.evcs.api.WriteHandler;
 import io.openems.edge.timedata.api.Timedata;
 import io.openems.edge.timedata.api.TimedataProvider;
 
@@ -56,8 +56,7 @@ import io.openems.edge.timedata.api.TimedataProvider;
 )
 @EventTopics({ //
 		EdgeEventConstants.TOPIC_CYCLE_BEFORE_PROCESS_IMAGE, //
-		EdgeEventConstants.TOPIC_CYCLE_AFTER_PROCESS_IMAGE, //
-		EdgeEventConstants.TOPIC_CYCLE_AFTER_CONTROLLERS }) //
+		EdgeEventConstants.TOPIC_CYCLE_AFTER_PROCESS_IMAGE }) //
 
 public class EvcsEvTecImpl extends AbstractOpenemsModbusComponent implements EvcsEvTec, Evcs, ManagedEvcs, SocEvcs,
 		ManagedVehicleBattery, ModbusComponent, EventHandler, TimedataProvider, OpenemsComponent {
@@ -78,11 +77,6 @@ public class EvcsEvTecImpl extends AbstractOpenemsModbusComponent implements Evc
 	 * Handles charge states.
 	 */
 	private final ChargeStateHandler chargeStateHandler = new ChargeStateHandler(this);
-
-	/**
-	 * Processes the controller's writes to this evcs component.
-	 */
-	private final WriteHandler writeHandler = new WriteHandler(this);
 
 	@Reference
 	private EvcsPower evcsPower;
@@ -132,20 +126,19 @@ public class EvcsEvTecImpl extends AbstractOpenemsModbusComponent implements Evc
 
 	private void addListeners() {
 
-		this.getChargedEnergyChannel().onUpdate(newValueOpt -> {
+		this.getChargedEnergyChannel().onUpdate(value -> {
 			var energySession = this.lastEnergySession;
-			if (newValueOpt.isDefined()) {
-				energySession = newValueOpt.get().intValue();
+			if (value.isDefined()) {
+				energySession = value.get().intValue();
 				this.lastEnergySession = energySession;
 			}
 			this._setEnergySession(energySession);
 		});
 
 		// charge power = active power kept positive
-		this.getActivePowerChannel().onUpdate(newValueOpt -> {
-			if (newValueOpt.isDefined()) {
-				var newValue = newValueOpt.get();
-				this._setChargePower(Math.max(newValue, 0));
+		this.getActivePowerChannel().onSetNextValue(value -> {
+			if (value.isDefined()) {
+				this._setChargePower(Math.max(value.get(), 0));
 			}
 		});
 
@@ -153,22 +146,18 @@ public class EvcsEvTecImpl extends AbstractOpenemsModbusComponent implements Evc
 		// BatteryMode
 
 		this.getSetChargePowerLimitChannel().onSetNextWrite(value -> {
-			boolean batMode = this.getBatteryMode().orElse(false);
-			if (!batMode) {
-				// log.info("EVCS Req (SetChargePowerLimit) " + value);
-
-				if (value != null && value != 0) {
-					value = TypeUtils.fitWithin(this.getMinimumPower().get(), this.getMaximumPower().get(), value);
-				}
+			if (value != null) {
 				this.setInputPower(value);
 				this._setSetChargePowerLimit(value);
+			} else {
+				this._setSetChargePowerLimit(null);
 			}
 		});
 
 		this.getSetActivePowerChannel().onSetNextWrite(value -> {
 			boolean batMode = this.getBatteryMode().orElse(false);
+			this.getSetActivePowerChannel().setNextValue(value);
 			if (batMode) {
-				// log.info("VehicleBatReq (SetActivePower) " + value);
 
 				if (value != null) {
 					// negative value indicate charging of the battery, positive value indicate
@@ -181,9 +170,6 @@ public class EvcsEvTecImpl extends AbstractOpenemsModbusComponent implements Evc
 					}
 				}
 				this.setInputPower(-value);
-				this.getSetActivePowerChannel().setNextValue(-value);
-			} else {
-				this.getSetActivePowerChannel().setNextValue(null);
 			}
 		});
 	}
@@ -192,20 +178,18 @@ public class EvcsEvTecImpl extends AbstractOpenemsModbusComponent implements Evc
 	public void handleEvent(Event event) {
 
 		switch (event.getTopic()) {
-		case EdgeEventConstants.TOPIC_CYCLE_BEFORE_PROCESS_IMAGE:
+		case EdgeEventConstants.TOPIC_CYCLE_BEFORE_PROCESS_IMAGE -> {
 			try {
 				this.mapStatus();
+				this.setSuspendMode(false);
 				this.channel(EvcsEvTec.ChannelId.COULD_NOT_READ_CHARGING_STATE).setNextValue(false);
-			} catch (OpenemsException e) {
+			} catch (OpenemsNamedException e) {
 				this.channel(EvcsEvTec.ChannelId.COULD_NOT_READ_CHARGING_STATE).setNextValue(true);
 			}
-			break;
-		case EdgeEventConstants.TOPIC_CYCLE_AFTER_PROCESS_IMAGE:
+		}
+		case EdgeEventConstants.TOPIC_CYCLE_AFTER_PROCESS_IMAGE -> {
 			this.calculateActiveConsumptionEnergy.update(this.lastEnergySession);
-			break;
-		case EdgeEventConstants.TOPIC_CYCLE_AFTER_CONTROLLERS:
-			this.writeHandler.run();
-			break;
+		}
 		}
 	}
 
@@ -218,29 +202,28 @@ public class EvcsEvTecImpl extends AbstractOpenemsModbusComponent implements Evc
 
 		ChargingState chargeState = chargeStateOpt.asEnum();
 		switch (chargeState) {
-		case NO_VEHICLE_CONNECTED:
+		case NO_VEHICLE_CONNECTED -> {
 			this._setStatus(Status.NOT_READY_FOR_CHARGING);
 			this._setSoc(null); // EvTec sends 0 as Soc if no vehicle is connected
-			break;
-		case WAITING_FOR_RELEASE:
+		}
+		case WAITING_FOR_RELEASE -> {
 			this._setStatus(Status.STARTING);
-			break;
-		case SUSPENDED:
-			this._setStatus(Status.READY_FOR_CHARGING);
-			break;
-		case CHARGING_PROCESS_STARTS:
+		}
+		case SUSPENDED -> {
+			this._setStatus(Status.CHARGING_REJECTED);
+		}
+		case CHARGING_PROCESS_STARTS -> {
 			this._setStatus(Status.CHARGING);
-			break;
-		case STOP:
-		case CHARGING_PROCESS_SUCCESSFULLY_COMPLETED:
-		case CHARGING_PROCESS_COMPLETED_BY_USER:
+		}
+		case STOP, CHARGING_PROCESS_SUCCESSFULLY_COMPLETED, CHARGING_PROCESS_COMPLETED_BY_USER -> {
 			this._setStatus(Status.CHARGING_FINISHED);
-			break;
-		case CHARGING_ENDED_WITH_ERROR:
+		}
+		case CHARGING_ENDED_WITH_ERROR -> {
 			this._setStatus(Status.ERROR);
-			break;
-		default:
+		}
+		default -> {
 			this._setStatus(Status.UNDEFINED);
+		}
 
 		}
 	}
@@ -248,13 +231,13 @@ public class EvcsEvTecImpl extends AbstractOpenemsModbusComponent implements Evc
 	@Override
 	protected ModbusProtocol defineModbusProtocol() throws OpenemsException {
 		var protocol = new ModbusProtocol(this,
-
 				new FC3ReadRegistersTask(0, Priority.HIGH,
 						this.m(EvcsEvTec.ChannelId.STATION_STATE, new UnsignedWordElement(0)),
 						this.m(EvcsEvTec.ChannelId.CHARGING_STATE, new UnsignedWordElement(1)),
 						new DummyRegisterElement(2), this.m(EvcsEvTec.ChannelId.VOLTAGE, new FloatDoublewordElement(3)),
 						this.m(EvcsEvTec.ChannelId.POWER_UINT, new UnsignedDoublewordElement(5)),
-						this.m(EvcsEvTec.ChannelId.CURRENT, new FloatDoublewordElement(7)),
+						this.m(Evcs.ChannelId.CURRENT, new FloatDoublewordElement(7),
+								ElementToChannelConverter.SCALE_FACTOR_3),
 						this.m(ManagedVehicleBattery.ChannelId.ACTIVE_POWER, new FloatDoublewordElement(9)),
 						this.m(SocEvcs.ChannelId.SOC, new UnsignedWordElement(11),
 								ElementToChannelConverter.SCALE_FACTOR_MINUS_1),
@@ -285,11 +268,9 @@ public class EvcsEvTecImpl extends AbstractOpenemsModbusComponent implements Evc
 						this.m(EvcsEvTec.ChannelId.REMAINING_BATTERY_CAPACITY, new FloatDoublewordElement(61)),
 						this.m(EvcsEvTec.ChannelId.MINIMAL_BATTERY_CAPACITY, new FloatDoublewordElement(63)),
 						this.m(EvcsEvTec.ChannelId.BULK_CHARGE_CAPACITY, new FloatDoublewordElement(65))),
-
 				new FC3ReadRegistersTask(100, Priority.HIGH,
 						this.m(EvcsEvTec.ChannelId.RFID, new StringWordElement(100, 20)),
 						this.m(EvcsEvTec.ChannelId.EVCC_ID, new StringWordElement(120, 12))),
-
 				new FC3ReadRegistersTask(600, Priority.HIGH,
 						this.m(EvcsEvTec.ChannelId.INPUT_POWER, new SignedDoublewordElement(600)),
 						this.m(EvcsEvTec.ChannelId.SUSPEND_MODE, new UnsignedWordElement(602))));
@@ -350,14 +331,12 @@ public class EvcsEvTecImpl extends AbstractOpenemsModbusComponent implements Evc
 
 	@Override
 	public boolean applyChargePowerLimit(int power) throws Exception {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public boolean pauseChargeProcess() throws Exception {
-		this.getSuspendModeChannel().setNextWriteValue(true);
-		return this.applyChargePowerLimit(0);
+		return true;
 	}
 
 	@Override
