@@ -1,6 +1,7 @@
 Bundle-Name: OpenEMS Edge Meter GMC EM2389
-Bundle-License: https://opensource.org/licenses/EPL-2.0
+Bundle-Description: This implementation covers the GMC EM2389 meter
 Bundle-Vendor: opernikus GmbH
+Bundle-License: https://opensource.org/licenses/EPL-2.0
 Bundle-Version: 1.0.0.${tstamp}
 
 -buildpath: \
