@@ -13,8 +13,6 @@ import org.osgi.service.component.annotations.ReferenceCardinality;
 import org.osgi.service.component.annotations.ReferencePolicy;
 import org.osgi.service.component.annotations.ReferencePolicyOption;
 import org.osgi.service.metatype.annotations.Designate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import io.openems.common.channel.AccessMode;
 import io.openems.common.exceptions.OpenemsException;
@@ -47,8 +45,6 @@ import io.openems.edge.meter.api.MeterType;
 )
 public class MeterGmcEm2389Impl extends AbstractOpenemsModbusComponent
 		implements MeterGmcEm2389, ElectricityMeter, ModbusComponent, OpenemsComponent, ModbusSlave {
-
-	private final Logger log = LoggerFactory.getLogger(MeterGmcEm2389Impl.class);
 
 	@Reference
 	private ConfigurationAdmin cm;

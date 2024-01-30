@@ -1,0 +1,6 @@
+= GMC Meters EM2389
+
+Implemented Natures:
+- ElectricityMeter
+
+https://github.com/OpenEMS/openems/tree/develop/io.openems.edge.meter.gmc[Source Code icon:github[]]
