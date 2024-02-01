@@ -12,45 +12,47 @@ import io.openems.edge.controller.api.Controller;
 
 public interface ControllerSyncActivePower extends Controller, OpenemsComponent {
 
-    public enum ChannelId implements io.openems.edge.common.channel.ChannelId {
-	DEBUG_SET_ACTIVE_POWER_BEFORE_PID(Doc.of(OpenemsType.INTEGER) //
-		.unit(Unit.WATT).persistencePriority(PersistencePriority.HIGH) //
-		.accessMode(AccessMode.READ_ONLY));
+	public enum ChannelId implements io.openems.edge.common.channel.ChannelId {
+		DEBUG_SET_ACTIVE_POWER_BEFORE_PID(Doc.of(OpenemsType.INTEGER) //
+				.unit(Unit.WATT).persistencePriority(PersistencePriority.HIGH) //
+				.accessMode(AccessMode.READ_ONLY));
 
-	private final Doc doc;
+		private final Doc doc;
 
-	private ChannelId(Doc doc) {
-	    this.doc = doc;
+		private ChannelId(Doc doc) {
+			this.doc = doc;
+		}
+
+		@Override
+		public Doc doc() {
+			return this.doc;
+		}
 	}
 
-	@Override
-	public Doc doc() {
-	    return this.doc;
+	public default IntegerReadChannel getDebugSetActivePowerBeforePidChannel() {
+		return this.channel(ChannelId.DEBUG_SET_ACTIVE_POWER_BEFORE_PID);
 	}
-    }
 
-    public default IntegerReadChannel getDebugSetActivePowerBeforePidChannel() {
-	return this.channel(ChannelId.DEBUG_SET_ACTIVE_POWER_BEFORE_PID);
-    }
+	public default Value<Integer> getDebugSetActivePowerBeforePid() {
+		return this.getDebugSetActivePowerBeforePidChannel().value();
+	}
 
-    public default Value<Integer> getDebugSetActivePowerBeforePid() {
-	return this.getDebugSetActivePowerBeforePidChannel().value();
-    }
+	/**
+	 * set debugSetActivePowerBeforePid.
+	 * 
+	 * @param value the value to set
+	 */
+	public default void _setDebugSetActivePowerBeforePid(Integer value) {
+		this.getDebugSetActivePowerBeforePidChannel().setNextValue(value);
+	}
 
-    /**
-     * set debugSetActivePowerBeforePid.
-     * @param value the value to set
-     */
-    public default void _setDebugSetActivePowerBeforePid(Integer value) {
-	this.getDebugSetActivePowerBeforePidChannel().setNextValue(value);
-    }
-
-    /**
-     * set debugSetActivePowerBeforePid.
-     * @param value the value to set
-     */
-    public default void _setDebugSetActivePowerBeforePid(int value) {
-	this.getDebugSetActivePowerBeforePidChannel().setNextValue(value);
-    }
+	/**
+	 * set debugSetActivePowerBeforePid.
+	 * 
+	 * @param value the value to set
+	 */
+	public default void _setDebugSetActivePowerBeforePid(int value) {
+		this.getDebugSetActivePowerBeforePidChannel().setNextValue(value);
+	}
 
 }

@@ -634,7 +634,7 @@ public class InfluxQlProxy extends QueryProxy {
 	}
 
 	// TODO move to common
-	public static record Pair<A, B>(A first, B second) {
+	public static record Pair<A, B> (A first, B second) {
 
 	}
 

@@ -34,79 +34,79 @@ import io.openems.edge.thermometer.api.Thermometer;
  */
 @Designate(ocd = Config.class, factory = true)
 @Component(//
-	name = "Consolinno.Leaflet.Bsp.Temperature", //
-	immediate = true, //
-	configurationPolicy = ConfigurationPolicy.REQUIRE //
+		name = "Consolinno.Leaflet.Bsp.Temperature", //
+		immediate = true, //
+		configurationPolicy = ConfigurationPolicy.REQUIRE //
 )
 public class TemperatureImpl extends AbstractOpenemsModbusComponent
-	implements Thermometer, ModbusComponent, OpenemsComponent {
+		implements Thermometer, ModbusComponent, OpenemsComponent {
 
-    private final Logger log = LoggerFactory.getLogger(TemperatureImpl.class);
-    private int tempAnalogInAddress;
-    private Config config;
+	private final Logger log = LoggerFactory.getLogger(TemperatureImpl.class);
+	private int tempAnalogInAddress;
+	private Config config;
 
-    @Reference
-    protected ConfigurationAdmin cm;
+	@Reference
+	protected ConfigurationAdmin cm;
 
-    @Reference(policy = ReferencePolicy.STATIC, policyOption = ReferencePolicyOption.GREEDY, cardinality = ReferenceCardinality.MANDATORY)
-    protected void setModbus(BridgeModbus modbus) {
-	super.setModbus(modbus);
-    }
-
-    @Reference(policy = ReferencePolicy.STATIC, policyOption = ReferencePolicyOption.GREEDY, cardinality = ReferenceCardinality.MANDATORY)
-    private LeafletCore leafletCore;
-
-    public TemperatureImpl() {
-	super(//
-		OpenemsComponent.ChannelId.values(), //
-		ModbusComponent.ChannelId.values(), //
-		Thermometer.ChannelId.values() //
-	);
-    }
-
-    @Activate
-    void activate(ComponentContext context, Config config) throws OpenemsException {
-	this.config = config;
-	if (this.leafletCore != null) {
-	    try {
-		this.leafletCore.checkModulePresent(ModuleType.TMP, config.module(), config.position().value,
-			config.id());
-		this.tempAnalogInAddress = this.leafletCore.registerModule(ModuleType.TMP, config.module(),
-			config.position().value);
-	    } catch (OpenemsException ex) {
-		this.logError(this.log, ex.getMessage());
-		throw ex;
-	    }
-	}
-	if (super.activate(context, config.id(), config.alias(), config.enabled(), this.config.modbusUnitId(), this.cm,
-		"Modbus", this.config.modbus_id())) {
-	    return;
-	}
-	if (OpenemsComponent.updateReferenceFilter(this.cm, this.servicePid(), "leafletCore", config.leaflet_id())) {
-	    return;
+	@Reference(policy = ReferencePolicy.STATIC, policyOption = ReferencePolicyOption.GREEDY, cardinality = ReferenceCardinality.MANDATORY)
+	protected void setModbus(BridgeModbus modbus) {
+		super.setModbus(modbus);
 	}
 
-    }
+	@Reference(policy = ReferencePolicy.STATIC, policyOption = ReferencePolicyOption.GREEDY, cardinality = ReferenceCardinality.MANDATORY)
+	private LeafletCore leafletCore;
 
-    @Deactivate
-    protected void deactivate() {
-	this.leafletCore.unregisterModule(ModuleType.TMP, this.config.module(), this.config.position().value);
-	super.deactivate();
-    }
-
-    @Override
-    protected ModbusProtocol defineModbusProtocol() throws OpenemsException {
-	if (this.leafletCore == null) {
-	    return null;
+	public TemperatureImpl() {
+		super(//
+				OpenemsComponent.ChannelId.values(), //
+				ModbusComponent.ChannelId.values(), //
+				Thermometer.ChannelId.values() //
+		);
 	}
-	return new ModbusProtocol(this, new FC4ReadInputRegistersTask(this.tempAnalogInAddress, //
-		Priority.LOW, //
-		m(Thermometer.ChannelId.TEMPERATURE, new SignedWordElement(this.tempAnalogInAddress))));
-    }
 
-    @Override
-    public String debugLog() {
-	return getTemperature().isDefined() ? getTemperature().asString() : "-";
-    }
+	@Activate
+	void activate(ComponentContext context, Config config) throws OpenemsException {
+		this.config = config;
+		if (this.leafletCore != null) {
+			try {
+				this.leafletCore.checkModulePresent(ModuleType.TMP, config.module(), config.position().value,
+						config.id());
+				this.tempAnalogInAddress = this.leafletCore.registerModule(ModuleType.TMP, config.module(),
+						config.position().value);
+			} catch (OpenemsException ex) {
+				this.logError(this.log, ex.getMessage());
+				throw ex;
+			}
+		}
+		if (super.activate(context, config.id(), config.alias(), config.enabled(), this.config.modbusUnitId(), this.cm,
+				"Modbus", this.config.modbus_id())) {
+			return;
+		}
+		if (OpenemsComponent.updateReferenceFilter(this.cm, this.servicePid(), "leafletCore", config.leaflet_id())) {
+			return;
+		}
+
+	}
+
+	@Deactivate
+	protected void deactivate() {
+		this.leafletCore.unregisterModule(ModuleType.TMP, this.config.module(), this.config.position().value);
+		super.deactivate();
+	}
+
+	@Override
+	protected ModbusProtocol defineModbusProtocol() throws OpenemsException {
+		if (this.leafletCore == null) {
+			return null;
+		}
+		return new ModbusProtocol(this, new FC4ReadInputRegistersTask(this.tempAnalogInAddress, //
+				Priority.LOW, //
+				m(Thermometer.ChannelId.TEMPERATURE, new SignedWordElement(this.tempAnalogInAddress))));
+	}
+
+	@Override
+	public String debugLog() {
+		return getTemperature().isDefined() ? getTemperature().asString() : "-";
+	}
 
 }

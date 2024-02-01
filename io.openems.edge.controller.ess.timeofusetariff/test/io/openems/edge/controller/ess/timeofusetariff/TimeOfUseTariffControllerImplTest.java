@@ -32,8 +32,7 @@ public class TimeOfUseTariffControllerImplTest {
 						.setEssId("ess0") //
 						.setMode(AUTOMATIC) //
 						.setControlMode(CHARGE_CONSUMPTION) //
-						.setRiskLevel(
-								MEDIUM) //
+						.setRiskLevel(MEDIUM) //
 						.build()); //
 	}
 }

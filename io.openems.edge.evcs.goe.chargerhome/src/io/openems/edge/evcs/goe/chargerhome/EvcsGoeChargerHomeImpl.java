@@ -131,12 +131,9 @@ public class EvcsGoeChargerHomeImpl extends AbstractManagedEvcsComponent
 					this.channel(EvcsGoeChargerHome.ChannelId.VOLTAGE_L1).setNextValue(JsonUtils.getAsInt(nrg, 0));
 					this.channel(EvcsGoeChargerHome.ChannelId.VOLTAGE_L2).setNextValue(JsonUtils.getAsInt(nrg, 1));
 					this.channel(EvcsGoeChargerHome.ChannelId.VOLTAGE_L3).setNextValue(JsonUtils.getAsInt(nrg, 2));
-					this.channel(Evcs.ChannelId.CURRENT_L1)
-							.setNextValue(JsonUtils.getAsInt(nrg, 4) * 100);
-					this.channel(Evcs.ChannelId.CURRENT_L2)
-							.setNextValue(JsonUtils.getAsInt(nrg, 5) * 100);
-					this.channel(Evcs.ChannelId.CURRENT_L3)
-							.setNextValue(JsonUtils.getAsInt(nrg, 6) * 100);
+					this.channel(Evcs.ChannelId.CURRENT_L1).setNextValue(JsonUtils.getAsInt(nrg, 4) * 100);
+					this.channel(Evcs.ChannelId.CURRENT_L2).setNextValue(JsonUtils.getAsInt(nrg, 5) * 100);
+					this.channel(Evcs.ChannelId.CURRENT_L3).setNextValue(JsonUtils.getAsInt(nrg, 6) * 100);
 					var power = JsonUtils.getAsInt(nrg, 11);
 					this.channel(EvcsGoeChargerHome.ChannelId.ACTUAL_POWER).setNextValue(power * 10);
 					this.channel(Evcs.ChannelId.CHARGE_POWER).setNextValue(power * 10);
