@@ -49,7 +49,6 @@ public interface EvcsCompleoDuo extends OpenemsComponent {
 		return this.getChargePointStateChannel().value();
 	}
 
-
 	/**
 	 * Gets the Channel for {@link ChannelId#POWER_LIMIT}.
 	 *
@@ -59,10 +58,8 @@ public interface EvcsCompleoDuo extends OpenemsComponent {
 		return this.channel(ChannelId.POWER_LIMIT);
 	}
 
-
 	/**
-	 * Sets a value into the PowerLimit register. See
-	 * {@link ChannelId#POWER_LIMIT}.
+	 * Sets a value into the PowerLimit register. See {@link ChannelId#POWER_LIMIT}.
 	 *
 	 * @param value the next write value
 	 * @throws OpenemsNamedException on error

@@ -11,40 +11,40 @@ import java.util.Scanner;
  */
 public class SourceReader {
 
-    /**
-     * Reads a CSV file from the given path.
-     * 
-     * @param path the path to read the CSV file from.
-     * @return a list with a list of strings.
-     */
-    public List<List<String>> readCsv(String path) {
-	List<List<String>> output = new ArrayList<>();
-	try (Scanner csvScan = new Scanner(new File(path))) {
-	    while (csvScan.hasNextLine()) {
-		output.add(this.getOutputFromLine(csvScan.nextLine()));
+	/**
+	 * Reads a CSV file from the given path.
+	 * 
+	 * @param path the path to read the CSV file from.
+	 * @return a list with a list of strings.
+	 */
+	public List<List<String>> readCsv(String path) {
+		List<List<String>> output = new ArrayList<>();
+		try (Scanner csvScan = new Scanner(new File(path))) {
+			while (csvScan.hasNextLine()) {
+				output.add(this.getOutputFromLine(csvScan.nextLine()));
 
-	    }
-	    return output;
+			}
+			return output;
 
-	} catch (Exception e) {
+		} catch (Exception e) {
 
-	    List<String> error = new ArrayList<>();
-	    error.add("Source file not Found");
-	    output.add(error);
+			List<String> error = new ArrayList<>();
+			error.add("Source file not Found");
+			output.add(error);
 
+		}
+		return output;
 	}
-	return output;
-    }
 
-    private List<String> getOutputFromLine(String thisLine) {
-	List<String> content = new ArrayList<>();
-	try (Scanner rowScanner = new Scanner(thisLine)) {
-	    rowScanner.useDelimiter(",");
-	    while (rowScanner.hasNext()) {
+	private List<String> getOutputFromLine(String thisLine) {
+		List<String> content = new ArrayList<>();
+		try (Scanner rowScanner = new Scanner(thisLine)) {
+			rowScanner.useDelimiter(",");
+			while (rowScanner.hasNext()) {
 
-		content.add(rowScanner.next());
-	    }
+				content.add(rowScanner.next());
+			}
+		}
+		return content;
 	}
-	return content;
-    }
 }

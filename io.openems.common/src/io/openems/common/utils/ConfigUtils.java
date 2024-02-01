@@ -93,7 +93,7 @@ public class ConfigUtils {
 		return targetBuilder.toString();
 	}
 
-	//oEMS begin
+	// oEMS begin
 	/**
 	 * Generates a target filter for a Declarative Service @Reference member.
 	 *
@@ -112,7 +112,7 @@ public class ConfigUtils {
 	 * <li>the service must be enabled (if 'forceEnabled' is true)
 	 * <li>the service must not have the same PID as the calling component
 	 * <li>the service "id" must be one of the provided "ids"
-	 * <li>the service must not include any component with same factory ID 
+	 * <li>the service must not include any component with same factory ID
 	 * </ul>
 	 *
 	 * @param pid       PID of the calling component (use 'config.service_pid()' or
@@ -154,6 +154,6 @@ public class ConfigUtils {
 		targetBuilder.append(")");
 		return targetBuilder.toString();
 	}
-	//oEMS end
+	// oEMS end
 
 }

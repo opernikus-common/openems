@@ -40,121 +40,121 @@ import io.openems.edge.io.api.DigitalOutput;
  */
 @Designate(ocd = Config.class, factory = true)
 @Component(//
-	name = "Consolinno.Leaflet.Bsp.Relay", //
-	immediate = true, //
-	configurationPolicy = ConfigurationPolicy.REQUIRE //
+		name = "Consolinno.Leaflet.Bsp.Relay", //
+		immediate = true, //
+		configurationPolicy = ConfigurationPolicy.REQUIRE //
 )
 public class RelayImpl extends AbstractOpenemsModbusComponent
-	implements DigitalOutput, ModbusComponent, OpenemsComponent {
+		implements DigitalOutput, ModbusComponent, OpenemsComponent {
 
-    private final Logger log = LoggerFactory.getLogger(RelayImpl.class);
+	private final Logger log = LoggerFactory.getLogger(RelayImpl.class);
 
-    private Config config;
-    private int relayOutputAddress;
+	private Config config;
+	private int relayOutputAddress;
 
-    private final BooleanWriteChannel[] channelOut;
-    private final StringBuilder debugBuilder = new StringBuilder();
+	private final BooleanWriteChannel[] channelOut;
+	private final StringBuilder debugBuilder = new StringBuilder();
 
-    @Reference
-    protected ConfigurationAdmin cm;
+	@Reference
+	protected ConfigurationAdmin cm;
 
-    @Reference(policy = ReferencePolicy.STATIC, policyOption = ReferencePolicyOption.GREEDY, cardinality = ReferenceCardinality.MANDATORY)
-    protected void setModbus(BridgeModbus modbus) {
-	super.setModbus(modbus);
-    }
-
-    @Reference(policy = ReferencePolicy.STATIC, policyOption = ReferencePolicyOption.GREEDY, cardinality = ReferenceCardinality.MANDATORY)
-    private LeafletCore leafletCore;
-
-    public RelayImpl() {
-	super(//
-		OpenemsComponent.ChannelId.values(), //
-		ModbusComponent.ChannelId.values(), //
-		Relay.values() //
-	);
-	this.channelOut = new BooleanWriteChannel[] { //
-		this.channel(Relay.OUT) };
-    }
-
-    @Activate
-    void activate(ComponentContext context, Config config) throws OpenemsException {
-	this.config = config;
-	if (this.leafletCore != null) {
-	    try {
-		this.leafletCore.checkModulePresent(ModuleType.REL, config.module(), config.position().value,
-			config.id());
-
-		// Output coils start at 0 and not 1 like Analog Input
-		this.relayOutputAddress = this.leafletCore.registerModule(ModuleType.REL, config.module(),
-			config.position().value - 1);
-		this.channel(Relay.NORMALLY_CLOSED).setNextValue(config.normallyClosed());
-	    } catch (OpenemsException ex) {
-		this.logError(this.log, ex.getMessage());
-		throw ex;
-	    }
+	@Reference(policy = ReferencePolicy.STATIC, policyOption = ReferencePolicyOption.GREEDY, cardinality = ReferenceCardinality.MANDATORY)
+	protected void setModbus(BridgeModbus modbus) {
+		super.setModbus(modbus);
 	}
-	if (super.activate(context, config.id(), config.alias(), config.enabled(), this.config.modbusUnitId(), this.cm,
-		"Modbus", this.config.modbus_id())) {
-	    return;
+
+	@Reference(policy = ReferencePolicy.STATIC, policyOption = ReferencePolicyOption.GREEDY, cardinality = ReferenceCardinality.MANDATORY)
+	private LeafletCore leafletCore;
+
+	public RelayImpl() {
+		super(//
+				OpenemsComponent.ChannelId.values(), //
+				ModbusComponent.ChannelId.values(), //
+				Relay.values() //
+		);
+		this.channelOut = new BooleanWriteChannel[] { //
+				this.channel(Relay.OUT) };
 	}
-	if (OpenemsComponent.updateReferenceFilter(this.cm, this.servicePid(), "leafletCore", config.leaflet_id())) {
-	    return;
+
+	@Activate
+	void activate(ComponentContext context, Config config) throws OpenemsException {
+		this.config = config;
+		if (this.leafletCore != null) {
+			try {
+				this.leafletCore.checkModulePresent(ModuleType.REL, config.module(), config.position().value,
+						config.id());
+
+				// Output coils start at 0 and not 1 like Analog Input
+				this.relayOutputAddress = this.leafletCore.registerModule(ModuleType.REL, config.module(),
+						config.position().value - 1);
+				this.channel(Relay.NORMALLY_CLOSED).setNextValue(config.normallyClosed());
+			} catch (OpenemsException ex) {
+				this.logError(this.log, ex.getMessage());
+				throw ex;
+			}
+		}
+		if (super.activate(context, config.id(), config.alias(), config.enabled(), this.config.modbusUnitId(), this.cm,
+				"Modbus", this.config.modbus_id())) {
+			return;
+		}
+		if (OpenemsComponent.updateReferenceFilter(this.cm, this.servicePid(), "leafletCore", config.leaflet_id())) {
+			return;
+		}
 	}
-    }
 
-    @Deactivate
-    protected void deactivate() {
-	this.setAllRelais(false);
-	this.leafletCore.unregisterModule(ModuleType.REL, this.config.module(), this.config.position().value);
-	super.deactivate();
-    }
-
-    private void setAllRelais(boolean isOn) {
-	Arrays.stream(this.channelOut).forEach(channel -> {
-	    try {
-		channel.setNextWriteValueFromObject(isOn);
-	    } catch (OpenemsError.OpenemsNamedException e) {
-		this.logWarn(this.log, "Couldn't set relais: " + channel.channelId() + " to " + isOn);
-	    }
-	});
-    }
-
-    @Override
-    protected ModbusProtocol defineModbusProtocol() throws OpenemsException {
-	if (this.leafletCore == null) {
-	    return null;
+	@Deactivate
+	protected void deactivate() {
+		this.setAllRelais(false);
+		this.leafletCore.unregisterModule(ModuleType.REL, this.config.module(), this.config.position().value);
+		super.deactivate();
 	}
-	return new ModbusProtocol(this,
-		new FC5WriteCoilTask(this.relayOutputAddress,
-			(CoilElement) m(Relay.OUT, new CoilElement(this.relayOutputAddress),
-				ElementToChannelConverter.INVERT_IF_TRUE(this.config.normallyClosed()))),
-		new FC1ReadCoilsTask(this.relayOutputAddress, Priority.HIGH,
-			m(Relay.OUT, new CoilElement(this.relayOutputAddress),
-				ElementToChannelConverter.INVERT_IF_TRUE(this.config.normallyClosed()))));
-    }
 
-    @Override
-    public BooleanWriteChannel[] digitalOutputChannels() {
-	return this.channelOut;
-    }
+	private void setAllRelais(boolean isOn) {
+		Arrays.stream(this.channelOut).forEach(channel -> {
+			try {
+				channel.setNextWriteValueFromObject(isOn);
+			} catch (OpenemsError.OpenemsNamedException e) {
+				this.logWarn(this.log, "Couldn't set relais: " + channel.channelId() + " to " + isOn);
+			}
+		});
+	}
 
-    @Override
-    public String debugLog() {
-	this.debugBuilder.setLength(0);
-	var wc = ((BooleanReadChannel) this.channel(Relay.DEBUG_OUT)).value();
-	this.appendToBuilder("WR", wc, this.debugBuilder);
-	var rc = ((BooleanReadChannel) this.channel(Relay.OUT)).value();
-	this.appendToBuilder("RD", rc, this.debugBuilder);
-	var nc = ((BooleanReadChannel) this.channel(Relay.NORMALLY_CLOSED)).value();
-	this.appendToBuilder("NC", nc, this.debugBuilder);
-	return this.debugBuilder.toString();
-    }
+	@Override
+	protected ModbusProtocol defineModbusProtocol() throws OpenemsException {
+		if (this.leafletCore == null) {
+			return null;
+		}
+		return new ModbusProtocol(this,
+				new FC5WriteCoilTask(this.relayOutputAddress,
+						(CoilElement) m(Relay.OUT, new CoilElement(this.relayOutputAddress),
+								ElementToChannelConverter.INVERT_IF_TRUE(this.config.normallyClosed()))),
+				new FC1ReadCoilsTask(this.relayOutputAddress, Priority.HIGH,
+						m(Relay.OUT, new CoilElement(this.relayOutputAddress),
+								ElementToChannelConverter.INVERT_IF_TRUE(this.config.normallyClosed()))));
+	}
 
-    private void appendToBuilder(String descriptor, Value<Boolean> val, StringBuilder builder) {
-	builder.append(descriptor).append(" ");
-	val.asOptional().ifPresentOrElse(value -> builder.append(value ? "1" : "0"), () -> {
-	    builder.append("-");
-	});
-	builder.append(" ");
-    }
+	@Override
+	public BooleanWriteChannel[] digitalOutputChannels() {
+		return this.channelOut;
+	}
+
+	@Override
+	public String debugLog() {
+		this.debugBuilder.setLength(0);
+		var wc = ((BooleanReadChannel) this.channel(Relay.DEBUG_OUT)).value();
+		this.appendToBuilder("WR", wc, this.debugBuilder);
+		var rc = ((BooleanReadChannel) this.channel(Relay.OUT)).value();
+		this.appendToBuilder("RD", rc, this.debugBuilder);
+		var nc = ((BooleanReadChannel) this.channel(Relay.NORMALLY_CLOSED)).value();
+		this.appendToBuilder("NC", nc, this.debugBuilder);
+		return this.debugBuilder.toString();
+	}
+
+	private void appendToBuilder(String descriptor, Value<Boolean> val, StringBuilder builder) {
+		builder.append(descriptor).append(" ");
+		val.asOptional().ifPresentOrElse(value -> builder.append(value ? "1" : "0"), () -> {
+			builder.append("-");
+		});
+		builder.append(" ");
+	}
 }

@@ -332,8 +332,7 @@ public interface Evcs extends OpenemsComponent {
 				.persistencePriority(PersistencePriority.HIGH)), //
 
 		/**
-		 * oEMS: Not used by Evcs-Cluster.
-		 * Maximum Power defined by Controller EVCS.
+		 * oEMS: Not used by Evcs-Cluster. Maximum Power defined by Controller EVCS.
 		 *
 		 * <ul>
 		 * <li>Interface: Evcs
@@ -348,8 +347,7 @@ public interface Evcs extends OpenemsComponent {
 				.persistencePriority(PersistencePriority.HIGH)), //
 
 		/**
-		 * oEMS: Not used by Evcs-Cluster.
-		 * Minimum Power defined by Controller EVCS.
+		 * oEMS: Not used by Evcs-Cluster. Minimum Power defined by Controller EVCS.
 		 *
 		 * <ul>
 		 * <li>Interface: Evcs

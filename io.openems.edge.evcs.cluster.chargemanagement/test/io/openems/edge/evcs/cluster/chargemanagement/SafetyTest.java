@@ -35,9 +35,10 @@ public class SafetyTest {
 	/*
 	 * private FairShareClusterTestComponent meterBrokenTestController() throws
 	 * Exception { this.config = ConfigBrokenMeter.createDefaultConfig().build();
-	 * var test = new FairShareClusterTestComponent(new EvcsClusterChargeMgmtImpl());
-	 * this.cpm = ConfigBrokenMeter.setBaseReferences(test);
-	 * test.activate(this.config); // return test; }
+	 * var test = new FairShareClusterTestComponent(new
+	 * EvcsClusterChargeMgmtImpl()); this.cpm =
+	 * ConfigBrokenMeter.setBaseReferences(test); test.activate(this.config); //
+	 * return test; }
 	 * 
 	 * @Test public void test01MeterBroken() throws Exception { var test =
 	 * this.meterBrokenTestController(); TestCase tc1 = new TestCase();

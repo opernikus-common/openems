@@ -117,7 +117,8 @@ public class EvcsCompleoDuoImpl extends AbstractOpenemsModbusComponent
 	protected ModbusProtocol defineModbusProtocol() throws OpenemsException {
 		int plug = this.config.plug().plug;
 		return new ModbusProtocol(this, new FC4ReadInputRegistersTask(PRE_OFFSET + 0 + plug * OFFSET, Priority.HIGH,
-				m(EvcsCompleoDuo.ChannelId.POWER_LIMIT, new UnsignedWordElement(PRE_OFFSET + 0 + plug * OFFSET),ElementToChannelConverter.SCALE_FACTOR_2),
+				m(EvcsCompleoDuo.ChannelId.POWER_LIMIT, new UnsignedWordElement(PRE_OFFSET + 0 + plug * OFFSET),
+						ElementToChannelConverter.SCALE_FACTOR_2),
 				m(EvcsCompleoDuo.ChannelId.CHARGE_POINT_STATE, new UnsignedWordElement(PRE_OFFSET + 1 + plug + OFFSET)),
 				m(Evcs.ChannelId.CHARGE_POWER, new UnsignedWordElement(PRE_OFFSET + 2 + plug * OFFSET),
 						ElementToChannelConverter.SCALE_FACTOR_2),

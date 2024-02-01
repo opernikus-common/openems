@@ -55,5 +55,5 @@ public class DummyTimerManager extends AbstractOpenemsComponent
 	public int getCoreCyclesCount() {
 		return this.coreCyclesCount;
 	}
-	
+
 }

@@ -11,12 +11,13 @@ import io.openems.edge.common.test.DummyComponentManager;
 import io.openems.edge.evcs.test.DummyManagedEvcs;
 import io.openems.edge.meter.test.DummyElectricityMeter;
 
-public class FairShareClusterTestComponent extends AbstractComponentTest<FairShareClusterTestComponent, OpenemsComponent> {
+public class FairShareClusterTestComponent
+		extends AbstractComponentTest<FairShareClusterTestComponent, OpenemsComponent> {
 	public FairShareClusterTestComponent(OpenemsComponent controller, OpenemsComponent... components)
 			throws OpenemsException {
 		super(controller);
 	}
-	
+
 	@Override
 	protected FairShareClusterTestComponent self() {
 		return this;

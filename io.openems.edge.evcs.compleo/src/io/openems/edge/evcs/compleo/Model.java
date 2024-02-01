@@ -8,14 +8,13 @@ public enum Model {
 	/**
 	 * With integrated meter.
 	 */
-	WALLBE_PRO(2), // 
+	WALLBE_PRO(2), //
 	/**
 	 * Without meter.
 	 */
 	WALLBE_ECO_20(3); //
 
 	protected final int scaleFactor;
-
 
 	Model(int scaleFactor) {
 		this.scaleFactor = scaleFactor;

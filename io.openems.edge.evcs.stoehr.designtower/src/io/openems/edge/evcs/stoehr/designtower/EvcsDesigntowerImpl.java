@@ -72,33 +72,33 @@ public class EvcsDesigntowerImpl extends AbstractOpenemsModbusComponent
 		if (intValue != null) {
 			// Status A-F corresponds to hexadecimal 0x0A-0x0F
 			switch (intValue) {
-				case 0x0A -> { // A - Device is in status A, no vehicle connected.
+			case 0x0A -> { // A - Device is in status A, no vehicle connected.
+				this.isCharging = false;
+				this.lastEvcsStatus = Status.NOT_READY_FOR_CHARGING;
+				return Status.NOT_READY_FOR_CHARGING;
+			}
+			case 0x0B -> { // B - Device is in status B, vehicle connected, no charging process.
+				if (this.isCharging) {
 					this.isCharging = false;
-					this.lastEvcsStatus = Status.NOT_READY_FOR_CHARGING;
-					return Status.NOT_READY_FOR_CHARGING;
+					this.lastEvcsStatus = Status.CHARGING_FINISHED;
+					return this.lastEvcsStatus;
 				}
-				case 0x0B -> { // B - Device is in status B, vehicle connected, no charging process.
-					if (this.isCharging) {
-						this.isCharging = false;
-						this.lastEvcsStatus = Status.CHARGING_FINISHED;
-						return this.lastEvcsStatus;
-					}
-					if (this.lastEvcsStatus == Status.CHARGING_FINISHED) {
-						return this.lastEvcsStatus;
-					}
-					return Status.READY_FOR_CHARGING;
-				} // C - Device is in status C, charging process can take place.
-				case 0x0C, 0x0D -> { // D - Device is in status D, charging process can take place.
-					this.isCharging = true;
-					this.lastEvcsStatus = Status.CHARGING;
-					return Status.CHARGING;
-				} // E - Device is in status E, error or charging station not ready.
-				case 0x0E, 0x0F -> { // F - Device is in status F, charging station not available for charging
-					// processes.
-					this.isCharging = false;
-					this.lastEvcsStatus = Status.ERROR;
-					return Status.ERROR;
+				if (this.lastEvcsStatus == Status.CHARGING_FINISHED) {
+					return this.lastEvcsStatus;
 				}
+				return Status.READY_FOR_CHARGING;
+			} // C - Device is in status C, charging process can take place.
+			case 0x0C, 0x0D -> { // D - Device is in status D, charging process can take place.
+				this.isCharging = true;
+				this.lastEvcsStatus = Status.CHARGING;
+				return Status.CHARGING;
+			} // E - Device is in status E, error or charging station not ready.
+			case 0x0E, 0x0F -> { // F - Device is in status F, charging station not available for charging
+				// processes.
+				this.isCharging = false;
+				this.lastEvcsStatus = Status.ERROR;
+				return Status.ERROR;
+			}
 			}
 		}
 		this.isCharging = false;
@@ -254,11 +254,11 @@ public class EvcsDesigntowerImpl extends AbstractOpenemsModbusComponent
 			return;
 		}
 		switch (event.getTopic()) {
-			case EdgeEventConstants.TOPIC_CYCLE_AFTER_PROCESS_IMAGE -> {
-				this.updateCommunicationState();
-				this.updatePowerAndEnergy();
-			}
-			case EdgeEventConstants.TOPIC_CYCLE_EXECUTE_WRITE -> this.writeHandler.run();
+		case EdgeEventConstants.TOPIC_CYCLE_AFTER_PROCESS_IMAGE -> {
+			this.updateCommunicationState();
+			this.updatePowerAndEnergy();
+		}
+		case EdgeEventConstants.TOPIC_CYCLE_EXECUTE_WRITE -> this.writeHandler.run();
 		}
 	}
 
@@ -322,10 +322,9 @@ public class EvcsDesigntowerImpl extends AbstractOpenemsModbusComponent
 
 	@Override
 	public boolean applyChargePowerLimit(int power) throws Exception {
-			this.setCurrentFromPower(power);
-			return true;
+		this.setCurrentFromPower(power);
+		return true;
 	}
-
 
 	@Override
 	public EvcsPower getEvcsPower() {

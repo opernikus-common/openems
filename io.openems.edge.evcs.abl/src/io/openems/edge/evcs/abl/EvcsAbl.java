@@ -66,7 +66,7 @@ public interface EvcsAbl extends OpenemsComponent {
 	 */
 	default short getCurrentLimit() {
 		WriteChannel<Short> channel = this.getCurrentLimitChannel();
-		return channel.value().orElse(channel.getNextValue().orElse((short)0));
+		return channel.value().orElse(channel.getNextValue().orElse((short) 0));
 	}
 
 	/**
@@ -78,7 +78,7 @@ public interface EvcsAbl extends OpenemsComponent {
 	 */
 	default void setCurrentLimit(int value) throws OpenemsError.OpenemsNamedException {
 		WriteChannel<Short> channel = this.getCurrentLimitChannel();
-		channel.setNextWriteValue((short)value);
+		channel.setNextWriteValue((short) value);
 	}
 
 	/**
@@ -90,6 +90,6 @@ public interface EvcsAbl extends OpenemsComponent {
 	 */
 	default void _setCurrentLimit(int value) throws OpenemsError.OpenemsNamedException {
 		WriteChannel<Short> channel = this.getCurrentLimitChannel();
-		channel.setNextValue((short)value);
+		channel.setNextValue((short) value);
 	}
 }

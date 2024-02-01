@@ -28,9 +28,9 @@ public @interface Config {
 
 	@AttributeDefinition(name = "Target Power", description = "The targeted power [W] (for all phases). Controller tries to keep the meter around this level. This Limit is applied as sum on all three phases.")
 	int targetPower() default 7000; // W
-	
+
 	@AttributeDefinition(name = "Mean Filter Time", description = "Average power and current is calculated over the given time period in seconds. Values less or equal to 0 are ignored")
-	int meanFilterTime() default 0; //s
+	int meanFilterTime() default 0; // s
 
 	@AttributeDefinition(name = "Phase Imbalance Limiter?", description = "Set to true to make this controller the responsible phase imbalance limiter (typically the controller with the gridmeter is responsible for that)?")
 	boolean isPhaseImbalanceLimiter() default false;
