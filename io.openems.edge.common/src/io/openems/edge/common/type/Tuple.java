@@ -1,4 +1,4 @@
 package io.openems.edge.common.type;
 
-public record Tuple<A, B> (A a, B b) {
+public record Tuple<A, B>(A a, B b) {
 }

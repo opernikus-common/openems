@@ -154,7 +154,7 @@ public class WebsocketServer extends AbstractWebsocketServer<WsData> {
 	 */
 	public SortedMap<ChannelAddress, JsonElement> getCurrentDataFromEdgeCache(String edgeId,
 			Set<ChannelAddress> channels) {
-		record Pair<A, B> (A a, B b) {
+		record Pair<A, B>(A a, B b) {
 		}
 
 		return this.getConnections().stream() //

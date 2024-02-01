@@ -18,7 +18,7 @@ public class EdgeCache {
 	private final ChannelDataCache current = new ChannelDataCache();
 	private final ChannelDataCache aggregated = new ChannelDataCache();
 
-	public static record Pair<A, B> (A a, B b) {
+	public static record Pair<A, B>(A a, B b) {
 
 	}
 
