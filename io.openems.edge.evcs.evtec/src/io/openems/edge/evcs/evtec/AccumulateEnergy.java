@@ -18,7 +18,9 @@ public class AccumulateEnergy {
 	 * in the generic static enum implementation.
 	 */
 	private static enum State {
-		TIMEDATA_QUERY_NOT_STARTED, TIMEDATA_QUERY_IS_RUNNING, CALCULATE_ENERGY_OPERATION;
+		TIMEDATA_QUERY_NOT_STARTED, //
+		TIMEDATA_QUERY_IS_RUNNING, //
+		CALCULATE_ENERGY_OPERATION;
 	}
 
 	/**
@@ -105,7 +107,7 @@ public class AccumulateEnergy {
 	 * @param energySession the session energy
 	 */
 	private void accumulateEnergy(Integer energySession) {
-		if (energySession == 0) {
+		if (energySession == 0 || this.energyBeforeSession == null) {
 			this.energyBeforeSession = this.energyTotal;
 		}
 

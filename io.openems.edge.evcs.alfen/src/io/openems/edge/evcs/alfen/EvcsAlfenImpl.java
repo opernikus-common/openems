@@ -115,6 +115,7 @@ public class EvcsAlfenImpl extends AbstractOpenemsModbusComponent
 		}
 
 		this._setPhaseRotation(config.phaseRotation());
+		this._setPriority(config.priority());
 		this._setFixedMaximumHardwarePower(Evcs.DEFAULT_MAXIMUM_HARDWARE_POWER);
 		this._setFixedMinimumHardwarePower(Evcs.DEFAULT_MINIMUM_HARDWARE_POWER);
 

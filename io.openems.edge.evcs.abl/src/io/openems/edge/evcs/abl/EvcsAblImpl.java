@@ -120,9 +120,9 @@ public class EvcsAblImpl extends AbstractOpenemsModbusComponent
 		var offset = 0x0100;
 		int plug = this.config.plug().plug;
 		/*
-		 * The ABL EMH4 does not support reading Multiple Registers in one task
-		 * with "gaps" in between. Therefore, this modbus protocol consists of many
-		 * small Tasks to compensate.
+		 * The ABL EMH4 does not support reading Multiple Registers in one task with
+		 * "gaps" in between. Therefore, this modbus protocol consists of many small
+		 * Tasks to compensate.
 		 */
 		var modbusProtocol = new ModbusProtocol(this,
 				new FC3ReadRegistersTask(12289 + plug * offset, Priority.HIGH,
@@ -181,7 +181,7 @@ public class EvcsAblImpl extends AbstractOpenemsModbusComponent
 		 * Limits the charging value because Abl knows only values between 6 and 32
 		 */
 		current = Math.min(current, 32);
-		
+
 		if (current < 6) {
 			current = 0;
 		}

@@ -20,66 +20,66 @@ import io.openems.edge.common.timer.Timer;
 
 @Designate(ocd = Config.class, factory = false)
 @Component(//
-	name = TimerManager.SINGLETON_SERVICE_PID, //
-	immediate = true, //
-	property = { //
-		"enabled=true" //
-	})
+		name = TimerManager.SINGLETON_SERVICE_PID, //
+		immediate = true, //
+		property = { //
+				"enabled=true" //
+		})
 @EventTopics({ //
-	EdgeEventConstants.TOPIC_CYCLE_AFTER_PROCESS_IMAGE//
+		EdgeEventConstants.TOPIC_CYCLE_AFTER_PROCESS_IMAGE//
 })
 public class TimerManagerImpl extends AbstractOpenemsComponent implements TimerManager, EventHandler, OpenemsComponent {
 
-    private int coreCyclesCount = 0;
+	private int coreCyclesCount = 0;
 
-    @Reference
-    private ConfigurationAdmin cm;
+	@Reference
+	private ConfigurationAdmin cm;
 
-    @Reference
-    protected ComponentManager componentManager;
+	@Reference
+	protected ComponentManager componentManager;
 
-    public TimerManagerImpl() {
-	super(//
-		OpenemsComponent.ChannelId.values() //
-	);
-    }
-
-    @Activate
-    private void activate(ComponentContext context, Config config) {
-	super.activate(context, SINGLETON_COMPONENT_ID, SINGLETON_SERVICE_PID, true);
-	if (OpenemsComponent.validateSingleton(this.cm, SINGLETON_SERVICE_PID, SINGLETON_COMPONENT_ID)) {
-	    return;
+	public TimerManagerImpl() {
+		super(//
+				OpenemsComponent.ChannelId.values() //
+		);
 	}
-    }
 
-    @Override
-    @Deactivate
-    protected void deactivate() {
-	super.deactivate();
-    }
+	@Activate
+	private void activate(ComponentContext context, Config config) {
+		super.activate(context, SINGLETON_COMPONENT_ID, SINGLETON_SERVICE_PID, true);
+		if (OpenemsComponent.validateSingleton(this.cm, SINGLETON_SERVICE_PID, SINGLETON_COMPONENT_ID)) {
+			return;
+		}
+	}
 
-    @Override
-    public void handleEvent(Event event) {
-	this.coreCyclesCount++;
-    }
+	@Override
+	@Deactivate
+	protected void deactivate() {
+		super.deactivate();
+	}
 
-    protected int getCoreCyclesCount() {
-	return this.coreCyclesCount;
-    }
+	@Override
+	public void handleEvent(Event event) {
+		this.coreCyclesCount++;
+	}
 
-    @Override
-    public Timer getTimerByCount(Channel<Integer> channel, int countCheckCalls, int startDelayInSecs) {
-	return new TimerByCount(this, channel, countCheckCalls, startDelayInSecs);
-    }
+	protected int getCoreCyclesCount() {
+		return this.coreCyclesCount;
+	}
 
-    @Override
-    public Timer getTimerByCoreCycles(Channel<Integer> channel, int count, int startDelayInSecs) {
-	return new TimerByCoreCycles(this, channel, count, startDelayInSecs);
-    }
+	@Override
+	public Timer getTimerByCount(Channel<Integer> channel, int countCheckCalls, int startDelayInSecs) {
+		return new TimerByCount(this, channel, countCheckCalls, startDelayInSecs);
+	}
 
-    @Override
-    public Timer getTimerByTime(Channel<Integer> channel, int seconds, int startDelayInSecs) {
-	return new TimerByTime(this, this.componentManager.getClock(), channel, seconds, startDelayInSecs);
-    }
+	@Override
+	public Timer getTimerByCoreCycles(Channel<Integer> channel, int count, int startDelayInSecs) {
+		return new TimerByCoreCycles(this, channel, count, startDelayInSecs);
+	}
+
+	@Override
+	public Timer getTimerByTime(Channel<Integer> channel, int seconds, int startDelayInSecs) {
+		return new TimerByTime(this, this.componentManager.getClock(), channel, seconds, startDelayInSecs);
+	}
 
 }

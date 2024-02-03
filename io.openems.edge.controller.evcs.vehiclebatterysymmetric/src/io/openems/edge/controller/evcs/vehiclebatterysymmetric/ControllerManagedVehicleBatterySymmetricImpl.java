@@ -98,17 +98,13 @@ public class ControllerManagedVehicleBatterySymmetricImpl extends AbstractOpenem
 	}
 
 	private void addListener() {
-
-		this.evcs.getActivePowerChannel().onUpdate(newValueOpt -> {
-			if (newValueOpt.isDefined() && newValueOpt.get().intValue() < 0) {
-				this._setActivePower(-newValueOpt.get());
+		this.evcs.getActivePowerChannel().onUpdate(value -> {
+			if (value.isDefined() && value.get().intValue() < 0) {
+				this._setActivePower(-value.get());
 			} else {
-				this._setActivePower(null);
+				this._setActivePower(0);
 			}
 		});
-
-		// TODO voltage, Current, ActiveConsEnergy
-
 	}
 
 	@Override
@@ -122,6 +118,7 @@ public class ControllerManagedVehicleBatterySymmetricImpl extends AbstractOpenem
 
 		var chargingAllowed = this.ess.getSoc().getOrError() > this.config.minEssSoc()
 				&& this.evcs.getSoc().orElse(0) < this.config.maxVehicleSoc()
+				// ESS should not discharge more than 2000W without the EVCS
 				&& this.ess.getActivePower().getOrError() - this.evcs.getChargePower().orElse(4200) < 2000;
 
 		if (chargingAllowed == this.allowCharging) {
@@ -145,11 +142,6 @@ public class ControllerManagedVehicleBatterySymmetricImpl extends AbstractOpenem
 			this.dischargingCounter.reset();
 		}
 
-		this.channel(ControllerManagedVehicleBatterySymmetric.ChannelId.CHARGING_BLOCKED)
-				.setNextValue(!this.allowCharging);
-		this.channel(ControllerManagedVehicleBatterySymmetric.ChannelId.DISCHARGING_BLOCKED)
-				.setNextValue(!this.allowDischarging);
-
 		Integer chargePower = 0;
 
 		this._setMode(this.config.mode());
@@ -158,37 +150,37 @@ public class ControllerManagedVehicleBatterySymmetricImpl extends AbstractOpenem
 		// besten mit 0-durchgang der Leistung am Auto
 
 		switch (this.config.mode()) {
-		case OFF:
+		case OFF -> {
 			this.allowCharging = false;
 			this.allowDischarging = false;
 			this.evcs._setBatteryMode(false);
-			break;
-		case CHARGE:
+		}
+		case CHARGE -> {
 			this.allowDischarging = false;
 			chargePower = this.config.minChargePower();
 			this.evcs._setBatteryMode(false);
-			break;
-		case DISCHARGE:
+		}
+		case DISCHARGE -> {
 			this.allowCharging = false;
 			chargePower = -this.config.dischargePower(); // negative power for discharge
 			this.evcs._setBatteryMode(true);
-			break;
-		case AUTOMATIC:
+		}
+		case AUTOMATIC -> {
 			chargePower = this.calculateChargePower();
 			if (chargePower < 0) {
 				this.evcs._setBatteryMode(true);
 			} else {
 				this.evcs._setBatteryMode(false);
 			}
-			break;
 		}
-
+		}
+		this.updateInfoStates();
 		this.apply(chargePower);
 	}
 
 	/**
 	 * Calculates the requested charge power.
-	 * 
+	 *
 	 * @return negative values for discharge, positive values for charge
 	 */
 	private Integer calculateChargePower() {
@@ -233,6 +225,11 @@ public class ControllerManagedVehicleBatterySymmetricImpl extends AbstractOpenem
 		this.evcs.setActivePowerWriteValue(0);
 		this.evcs.setChargePowerLimit(0);
 		this.getDebugReqActivePowerChannel().setNextValue(0);
+	}
+
+	private void updateInfoStates() {
+		this._setChargingBlocked(this.config.mode() == Mode.CHARGE && !this.allowCharging);
+		this._setChargingBlocked(this.config.mode() == Mode.DISCHARGE && !this.allowDischarging);
 	}
 
 	@Override

@@ -8,6 +8,7 @@ import io.openems.common.types.OpenemsType;
 import io.openems.edge.common.channel.Doc;
 import io.openems.edge.common.channel.EnumReadChannel;
 import io.openems.edge.common.channel.IntegerReadChannel;
+import io.openems.edge.common.channel.StateChannel;
 import io.openems.edge.common.channel.value.Value;
 import io.openems.edge.common.component.OpenemsComponent;
 import io.openems.edge.controller.api.Controller;
@@ -18,7 +19,7 @@ public interface ControllerManagedVehicleBatterySymmetric extends Controller, Op
 
 		/**
 		 * The mode of this controller.
-		 * 
+		 *
 		 * <ul>
 		 * <li>Read-only
 		 * <li>Type: Mode
@@ -28,12 +29,15 @@ public interface ControllerManagedVehicleBatterySymmetric extends Controller, Op
 				.persistencePriority(PersistencePriority.HIGH)), //
 
 		DEBUG_REQ_ACTIVE_POWER(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.WATT)), //
+				.unit(Unit.WATT) //
+				.persistencePriority(PersistencePriority.HIGH)), //
 		DISCHARGING_BLOCKED(Doc.of(Level.INFO) //
 				.accessMode(AccessMode.READ_ONLY) //
+				.persistencePriority(PersistencePriority.HIGH) //
 				.text("Entladen verzögert")), //
 		CHARGING_BLOCKED(Doc.of(Level.INFO) //
 				.accessMode(AccessMode.READ_ONLY) //
+				.persistencePriority(PersistencePriority.HIGH) //
 				.text("Laden verzögert")), //
 		CHARGING_CYCLE_COUNTER(Doc.of(OpenemsType.INTEGER) //
 				.unit(Unit.NONE)), //
@@ -88,6 +92,44 @@ public interface ControllerManagedVehicleBatterySymmetric extends Controller, Op
 	 */
 	public default void _setMode(Mode value) {
 		this.getModeChannel().setNextValue(value);
+	}
+
+	/**
+	 * Gets the Channel for {@link ChannelId#CHARGING_BLOCKED}.
+	 *
+	 * @return the channel
+	 */
+	public default StateChannel getChargingBlockedChannel() {
+		return this.channel(ChannelId.CHARGING_BLOCKED);
+	}
+
+	/**
+	 * Internal method to set the 'nextValue' on {@link ChannelId#CHARGING_BLOCKED}
+	 * Channel.
+	 *
+	 * @param value the next value
+	 */
+	public default void _setChargingBlocked(boolean value) {
+		this.getChargingBlockedChannel().setNextValue(value);
+	}
+
+	/**
+	 * Gets the Channel for {@link ChannelId#DISCHARGING_BLOCKED}.
+	 *
+	 * @return the channel
+	 */
+	public default StateChannel getDischargingBlockedChannel() {
+		return this.channel(ChannelId.DISCHARGING_BLOCKED);
+	}
+
+	/**
+	 * Internal method to set the 'nextValue' on
+	 * {@link ChannelId#DISCHARGING_BLOCKED} Channel.
+	 *
+	 * @param value the next value
+	 */
+	public default void _setDischargingBlocked(boolean value) {
+		this.getDischargingBlockedChannel().setNextValue(value);
 	}
 
 }

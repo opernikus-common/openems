@@ -1,0 +1,20 @@
+= Stöhr Designtower
+
+Implementation of a Stöhr Designtower charging station.
+
+== Application Notes
+
+=== Dependencies
+* Login to website of charging station
+* Enable Modbus TCP Server on webpage/Lastmanagement/Modbus 		
+* The modbus protocol of the charging station has to be set to "Bender" via website. +
+* Disable dynamic load management
+
+=== Maturity
+Production State: *-pilot projects-* 
+
+=== Open Issues:
+* The charging station can read the maximum EV current. This could be used to control the charging station
+more efficiently.
+
+https://github.com/OpenEMS/openems/tree/develop/io.openems.edge.evcs.stoehr.designtower[Source Code icon:github[]]

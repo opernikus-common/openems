@@ -1,5 +1,6 @@
 package io.openems.edge.evcs.alfen;
 
+import io.openems.edge.evcs.api.Priority;
 import org.junit.Test;
 
 import io.openems.edge.bridge.modbus.test.DummyModbusBridge;
@@ -26,6 +27,7 @@ public class EvcsAlfenImplTest {
 						.setMinHwPower(Evcs.DEFAULT_MINIMUM_HARDWARE_POWER) //
 						.setMaxHwPower(Evcs.DEFAULT_MAXIMUM_HARDWARE_POWER) //
 						.setPhaseRotation(PhaseRotation.L1_L2_L3) //
+						.setPriority(Priority.LOW) //
 						.setDebugMode(false) //
 						.build()) //
 				.next(new TestCase());

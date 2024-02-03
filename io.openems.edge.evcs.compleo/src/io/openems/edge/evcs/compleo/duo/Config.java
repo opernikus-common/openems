@@ -26,7 +26,7 @@ import io.openems.edge.evcs.api.PhaseRotation;
 	int modbusUnitId() default 255;
 
 	@AttributeDefinition(name = "Model", description = "What model is the charging station?")
-    Plug plug() default Plug.PLUG_1;
+	Plug plug() default Plug.PLUG_1;
 
 	@AttributeDefinition(name = "Minimum current", description = "Minimum current of charger in mA.")
 	int minHwCurrent() default 6000;
@@ -39,7 +39,6 @@ import io.openems.edge.evcs.api.PhaseRotation;
 
 	@AttributeDefinition(name = "Debug Mode", description = "Activates the debug mode")
 	boolean debugMode() default false;
-
 
 	String webconsole_configurationFactory_nameHint() default "EVCS Compleo Eco 20 [{id}]";
 

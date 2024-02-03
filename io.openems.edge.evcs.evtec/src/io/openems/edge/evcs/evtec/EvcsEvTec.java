@@ -18,74 +18,134 @@ public interface EvcsEvTec extends OpenemsComponent {
 
 	public enum ChannelId implements io.openems.edge.common.channel.ChannelId {
 		STATION_STATE(Doc.of(StationState.values()) //
-				.persistencePriority(PersistencePriority.HIGH).text("Station State")), //
+				.persistencePriority(PersistencePriority.HIGH) //
+				.text("Station State")), //
 		CHARGING_STATE(Doc.of(ChargingState.values()) //
-				.persistencePriority(PersistencePriority.HIGH).text("Charge state")), //
-		VOLTAGE(Doc.of(OpenemsType.FLOAT).unit(Unit.VOLT) //
-				.persistencePriority(PersistencePriority.LOW).text("Voltage")), //
-		CURRENT(Doc.of(OpenemsType.FLOAT).unit(Unit.AMPERE) //
-				.persistencePriority(PersistencePriority.LOW).text("Current")),
-		POWER_UINT(Doc.of(OpenemsType.INTEGER).unit(Unit.WATT) //
-				.persistencePriority(PersistencePriority.LOW).text("Power UInt")), //
-		CONNECTOR_TYPE(Doc.of(ConnectorType.values()) //
-				.persistencePriority(PersistencePriority.VERY_LOW).text("Connector Type")), //
-		CHARGE_TIME(Doc.of(OpenemsType.FLOAT).unit(Unit.SECONDS) //
-				.persistencePriority(PersistencePriority.LOW).text("Charge time")), //
-		CHARGED_ENERGY(Doc.of(OpenemsType.FLOAT).unit(Unit.WATT_HOURS) //
-				.persistencePriority(PersistencePriority.MEDIUM).text("Charged energy")), //
-		DISCHARGED_ENERGY(Doc.of(OpenemsType.FLOAT).unit(Unit.WATT_HOURS) //
-				.persistencePriority(PersistencePriority.MEDIUM).text("Discharged energy")), //
-		L_LIMIT_POTENTIAL(Doc.of(OpenemsType.FLOAT).unit(Unit.WATT) //
-				.persistencePriority(PersistencePriority.LOW).text("Lower limit potential")), //
-		L_LIMIT_POTENTIAL_L1(Doc.of(OpenemsType.FLOAT).unit(Unit.WATT) //
-				.persistencePriority(PersistencePriority.LOW).text("Lower limit potential L1")), //
-		L_LIMIT_POTENTIAL_L2(Doc.of(OpenemsType.FLOAT).unit(Unit.WATT) //
-				.persistencePriority(PersistencePriority.LOW).text("Lower limit potential L2")), //
-		L_LIMIT_POTENTIAL_L3(Doc.of(OpenemsType.FLOAT).unit(Unit.WATT) //
-				.persistencePriority(PersistencePriority.LOW).text("Lower limit potential L3")), //
-		U_LIMIT_REQUEST(Doc.of(OpenemsType.FLOAT).unit(Unit.WATT) //
-				.persistencePriority(PersistencePriority.LOW).text("Upper limit reqeust")), //
-		U_LIMIT_REQUEST_L1(Doc.of(OpenemsType.FLOAT).unit(Unit.WATT) //
-				.persistencePriority(PersistencePriority.LOW).text("Upper limit reqeust L1")), //
-		U_LIMIT_REQUEST_L2(Doc.of(OpenemsType.FLOAT).unit(Unit.WATT) //
-				.persistencePriority(PersistencePriority.LOW).text("Upper limit reqeust L2")), //
-		U_LIMIT_REQUEST_L3(Doc.of(OpenemsType.FLOAT).unit(Unit.WATT) //
-				.persistencePriority(PersistencePriority.LOW).text("Upper limit reqeust L3")), //
-		L_LIMIT_REQUEST(Doc.of(OpenemsType.FLOAT).unit(Unit.WATT) //
-				.persistencePriority(PersistencePriority.LOW).text("Lower limit reqeust")), //
-		L_LIMIT_REQUEST_L1(Doc.of(OpenemsType.FLOAT).unit(Unit.WATT) //
-				.persistencePriority(PersistencePriority.LOW).text("Lower limit reqeust L1")), //
-		L_LIMIT_REQUEST_L2(Doc.of(OpenemsType.FLOAT).unit(Unit.WATT) //
-				.persistencePriority(PersistencePriority.LOW).text("Lower limit reqeust L2")), //
-		L_LIMIT_REQUEST_L3(Doc.of(OpenemsType.FLOAT).unit(Unit.WATT) //
-				.persistencePriority(PersistencePriority.LOW).text("Lower limit reqeust L3")), //
-		PRESENT_CONSUMPTION(Doc.of(OpenemsType.FLOAT).unit(Unit.WATT) //
-				.persistencePriority(PersistencePriority.LOW).text("Present consumption total")), //
-		PRESENT_CONSUMPTION_L1(Doc.of(OpenemsType.FLOAT).unit(Unit.WATT) //
-				.persistencePriority(PersistencePriority.LOW).text("Present consumption L1")), //
-		PRESENT_CONSUMPTION_L2(Doc.of(OpenemsType.FLOAT).unit(Unit.WATT) //
-				.persistencePriority(PersistencePriority.LOW).text("Present consumption L2")), //
-		PRESENT_CONSUMPTION_L3(Doc.of(OpenemsType.FLOAT).unit(Unit.WATT) //
-				.persistencePriority(PersistencePriority.LOW).text("Present consumption L3")), //
-		ERROR(Doc.of(Level.FAULT)), TOTAL_BATTERY_CAPACITY(Doc.of(OpenemsType.FLOAT).unit(Unit.WATT_HOURS) //
-				.persistencePriority(PersistencePriority.LOW).text("Capacity of the battery")), //
-		REMAINING_BATTERY_CAPACITY(Doc.of(OpenemsType.FLOAT).unit(Unit.WATT_HOURS) //
-				.persistencePriority(PersistencePriority.LOW).text("Remaining capacity of the battery")), //
-		MINIMAL_BATTERY_CAPACITY(Doc.of(OpenemsType.FLOAT).unit(Unit.WATT_HOURS) //
-				.persistencePriority(PersistencePriority.LOW).text("Minimal capacity of the battery")), //
-		BULK_CHARGE_CAPACITY(Doc.of(OpenemsType.FLOAT).unit(Unit.WATT_HOURS) //
-				.persistencePriority(PersistencePriority.LOW).text("Bulk charge capacity")), //
-		RFID(Doc.of(OpenemsType.STRING) //
-				.persistencePriority(PersistencePriority.VERY_LOW).text("RFID")), //
-		EVCC_ID(Doc.of(OpenemsType.STRING) //
-				.persistencePriority(PersistencePriority.VERY_LOW).text("EVCC ID")), //
-		SUSPEND_MODE(Doc.of(OpenemsType.BOOLEAN) //
+				.persistencePriority(PersistencePriority.HIGH) //
+				.text("Charge state")), //
+		VOLTAGE(Doc.of(OpenemsType.FLOAT) //
+				.unit(Unit.VOLT) //
 				.persistencePriority(PersistencePriority.LOW) //
+				.text("Voltage")), //
+		POWER_UINT(Doc.of(OpenemsType.INTEGER) //
+				.unit(Unit.WATT) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Power UInt")), //
+		CONNECTOR_TYPE(Doc.of(ConnectorType.values()) //
+				.persistencePriority(PersistencePriority.VERY_LOW) //
+				.text("Connector Type")), //
+		CHARGE_TIME(Doc.of(OpenemsType.FLOAT) //
+				.unit(Unit.SECONDS) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Charge time")), //
+		CHARGED_ENERGY(Doc.of(OpenemsType.FLOAT) //
+				.unit(Unit.WATT_HOURS) //
+				.persistencePriority(PersistencePriority.HIGH) //
+				.text("Charged energy")), //
+		DISCHARGED_ENERGY(Doc.of(OpenemsType.FLOAT) //
+				.unit(Unit.WATT_HOURS) //
+				.persistencePriority(PersistencePriority.HIGH) //
+				.text("Discharged energy")), //
+		L_LIMIT_POTENTIAL(Doc.of(OpenemsType.FLOAT) //
+				.unit(Unit.WATT) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Lower limit potential")), //
+		L_LIMIT_POTENTIAL_L1(Doc.of(OpenemsType.FLOAT) //
+				.unit(Unit.WATT) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Lower limit potential L1")), //
+		L_LIMIT_POTENTIAL_L2(Doc.of(OpenemsType.FLOAT) //
+				.unit(Unit.WATT) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Lower limit potential L2")), //
+		L_LIMIT_POTENTIAL_L3(Doc.of(OpenemsType.FLOAT) //
+				.unit(Unit.WATT) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Lower limit potential L3")), //
+		U_LIMIT_REQUEST(Doc.of(OpenemsType.FLOAT) //
+				.unit(Unit.WATT) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Upper limit reqeust")), //
+		U_LIMIT_REQUEST_L1(Doc.of(OpenemsType.FLOAT) //
+				.unit(Unit.WATT) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Upper limit reqeust L1")), //
+		U_LIMIT_REQUEST_L2(Doc.of(OpenemsType.FLOAT) //
+				.unit(Unit.WATT) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Upper limit reqeust L2")), //
+		U_LIMIT_REQUEST_L3(Doc.of(OpenemsType.FLOAT) //
+				.unit(Unit.WATT) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Upper limit reqeust L3")), //
+		L_LIMIT_REQUEST(Doc.of(OpenemsType.FLOAT) //
+				.unit(Unit.WATT) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Lower limit reqeust")), //
+		L_LIMIT_REQUEST_L1(Doc.of(OpenemsType.FLOAT) //
+				.unit(Unit.WATT) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Lower limit reqeust L1")), //
+		L_LIMIT_REQUEST_L2(Doc.of(OpenemsType.FLOAT) //
+				.unit(Unit.WATT) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Lower limit reqeust L2")), //
+		L_LIMIT_REQUEST_L3(Doc.of(OpenemsType.FLOAT) //
+				.unit(Unit.WATT) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Lower limit reqeust L3")), //
+		PRESENT_CONSUMPTION(Doc.of(OpenemsType.FLOAT) //
+				.unit(Unit.WATT) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Present consumption total")), //
+		PRESENT_CONSUMPTION_L1(Doc.of(OpenemsType.FLOAT) //
+				.unit(Unit.WATT) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Present consumption L1")), //
+		PRESENT_CONSUMPTION_L2(Doc.of(OpenemsType.FLOAT) //
+				.unit(Unit.WATT) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Present consumption L2")), //
+		PRESENT_CONSUMPTION_L3(Doc.of(OpenemsType.FLOAT) //
+				.unit(Unit.WATT) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Present consumption L3")), //
+		ERROR(Doc.of(Level.FAULT)//
+				.persistencePriority(PersistencePriority.HIGH)), //
+		TOTAL_BATTERY_CAPACITY(Doc.of(OpenemsType.FLOAT) //
+				.unit(Unit.WATT_HOURS) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Capacity of the battery")), //
+		REMAINING_BATTERY_CAPACITY(Doc.of(OpenemsType.FLOAT) //
+				.unit(Unit.WATT_HOURS) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Remaining capacity of the battery")), //
+		MINIMAL_BATTERY_CAPACITY(Doc.of(OpenemsType.FLOAT) //
+				.unit(Unit.WATT_HOURS) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Minimal capacity of the battery")), //
+		BULK_CHARGE_CAPACITY(Doc.of(OpenemsType.FLOAT) //
+				.unit(Unit.WATT_HOURS) //
+				.persistencePriority(PersistencePriority.LOW) //
+				.text("Bulk charge capacity")), //
+		RFID(Doc.of(OpenemsType.STRING) //
+				.persistencePriority(PersistencePriority.VERY_LOW) //
+				.text("RFID")), //
+		EVCC_ID(Doc.of(OpenemsType.STRING) //
+				.persistencePriority(PersistencePriority.VERY_LOW) //
+				.text("EVCC ID")), //
+		SUSPEND_MODE(Doc.of(OpenemsType.BOOLEAN) //
+				.persistencePriority(PersistencePriority.HIGH) //
 				.accessMode(AccessMode.READ_WRITE) //
 				.text("true if charging pause")), //
-		INPUT_POWER(Doc.of(OpenemsType.INTEGER).unit(Unit.WATT) //
+		DEBUG_INPUT_POWER(Doc.of(OpenemsType.INTEGER) //
+				.unit(Unit.WATT) //
+				.persistencePriority(PersistencePriority.HIGH)),
+		INPUT_POWER(Doc.of(OpenemsType.INTEGER) //
+				.unit(Unit.WATT) //
 				.persistencePriority(PersistencePriority.HIGH) //
-				.accessMode(AccessMode.READ_WRITE).text("input power")), //
+				.accessMode(AccessMode.READ_WRITE).text("input power")
+				.onChannelSetNextWriteMirrorToDebugChannel(DEBUG_INPUT_POWER)), //
 
 		/**
 		 * Maximum Discharge Power defined by software.
@@ -102,7 +162,7 @@ public interface EvcsEvTec extends OpenemsComponent {
 				.accessMode(AccessMode.READ_ONLY) //
 				.persistencePriority(PersistencePriority.HIGH)), //
 		COULD_NOT_READ_CHARGING_STATE(Doc.of(Level.WARNING) //
-				.text("Could not read charging state."))
+				.text("Could not read charging state.")) //
 
 		;
 
@@ -178,6 +238,10 @@ public interface EvcsEvTec extends OpenemsComponent {
 
 	public default BooleanWriteChannel getSuspendModeChannel() {
 		return this.channel(ChannelId.SUSPEND_MODE);
+	}
+
+	public default void setSuspendMode(boolean value) throws OpenemsNamedException {
+		this.getSuspendModeChannel().setNextWriteValue(value);
 	}
 
 }

@@ -16,14 +16,14 @@ public class CompleoDuoReadHandler {
 	}
 
 	private void setStatus() {
-		//The Compleo DUO does not change the state if there is a car connected or not. To ensure functionality,
-		//state 1 (0b00000001) state will be READY_FOR_CHARGING.
+		// The Compleo DUO does not change the state if there is a car connected or not.
+		// To ensure functionality,
+		// state 1 (0b00000001) state will be READY_FOR_CHARGING.
 		switch (this.parent.getChargePointState().orElse(-1)) {
-			case (1) -> this.parent._setStatus(Status.READY_FOR_CHARGING);
-			case (2),(4) -> this.parent._setStatus(Status.CHARGING);
-			case (16),(32) ->
-					this.parent._setStatus(Status.UNDEFINED);
-			default -> this.parent._setStatus(Status.ERROR);
+		case (1) -> this.parent._setStatus(Status.READY_FOR_CHARGING);
+		case (2), (4) -> this.parent._setStatus(Status.CHARGING);
+		case (16), (32) -> this.parent._setStatus(Status.UNDEFINED);
+		default -> this.parent._setStatus(Status.ERROR);
 		}
 	}
 

@@ -31,7 +31,6 @@ public interface EvcsWebastoNext extends OpenemsComponent {
 
 		EVSE_ERROR_CODE(Doc.of(EvseErrorCode.values())), //
 
-
 		POWER_L1(Doc.of(OpenemsType.INTEGER) //
 				.unit(Unit.WATT)), //
 

@@ -1,0 +1,19 @@
+Bundle-Name: Edge EVCS Cluster Chargemanagement
+Bundle-License: https://opensource.org/licenses/EPL-2.0
+Bundle-Vendor: opernikus GmbH
+Bundle-Version: 1.0.0.${tstamp}
+
+-buildpath: \
+	${buildpath},\
+	com.ghgande.j2mod,\
+	io.openems.common,\
+	io.openems.edge.common,\
+	io.openems.edge.controller.api,\
+	io.openems.edge.controller.api.common;version=latest,\
+	io.openems.edge.core,\
+	io.openems.edge.evcs.api,\
+	io.openems.edge.io.api;version=latest,\
+	io.openems.edge.meter.api
+
+-testpath: \
+	${testpath}

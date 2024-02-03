@@ -1,5 +1,6 @@
 package io.openems.edge.evcs.alfen;
 
+import io.openems.edge.evcs.api.Priority;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
@@ -37,6 +38,9 @@ import io.openems.edge.evcs.api.PhaseRotation;
 
 	@AttributeDefinition(name = "Phase rotation", description = "The way in which the phases are physically swapped")
 	PhaseRotation phaseRotation() default PhaseRotation.L1_L2_L3;
+
+	@AttributeDefinition(name = "Charge Priority", description = "Priority in comparison to other chargepoints.")
+	Priority priority() default Priority.LOW;
 
 	@AttributeDefinition(name = "Debug Mode", description = "Activates the debug mode")
 	boolean debugMode() default false;

@@ -759,7 +759,8 @@ public class BatteryFeneconHomeImpl extends AbstractOpenemsModbusComponent imple
 										new UnsignedDoublewordElement(towerOffset + 51),
 										new ElementToChannelConverter(value -> {
 											Integer intValue = TypeUtils.getAsType(OpenemsType.INTEGER, value);
-											return buildSerialNumber(this.getBatteryHardwareType().serialNrPrefixBms, intValue);
+											return buildSerialNumber(this.getBatteryHardwareType().serialNrPrefixBms,
+													intValue);
 										}))));
 			}
 
@@ -851,7 +852,8 @@ public class BatteryFeneconHomeImpl extends AbstractOpenemsModbusComponent imple
 									m(channelId, new UnsignedDoublewordElement(moduleOffset + module * 100 + 83),
 											new ElementToChannelConverter(value -> {
 												Integer intValue = TypeUtils.getAsType(OpenemsType.INTEGER, value);
-												return buildSerialNumber(this.getBatteryHardwareType().serialNrPrefixModule, intValue);
+												return buildSerialNumber(
+														this.getBatteryHardwareType().serialNrPrefixModule, intValue);
 											}))));
 				}
 			}

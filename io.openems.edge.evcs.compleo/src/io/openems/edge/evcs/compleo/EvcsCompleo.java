@@ -62,14 +62,14 @@ public interface EvcsCompleo extends OpenemsComponent {
 				.persistencePriority(PersistencePriority.LOW) //
 				.text("Max current on L3")),
 
-		/** 
+		/**
 		 * Read back charging current from chargepoint.
 		 */
 		SET_CHARGING_CURRENT(Doc.of(OpenemsType.INTEGER) //
 				.unit(Unit.MILLIAMPERE) //
 				.persistencePriority(PersistencePriority.HIGH) //
 				.text("current")),
-		/** 
+		/**
 		 * Write charging current request to chargepoint.
 		 */
 		DEFAULT_CHARGING_CURRENT(Doc.of(OpenemsType.INTEGER) //
@@ -93,8 +93,7 @@ public interface EvcsCompleo extends OpenemsComponent {
 				.accessMode(AccessMode.READ_WRITE) //
 				.onChannelSetNextWriteMirrorToDebugChannel(ChannelId.DEBUG_MODIFY_CHARGING_STATION_AVAILABILTY)), //
 		DEBUG_ENABLE_CHARGING(new BooleanDoc() //
-				.unit(Unit.ON_OFF)
-				.persistencePriority(PersistencePriority.MEDIUM)), //
+				.unit(Unit.ON_OFF).persistencePriority(PersistencePriority.MEDIUM)), //
 		ENABLE_CHARGING(new BooleanDoc() //
 				.unit(Unit.ON_OFF) //
 				.accessMode(AccessMode.READ_WRITE) //
@@ -217,7 +216,7 @@ public interface EvcsCompleo extends OpenemsComponent {
 	public default EnumReadChannel getPlugChannel() {
 		return this.channel(ChannelId.PLUG);
 	}
-	
+
 	/**
 	 * Internal method to set the 'nextValue' on {@link ChannelId#PLUG} Channel.
 	 *

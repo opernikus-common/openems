@@ -24,14 +24,11 @@ public interface EvTecCore extends OpenemsComponent {
 				.persistencePriority(PersistencePriority.VERY_LOW)), //
 		CHARGER_MODEL(Doc.of(OpenemsType.STRING) //
 				.persistencePriority(PersistencePriority.VERY_LOW)), //
-		COM_TIMEOUT_ENABLED(Doc.of(OpenemsType.BOOLEAN).accessMode(AccessMode.READ_WRITE)
-				//
+		COM_TIMEOUT_ENABLED(Doc.of(OpenemsType.BOOLEAN).accessMode(AccessMode.READ_WRITE) //
 				.persistencePriority(PersistencePriority.HIGH)), //
-		COM_TIMEOUT_VALUE(Doc.of(OpenemsType.INTEGER).unit(Unit.SECONDS).accessMode(AccessMode.READ_WRITE)
-				//
+		COM_TIMEOUT_VALUE(Doc.of(OpenemsType.INTEGER).unit(Unit.SECONDS).accessMode(AccessMode.READ_WRITE) //
 				.persistencePriority(PersistencePriority.HIGH)), //
-		FALLBACK_POWER(Doc.of(OpenemsType.INTEGER).unit(Unit.WATT).accessMode(AccessMode.READ_WRITE)
-				//
+		FALLBACK_POWER(Doc.of(OpenemsType.INTEGER).unit(Unit.WATT).accessMode(AccessMode.READ_WRITE) //
 				.persistencePriority(PersistencePriority.HIGH)) //
 		;
 
