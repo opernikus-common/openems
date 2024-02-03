@@ -189,7 +189,7 @@ public interface Channel<T> {
 	 * @see #onUpdate(Consumer)
 	 * @param callback the callback {@link Consumer}
 	 */
-	public void removeOnUpdateCallback(Consumer<Value<?>> callback);
+	public void removeOnUpdateCallback(Consumer<?> callback);
 
 	/**
 	 * Add an onChange callback. It is called, after a new, different active value

@@ -218,7 +218,7 @@ public abstract class AbstractReadChannel<D extends AbstractDoc<T>, T> implement
 	}
 
 	@Override
-	public void removeOnUpdateCallback(Consumer<Value<?>> callback) {
+	public void removeOnUpdateCallback(Consumer<?> callback) {
 		this.onUpdateCallbacks.remove(callback);
 	}
 

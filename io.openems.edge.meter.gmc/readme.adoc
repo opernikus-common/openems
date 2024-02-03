@@ -1,0 +1,25 @@
+= GMC EM2389
+
+The GMC EM2389 three phase bidirectional LAN Meter for 1A coils.
+
+Implemented Natures:
+- ElectricityMeter
+
+== Compatibility 
+* GMC EM2389
+
+== Application Notes
+
+Response from GMC: If the coil ratio is 50 (e.g. 250A primary, 5A secondary) the meter
+provides data with a resolution of 100W.
+
+If the coil ratio is > 100 (e.g. 250A primary, 1A secondary) the meter
+provides data with a resolution of 1000W. In this case, set `config.alternativePowerCalculation() = true`, and the power will be calculated
+from voltage and current to obtain a resolution of 230W.
+
+
+=== Code Quality
+Production State: *-pilot projects-* 
+
+
+https://github.com/OpenEMS/openems/tree/develop/io.openems.edge.meter.gmc[Source Code icon:github[]]
