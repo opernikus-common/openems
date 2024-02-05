@@ -17,6 +17,15 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 		private Builder() {
 		}
 
+		public MyConfig build() {
+			return new MyConfig(this);
+		}
+
+		public Builder setalternativePowerCalculation(boolean alternative) {
+			this.alternativePowerCalculation = alternative;
+			return this;
+		}
+
 		public Builder setId(String id) {
 			this.id = id;
 			return this;
@@ -27,29 +36,20 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 			return this;
 		}
 
-		public Builder setType(MeterType type) {
-			this.type = type;
-			return this;
-		}
-
 		public Builder setModbusUnitId(int modbusUnitId) {
 			this.modbusUnitId = modbusUnitId;
 			return this;
 		}
 
-		public Builder setalternativePowerCalculation(boolean alternative) {
-			this.alternativePowerCalculation = alternative;
+		public Builder setType(MeterType type) {
+			this.type = type;
 			return this;
-		}
-
-		public MyConfig build() {
-			return new MyConfig(this);
 		}
 	}
 
 	/**
 	 * Create a Config builder.
-	 * 
+	 *
 	 * @return a {@link Builder}
 	 */
 	public static Builder create() {
@@ -61,6 +61,11 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 	private MyConfig(Builder builder) {
 		super(Config.class, builder.id);
 		this.builder = builder;
+	}
+
+	@Override
+	public boolean alternativePowerCalculation() {
+		return this.builder.alternativePowerCalculation;
 	}
 
 	@Override
@@ -76,11 +81,6 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 	@Override
 	public int modbusUnitId() {
 		return this.builder.modbusUnitId;
-	}
-
-	@Override
-	public boolean alternativePowerCalculation() {
-		return this.builder.alternativePowerCalculation;
 	}
 
 	@Override

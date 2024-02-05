@@ -6,6 +6,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import io.openems.common.exceptions.OpenemsError;
 import io.openems.common.exceptions.OpenemsError.OpenemsNamedException;
 
 /**
@@ -25,6 +26,7 @@ public abstract class AbstractStateMachine<STATE extends State<STATE>, CONTEXT e
 
 	private STATE previousState;
 	private STATE state;
+	private boolean runOnce = true;
 
 	/**
 	 * Initialize the State-Machine and set an initial State.
@@ -118,6 +120,19 @@ public abstract class AbstractStateMachine<STATE extends State<STATE>, CONTEXT e
 
 		// Evaluate the next State
 		STATE nextState;
+
+		// run very first onEntry()
+		if (this.runOnce) {
+			this.runOnce = false;
+			try {
+				context.logInfo(this.log, "Changing StateMachine from [] to [" + this.state + "]");
+				this.stateHandlers.get(this.state) //
+						.onEntry(context);
+			} catch (OpenemsError.OpenemsNamedException e) {
+				exception = e;
+			}
+		}
+
 		if (this.forceNextState != null) {
 			// Apply Force-Next-State
 			nextState = this.forceNextState;
@@ -130,6 +145,9 @@ public abstract class AbstractStateMachine<STATE extends State<STATE>, CONTEXT e
 						.get(this.state) //
 						.runAndGetNextState(context);
 			} catch (OpenemsNamedException e) {
+				if (exception != null) {
+					e.addSuppressed(exception);
+				}
 				exception = e;
 				nextState = this.initialState; // set to initial state on error
 			}

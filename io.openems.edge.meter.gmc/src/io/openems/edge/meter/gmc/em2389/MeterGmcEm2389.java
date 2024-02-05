@@ -14,19 +14,6 @@ import io.openems.edge.meter.api.ElectricityMeter;
 
 public interface MeterGmcEm2389 extends ElectricityMeter, OpenemsComponent {
 
-	/**
-	 * Returns 1 if value is above or equals 0, negative 1 if not.
-	 */
-	public static final ElementToChannelConverter SIGNUM_NON_ZERO = new ElementToChannelConverter(value -> {
-		if (value != null) {
-			if ((double) value >= 0) {
-				return 1;
-			}
-			return -1;
-		}
-		return 1;
-	});
-
 	public enum ChannelId implements io.openems.edge.common.channel.ChannelId {
 		VOLTAGE_L1_L2(Doc.of(OpenemsType.INTEGER) //
 				.unit(Unit.MILLIVOLT) //
@@ -127,6 +114,28 @@ public interface MeterGmcEm2389 extends ElectricityMeter, OpenemsComponent {
 	}
 
 	/**
+	 * Returns 1 if value is above or equals 0, negative 1 if not.
+	 */
+	public static final ElementToChannelConverter SIGNUM_NON_ZERO = new ElementToChannelConverter(value -> {
+		if (value != null) {
+			if ((double) value >= 0) {
+				return 1;
+			}
+			return -1;
+		}
+		return 1;
+	});
+
+	/**
+	 * Internal method to get the sign of {@link ChannelId#SIGN_L1} Channel.
+	 *
+	 * @return value of firmware version value
+	 */
+	public default Value<Integer> getSignL1() {
+		return this.getSignL1Channel().value();
+	}
+
+	/**
 	 * Gets the Channel for {@link ChannelId#SIGN_L1}.
 	 *
 	 * @return returns the channel
@@ -134,6 +143,15 @@ public interface MeterGmcEm2389 extends ElectricityMeter, OpenemsComponent {
 	 */
 	private IntegerReadChannel getSignL1Channel() {
 		return this.channel(ChannelId.SIGN_L1);
+	}
+
+	/**
+	 * Internal method to get the sign of {@link ChannelId#SIGN_L2} Channel.
+	 *
+	 * @return value of firmware version value
+	 */
+	public default Value<Integer> getSignL2() {
+		return this.getSignL2Channel().value();
 	}
 
 	/**
@@ -147,6 +165,15 @@ public interface MeterGmcEm2389 extends ElectricityMeter, OpenemsComponent {
 	}
 
 	/**
+	 * Internal method to get the sign of {@link ChannelId#SIGN_L3} Channel.
+	 *
+	 * @return value of firmware version value
+	 */
+	public default Value<Integer> getSignL3() {
+		return this.getSignL3Channel().value();
+	}
+
+	/**
 	 * Gets the Channel for {@link ChannelId#SIGN_L3}.
 	 *
 	 * @return returns the channel
@@ -154,33 +181,6 @@ public interface MeterGmcEm2389 extends ElectricityMeter, OpenemsComponent {
 	 */
 	private IntegerReadChannel getSignL3Channel() {
 		return this.channel(ChannelId.SIGN_L3);
-	}
-
-	/**
-	 * Internal method to get the sign of {@link ChannelId#SIGN_L1} Channel.
-	 *
-	 * @return value of firmware version value
-	 */
-	public default Value<Integer> getSignL1() {
-		return this.getSignL1Channel().value();
-	}
-
-	/**
-	 * Internal method to get the sign of {@link ChannelId#SIGN_L2} Channel.
-	 *
-	 * @return value of firmware version value
-	 */
-	public default Value<Integer> getSignL2() {
-		return this.getSignL2Channel().value();
-	}
-
-	/**
-	 * Internal method to get the sign of {@link ChannelId#SIGN_L3} Channel.
-	 *
-	 * @return value of firmware version value
-	 */
-	public default Value<Integer> getSignL3() {
-		return this.getSignL3Channel().value();
 	}
 
 }
