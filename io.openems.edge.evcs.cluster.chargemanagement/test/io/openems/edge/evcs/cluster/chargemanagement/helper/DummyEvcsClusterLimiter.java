@@ -22,8 +22,7 @@ public class DummyEvcsClusterLimiter extends AbstractOpenemsComponent implements
 
 	@Override
 	public void run() throws OpenemsNamedException {
-		// TODO Auto-generated method stub
-
+		// nothing to do here
 	}
 
 	@Override
@@ -33,7 +32,6 @@ public class DummyEvcsClusterLimiter extends AbstractOpenemsComponent implements
 
 	@Override
 	public boolean isPhaseImbalanceLimiter() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
