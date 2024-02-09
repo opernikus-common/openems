@@ -258,12 +258,6 @@ public class SimulatorEvcsImpl extends AbstractManagedEvcsComponent
 
 	@Override
 	public boolean applyChargePowerLimit(int power) throws OpenemsException {
-		// TODO Nicht mehr notwendig oder? power = power <
-		// this.getFixedMinimumHardwarePower().orElse(Evcs.DEFAULT_MINIMUM_HARDWARE_POWER)
-		// ? 0 : power;
-		// TODO power = Math.min(power,
-		// this.getFixedMaximumHardwarePower().orElse(Evcs.DEFAULT_MAXIMUM_HARDWARE_POWER));
-		// TODO warum ist _setSetChargePowerLimit rausgeflogen?
 		int chargePower = this.getChargePower().orElse(0);
 
 		// increas chargePowerLimit slowly
