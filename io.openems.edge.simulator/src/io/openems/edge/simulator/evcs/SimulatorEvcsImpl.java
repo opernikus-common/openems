@@ -350,8 +350,7 @@ public class SimulatorEvcsImpl extends AbstractManagedEvcsComponent
 		return this.timedata;
 	}
 
-	// clehne test mit fairShare Controller will work only, when this is set to
-	// true.
+	// Cluster.Chargemanagement needs this to be true.
 	@Override
 	public boolean ignoreChargeState() {
 		return true;
