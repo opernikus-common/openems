@@ -1,0 +1,2 @@
+EventTimeHour,EventTimeMin,EventType,Phases,SetEnergyLimit,MaxEvPower
+0,0,1,1,10000000,50000

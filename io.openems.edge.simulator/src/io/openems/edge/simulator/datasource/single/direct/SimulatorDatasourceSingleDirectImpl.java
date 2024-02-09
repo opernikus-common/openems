@@ -7,6 +7,7 @@ import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.ConfigurationPolicy;
 import org.osgi.service.component.annotations.Deactivate;
+import org.osgi.service.component.annotations.Modified;
 import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.event.EventHandler;
 import org.osgi.service.event.propertytypes.EventTopics;
@@ -54,6 +55,14 @@ public class SimulatorDatasourceSingleDirectImpl extends AbstractCsvDatasource
 	protected void deactivate() {
 		super.deactivate();
 	}
+	
+	@Modified
+	private void modified(ComponentContext compContext, Config config) throws NumberFormatException, IOException {
+		this.config = config;
+		super.modified(compContext, config.id(), config.alias(), config.enabled());
+		this.data = this.getData();
+	}
+	
 
 	@Override
 	protected ComponentManager getComponentManager() {

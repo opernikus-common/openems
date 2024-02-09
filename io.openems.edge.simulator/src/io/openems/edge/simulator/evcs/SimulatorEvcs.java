@@ -14,7 +14,8 @@ import io.openems.edge.evcs.api.ManagedEvcs;
 public interface SimulatorEvcs extends ManagedEvcs, Evcs, OpenemsComponent, EventHandler {
 
 	public enum ChannelId implements io.openems.edge.common.channel.ChannelId {
-		SIMULATED_CHARGE_POWER(Doc.of(OpenemsType.INTEGER).unit(Unit.WATT));
+		EVENT_TYPE(Doc.of(EventType.values())), //
+		MAX_EV_POWER(Doc.of(OpenemsType.INTEGER).unit(Unit.WATT)); //
 
 		private final Doc doc;
 

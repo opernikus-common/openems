@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.function.Consumer;
 
-import io.openems.edge.evcs.api.ManagedEvcs;
-import io.openems.edge.evcs.api.MeasuringEvcs;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
@@ -28,9 +26,12 @@ import io.openems.edge.common.event.EdgeEventConstants;
 import io.openems.edge.common.type.TypeUtils;
 import io.openems.edge.ess.api.ManagedSymmetricEss;
 import io.openems.edge.ess.api.MetaEss;
+import io.openems.edge.evcs.api.Evcs;
+import io.openems.edge.evcs.api.EvcsUtils;
+import io.openems.edge.evcs.api.MetaEvcs;
 import io.openems.edge.meter.api.ElectricityMeter;
 import io.openems.edge.meter.api.MeterType;
-import io.openems.edge.simulator.Constants;
+import io.openems.edge.meter.api.VirtualMeter;
 import io.openems.edge.timedata.api.Timedata;
 import io.openems.edge.timedata.api.TimedataProvider;
 import io.openems.edge.timedata.api.utils.CalculateEnergyFromPower;
@@ -55,7 +56,7 @@ public class SimulatorGridMeterReactingImpl extends AbstractOpenemsComponent
 			ElectricityMeter.ChannelId.ACTIVE_CONSUMPTION_ENERGY);
 
 	private final CopyOnWriteArraySet<ManagedSymmetricEss> symmetricEsss = new CopyOnWriteArraySet<>();
-	private final CopyOnWriteArraySet<ManagedEvcs> managedEvcs = new CopyOnWriteArraySet<>();
+	private final CopyOnWriteArraySet<Evcs> evcss = new CopyOnWriteArraySet<>();
 	private final CopyOnWriteArraySet<ElectricityMeter> meters = new CopyOnWriteArraySet<>();
 
 	@Reference
@@ -63,6 +64,7 @@ public class SimulatorGridMeterReactingImpl extends AbstractOpenemsComponent
 
 	@Reference(policy = ReferencePolicy.DYNAMIC, policyOption = ReferencePolicyOption.GREEDY, cardinality = ReferenceCardinality.OPTIONAL)
 	private volatile Timedata timedata = null;
+	private boolean filterNotMeteredMeters;
 
 	@Reference(//
 			policy = ReferencePolicy.DYNAMIC, //
@@ -84,14 +86,20 @@ public class SimulatorGridMeterReactingImpl extends AbstractOpenemsComponent
 			policyOption = ReferencePolicyOption.GREEDY, //
 			cardinality = ReferenceCardinality.MULTIPLE, //
 			target = "(enabled=true)")
-	private void addEvcs(ManagedEvcs evcs) {
-		this.managedEvcs.add(evcs);
+	protected void addEvcs(Evcs evcs) {
+		if (evcs instanceof MetaEvcs || evcs.serviceFactoryPid().startsWith("Evcs.Cluster")) {
+			return;
+		}
+		this.evcss.add(evcs);
 		evcs.getChargePowerChannel().onSetNextValue(this.updateChannelsCallback);
 	}
 
-	protected void removeEvcs(ManagedEvcs evcs) {
+	protected void removeEvcs(Evcs evcs) {
+		if (evcs instanceof MetaEvcs) {
+			return;
+		}
 		evcs.getChargePowerChannel().removeOnSetNextValueCallback(this.updateChannelsCallback);
-		this.managedEvcs.remove(evcs);
+		this.evcss.remove(evcs);
 	}
 
 	@Reference(//
@@ -117,12 +125,17 @@ public class SimulatorGridMeterReactingImpl extends AbstractOpenemsComponent
 		);
 
 		// Automatically calculate L1/l2/L3 values from sum
-		ElectricityMeter.calculatePhasesFromActivePower(this);
+		this._setVoltageL1(Evcs.DEFAULT_VOLTAGE * 1000);
+		this._setVoltageL2(Evcs.DEFAULT_VOLTAGE * 1000);
+		this._setVoltageL3(Evcs.DEFAULT_VOLTAGE * 1000);
+		this._setFrequency(50_000);
+
 	}
 
 	@Activate
 	private void activate(ComponentContext context, Config config) throws IOException {
 		super.activate(context, config.id(), config.alias(), config.enabled());
+		this.filterNotMeteredMeters = config.filterNotMeteredMeters();
 	}
 
 	@Override
@@ -144,54 +157,89 @@ public class SimulatorGridMeterReactingImpl extends AbstractOpenemsComponent
 	}
 
 	private final Consumer<Value<Integer>> updateChannelsCallback = value -> {
-		Integer activePower = null;
+		Integer sum = 0;
+		Integer sumL1 = 0;
+		Integer sumL2 = 0;
+		Integer sumL3 = 0;
 
 		for (ManagedSymmetricEss ess : this.symmetricEsss) {
 			if (ess instanceof MetaEss) {
 				// ignore this Ess
 				continue;
 			}
-			activePower = subtract(activePower, ess.getActivePowerChannel().getNextValue().get());
+			sum = subtract(sum, ess.getActivePowerChannel().getNextValue().get());
 		}
-		for (ManagedEvcs evcs : this.managedEvcs) {
-			if (evcs instanceof MeasuringEvcs) {
-				// ignore this Ess
+		for (Evcs evcs : this.evcss) {
+			if (evcs instanceof MetaEvcs) {
+				// ignore this Evcs
 				continue;
 			}
-			activePower = add(activePower, evcs.getChargePowerChannel().getNextValue().get());
+			sum = add(sum, evcs.getChargePowerChannel().getNextValue().orElse(0));
+			var currL1 = evcs.getCurrentL1Channel().getNextValue().orElse(0);
+			var currL2 = evcs.getCurrentL2Channel().getNextValue().orElse(0);
+			var currL3 = evcs.getCurrentL3Channel().getNextValue().orElse(0);
+			if (currL1 == 0 && currL2 == 0 && currL3 == 0) {
+				var power = evcs.getChargePowerChannel().getNextValue().orElse(0);
+				currL1 = power * 1000 / (Evcs.DEFAULT_VOLTAGE * 3);
+				currL2 = currL1;
+				currL3 = currL1;
+			}
+
+			sumL1 = add(sumL1, EvcsUtils.currentInMilliampereToPower(currL1, 1));
+			sumL2 = add(sumL2, EvcsUtils.currentInMilliampereToPower(currL2, 1));
+			sumL3 = add(sumL3, EvcsUtils.currentInMilliampereToPower(currL3, 1));
 		}
 		for (var m : this.meters) {
 			try {
 				switch (m.getMeterType()) {
-				case CONSUMPTION_METERED:
 				case GRID:
 					// ignore
 					break;
+				case CONSUMPTION_METERED:
 				case CONSUMPTION_NOT_METERED:
-					activePower = add(activePower, m.getActivePowerChannel().getNextValue().get());
+					if (m instanceof VirtualMeter vm) {
+						if (!vm.addToSum()) {
+							// ignore
+							break;
+						}
+					}
+					// TODO brauchen wir diese Configoption jetzt noch?
+					if (this.filterNotMeteredMeters) {
+						break;
+					}
+					sum = add(sum, m.getActivePowerChannel().getNextValue().get());
+					sumL1 = add(sumL1, m.getActivePowerL1Channel().getNextValue().get());
+					sumL2 = add(sumL2, m.getActivePowerL2Channel().getNextValue().get());
+					sumL3 = add(sumL3, m.getActivePowerL3Channel().getNextValue().get());
 					break;
 				case PRODUCTION:
 				case PRODUCTION_AND_CONSUMPTION:
-					activePower = subtract(activePower, m.getActivePowerChannel().getNextValue().get());
+					sum = subtract(sum, m.getActivePowerChannel().getNextValue().get());
+					sumL1 = subtract(sumL1, m.getActivePowerL1Channel().getNextValue().get());
+					sumL2 = subtract(sumL2, m.getActivePowerL2Channel().getNextValue().get());
+					sumL3 = subtract(sumL3, m.getActivePowerL3Channel().getNextValue().get());
 					break;
 				}
 			} catch (NullPointerException e) {
-				// ignore
+				; // ignore
 			}
 		}
 
-		this._setActivePower(activePower);
-		var voltage = activePower == null ? null : Constants.VOLTAGE; // [mV]
-		this._setVoltage(voltage);
-		this._setVoltageL1(voltage);
-		this._setVoltageL2(voltage);
-		this._setVoltageL3(voltage);
-		var current = activePower == null ? null : Math.round(activePower * 1_000_000F / Constants.VOLTAGE);
+		this._setActivePower(sum);
+		this._setActivePowerL1(sumL1);
+		this._setActivePowerL2(sumL2);
+		this._setActivePowerL3(sumL3);
+
+		var current = TypeUtils.divide(sum * 1000, 230);
+		var currentL1 = TypeUtils.divide(sumL1 * 1000, 230);
+		var currentL2 = TypeUtils.divide(sumL2 * 1000, 230);
+		var currentL3 = TypeUtils.divide(sumL3 * 1000, 230);
+
 		this._setCurrent(current);
-		var currentPerPhase = TypeUtils.divide(current, 3);
-		this._setCurrentL1(currentPerPhase);
-		this._setCurrentL2(currentPerPhase);
-		this._setCurrentL3(currentPerPhase);
+		this._setCurrentL1(currentL1);
+		this._setCurrentL2(currentL2);
+		this._setCurrentL3(currentL3);
+
 	};
 
 	private static Integer add(Integer sum, Integer activePower) {
