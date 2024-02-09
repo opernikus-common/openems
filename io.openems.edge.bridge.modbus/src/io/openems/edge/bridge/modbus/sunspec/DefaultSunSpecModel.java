@@ -5850,7 +5850,10 @@ public enum DefaultSunSpecModel implements SunSpecModel {
 	public static enum S124_StorCtl_Mod implements OptionsEnum {
 		UNDEFINED(-1, "Undefined"), //
 		CHARGE(0, "CHARGE"), //
-		DI_S_C_H_A_R_G_E(1, "DI_S_C_H_A_R_G_E"); //
+		DI_S_C_H_A_R_G_E(1, "DI_S_C_H_A_R_G_E"), //
+		// oEMS begin
+		ALLOW_BOTH(3, "ALLOW BOTH"); // TODO: Only for Fronius GEN24, -to be removed-
+		// oEMS end
 
 		private final int value;
 		private final String name;

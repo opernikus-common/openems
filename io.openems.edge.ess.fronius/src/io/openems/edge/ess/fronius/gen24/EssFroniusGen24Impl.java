@@ -96,7 +96,7 @@ public class EssFroniusGen24Impl extends AbstractOpenemsSunSpecComponent
 		this.config = config;
 
 		if (super.activate(context, config.id(), config.alias(), config.enabled(), config.modbusUnitId(), this.cm,
-				"Modbus", config.modbus_id(), READ_FROM_MODBUS_BLOCK, this.config.readOnly(), false)) {
+				"Modbus", config.modbus_id(), READ_FROM_MODBUS_BLOCK /* , this.config.readOnly(), false */)) {
 			return;
 		}
 

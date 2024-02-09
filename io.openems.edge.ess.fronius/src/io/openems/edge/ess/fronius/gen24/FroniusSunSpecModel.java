@@ -18,7 +18,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 			FroniusSunSpecModel.S160.values(), //
 			SunSpecModelType.INVERTER //
 	); //
-	
+
 	public static enum S160 implements SunSpecPoint {
 		DCA_SF(new PointImpl(//
 				"S160_DCA_S_F", //
@@ -96,10 +96,8 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.NONE, //
 				null, //
-				new OptionsEnum[0])), //	
+				new OptionsEnum[0])), //
 
-		
-		
 		MODULE_1_I_D(new PointImpl(//
 				"S160_MODULE_1_I_D", //
 				"Module1Id", //
@@ -110,7 +108,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.NONE, //
 				null, //
-				new OptionsEnum[0])), //	
+				new OptionsEnum[0])), //
 		MODULE_1_I_D_STR(new PointImpl(//
 				"S160_MODULE_1_I_D_STR", //
 				"Module1IdStr", //
@@ -121,7 +119,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.NONE, //
 				null, //
-				new OptionsEnum[0])), //	
+				new OptionsEnum[0])), //
 		MODULE_1_D_C_A(new PointImpl(//
 				"S160_MODULE_1_D_C_A", //
 				"Module1Dca", //
@@ -132,7 +130,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.AMPERE, //
 				"DCA_SF", //
-				new OptionsEnum[0])), //	
+				new OptionsEnum[0])), //
 		MODULE_1_D_C_V(new PointImpl(//
 				"S160_MODULE_1_D_C_V", //
 				"Module1Dcv", //
@@ -143,7 +141,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.VOLT, //
 				"DCV_SF", //
-				new OptionsEnum[0])), //	
+				new OptionsEnum[0])), //
 		MODULE_1_D_C_W(new PointImpl(//
 				"S160_MODULE_1_D_C_W", //
 				"Module1Dcw", //
@@ -154,7 +152,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.WATT, //
 				"DCW_SF", //
-				new OptionsEnum[0])), //	
+				new OptionsEnum[0])), //
 		MODULE_1_D_C_W_H(new PointImpl(//
 				"S160_MODULE_1_D_C_W_H", //
 				"Module1Dcwh", //
@@ -165,7 +163,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.WATT_HOURS, //
 				"DCWH_SF", //
-				new OptionsEnum[0])), //	
+				new OptionsEnum[0])), //
 		MODULE_1_TMS(new PointImpl(//
 				"S160_MODULE_1_TMS", //
 				"Module1Timestamp", //
@@ -176,7 +174,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.SECONDS, //
 				null, //
-				new OptionsEnum[0])), //	
+				new OptionsEnum[0])), //
 		MODULE_1_TMP(new PointImpl(//
 				"S160_MODULE_1_TEMP", //
 				"Module1Temp", //
@@ -187,7 +185,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.DEGREE_CELSIUS, //
 				null, //
-				new OptionsEnum[0])), //	
+				new OptionsEnum[0])), //
 		MODULE_1_D_C_ST(new PointImpl(//
 				"S160_MODULE_1_OP_STATES", //
 				"Module1OpStates", //
@@ -198,7 +196,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.NONE, //
 				null, //
-				S160_DCSt.values())), //	
+				S160_DCSt.values())), //
 		MODULE_1_EVT(new PointImpl(//
 				"S160_MODULE_1_EVENTS", //
 				"Module1Events", //
@@ -209,11 +207,8 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.NONE, //
 				null, //
-				S160_DCEvt.values())), //	
-		
+				S160_DCEvt.values())), //
 
-		
-		
 		MODULE_2_I_D(new PointImpl(//
 				"S160_MODULE_2_I_D", //
 				"Module2Id", //
@@ -224,7 +219,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.NONE, //
 				null, //
-				new OptionsEnum[0])), //	
+				new OptionsEnum[0])), //
 		MODULE_2_I_D_STR(new PointImpl(//
 				"S160_MODULE_2_I_D_STR", //
 				"Module2IdStr", //
@@ -235,7 +230,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.NONE, //
 				null, //
-				new OptionsEnum[0])), //	
+				new OptionsEnum[0])), //
 		MODULE_2_D_C_A(new PointImpl(//
 				"S160_MODULE_2_D_C_A", //
 				"Module2Dca", //
@@ -246,7 +241,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.AMPERE, //
 				"DCA_SF", //
-				new OptionsEnum[0])), //	
+				new OptionsEnum[0])), //
 		MODULE_2_D_C_V(new PointImpl(//
 				"S160_MODULE_2_D_C_V", //
 				"Module2Dcv", //
@@ -257,7 +252,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.VOLT, //
 				"DCV_SF", //
-				new OptionsEnum[0])), //	
+				new OptionsEnum[0])), //
 		MODULE_2_D_C_W(new PointImpl(//
 				"S160_MODULE_2_D_C_W", //
 				"Module2Dcw", //
@@ -268,7 +263,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.WATT, //
 				"DCW_SF", //
-				new OptionsEnum[0])), //	
+				new OptionsEnum[0])), //
 		MODULE_2_D_C_W_H(new PointImpl(//
 				"S160_MODULE_2_D_C_W_H", //
 				"Module2Dcwh", //
@@ -279,7 +274,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.WATT_HOURS, //
 				"DCWH_SF", //
-				new OptionsEnum[0])), //	
+				new OptionsEnum[0])), //
 		MODULE_2_TMS(new PointImpl(//
 				"S160_MODULE_2_TMS", //
 				"Module2Tms", //
@@ -290,7 +285,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.SECONDS, //
 				null, //
-				new OptionsEnum[0])), //	
+				new OptionsEnum[0])), //
 		MODULE_2_TMP(new PointImpl(//
 				"S160_MODULE_2_TEMP", //
 				"Module2Temp", //
@@ -301,7 +296,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.DEGREE_CELSIUS, //
 				null, //
-				new OptionsEnum[0])), //	
+				new OptionsEnum[0])), //
 		MODULE_2_D_C_ST(new PointImpl(//
 				"S160_MODULE_2_OP_STATES", //
 				"Module2OpStates", //
@@ -312,7 +307,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.NONE, //
 				null, //
-				S160_DCSt.values())), //	
+				S160_DCSt.values())), //
 		MODULE_2_EVT(new PointImpl(//
 				"S160_MODULE_2_EVENTS", //
 				"Module2Events", //
@@ -323,12 +318,8 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.NONE, //
 				null, //
-				S160_DCEvt.values())), //	
-		
+				S160_DCEvt.values())), //
 
-
-		
-		
 		MODULE_3_I_D(new PointImpl(//
 				"S160_MODULE_3_I_D", //
 				"Module3Id", //
@@ -339,7 +330,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.NONE, //
 				null, //
-				new OptionsEnum[0])), //	
+				new OptionsEnum[0])), //
 		MODULE_3_I_D_STR(new PointImpl(//
 				"S160_MODULE_3_I_D_STR", //
 				"Module3IdStr", //
@@ -350,7 +341,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.NONE, //
 				null, //
-				new OptionsEnum[0])), //	
+				new OptionsEnum[0])), //
 		MODULE_3_D_C_A(new PointImpl(//
 				"S160_MODULE_3_D_C_A", //
 				"Module3Dca", //
@@ -361,7 +352,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.AMPERE, //
 				"DCA_SF", //
-				new OptionsEnum[0])), //	
+				new OptionsEnum[0])), //
 		MODULE_3_D_C_V(new PointImpl(//
 				"S160_MODULE_3_D_C_V", //
 				"Module3Dcv", //
@@ -372,7 +363,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.VOLT, //
 				"DCV_SF", //
-				new OptionsEnum[0])), //	
+				new OptionsEnum[0])), //
 		MODULE_3_D_C_W(new PointImpl(//
 				"S160_MODULE_3_D_C_W", //
 				"Module3Dcw", //
@@ -383,7 +374,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.WATT, //
 				"DCW_SF", //
-				new OptionsEnum[0])), //	
+				new OptionsEnum[0])), //
 		MODULE_3_D_C_W_H(new PointImpl(//
 				"S160_MODULE_3_D_C_W_H", //
 				"Module3Dcwh", //
@@ -394,7 +385,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.WATT_HOURS, //
 				"DCWH_SF", //
-				new OptionsEnum[0])), //	
+				new OptionsEnum[0])), //
 		MODULE_3_TMS(new PointImpl(//
 				"S160_MODULE_3_TMS", //
 				"Module3Tms", //
@@ -405,7 +396,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.SECONDS, //
 				null, //
-				new OptionsEnum[0])), //	
+				new OptionsEnum[0])), //
 		MODULE_3_TMP(new PointImpl(//
 				"S160_MODULE_3_TEMP", //
 				"Module3Temp", //
@@ -416,7 +407,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.DEGREE_CELSIUS, //
 				null, //
-				new OptionsEnum[0])), //	
+				new OptionsEnum[0])), //
 		MODULE_3_D_C_ST(new PointImpl(//
 				"S160_MODULE_3_OP_STATES", //
 				"Module3OpStates", //
@@ -427,7 +418,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.NONE, //
 				null, //
-				S160_DCSt.values())), //	
+				S160_DCSt.values())), //
 		MODULE_3_EVT(new PointImpl(//
 				"S160_MODULE_3_EVENTS", //
 				"Module3Events", //
@@ -438,13 +429,8 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.NONE, //
 				null, //
-				S160_DCEvt.values())), //	
-		
+				S160_DCEvt.values())), //
 
-		
-		
-		
-		
 		MODULE_4_I_D(new PointImpl(//
 				"S160_MODULE_4_I_D", //
 				"Module4Id", //
@@ -455,7 +441,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.NONE, //
 				null, //
-				new OptionsEnum[0])), //	
+				new OptionsEnum[0])), //
 		MODULE_4_I_D_STR(new PointImpl(//
 				"S160_MODULE_4_I_D_STR", //
 				"Module4IdStr", //
@@ -466,7 +452,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.NONE, //
 				null, //
-				new OptionsEnum[0])), //	
+				new OptionsEnum[0])), //
 		MODULE_4_D_C_A(new PointImpl(//
 				"S160_MODULE_4_D_C_A", //
 				"Module4Dca", //
@@ -477,7 +463,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.AMPERE, //
 				"DCA_SF", //
-				new OptionsEnum[0])), //	
+				new OptionsEnum[0])), //
 		MODULE_4_D_C_V(new PointImpl(//
 				"S160_MODULE_4_D_C_V", //
 				"Module4Dcv", //
@@ -488,7 +474,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.VOLT, //
 				"DCV_SF", //
-				new OptionsEnum[0])), //	
+				new OptionsEnum[0])), //
 		MODULE_4_D_C_W(new PointImpl(//
 				"S160_MODULE_4_D_C_W", //
 				"Module4Dcw", //
@@ -499,7 +485,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.WATT, //
 				"DCW_SF", //
-				new OptionsEnum[0])), //	
+				new OptionsEnum[0])), //
 		MODULE_4_D_C_W_H(new PointImpl(//
 				"S160_MODULE_4_D_C_W_H", //
 				"Module4Dcwh", //
@@ -510,7 +496,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.WATT_HOURS, //
 				"DCWH_SF", //
-				new OptionsEnum[0])), //	
+				new OptionsEnum[0])), //
 		MODULE_4_TMS(new PointImpl(//
 				"S160_MODULE_4_TMS", //
 				"Module4Tms", //
@@ -521,7 +507,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.SECONDS, //
 				null, //
-				new OptionsEnum[0])), //	
+				new OptionsEnum[0])), //
 		MODULE_4_TMP(new PointImpl(//
 				"S160_MODULE_4_TEMP", //
 				"Module4Temp", //
@@ -532,7 +518,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.DEGREE_CELSIUS, //
 				null, //
-				new OptionsEnum[0])), //	
+				new OptionsEnum[0])), //
 		MODULE_4_D_C_ST(new PointImpl(//
 				"S160_MODULE_4_OP_STATES", //
 				"Module4OpStates", //
@@ -543,7 +529,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.NONE, //
 				null, //
-				S160_DCSt.values())), //	
+				S160_DCSt.values())), //
 		MODULE_4_EVT(new PointImpl(//
 				"S160_MODULE_4_EVENTS", //
 				"Module4Events", //
@@ -554,7 +540,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 				AccessMode.READ_ONLY, //
 				Unit.NONE, //
 				null, //
-				S160_DCEvt.values())) //	
+				S160_DCEvt.values())) //
 		; //
 
 		protected final PointImpl impl;
@@ -568,7 +554,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 			return this.impl;
 		}
 	}
-	
+
 	public static enum S160_DCSt implements OptionsEnum {
 		UNDEFINED(-1, "Undefined"), //
 		OFF(1, "Off"), //
@@ -581,10 +567,10 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 		STANDBY(8, "Standby"), //
 		TEST(9, "Test"), //
 		RESERVED_10(10, "Reserved 10"); //
-		
+
 		private final int value;
 		private final String name;
-		
+
 		private S160_DCSt(int value, String name) {
 			this.value = value;
 			this.name = name;
@@ -605,7 +591,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 			return UNDEFINED;
 		}
 	}
-	
+
 	public static enum S160_DCEvt implements OptionsEnum {
 		UNDEFINED(-1, "Undefined"), //
 		GROUND_FAULT(0, "Ground Fault"), //
@@ -632,10 +618,9 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 		INPUT_UNDER_VOLTAGE(21, "Input under voltage"), //
 		INPUT_OVER_CURRENT(22, "Inout over current"); //
 
-		
 		private final int value;
 		private final String name;
-		
+
 		private S160_DCEvt(int value, String name) {
 			this.value = value;
 			this.name = name;
@@ -656,14 +641,14 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 			return UNDEFINED;
 		}
 	}
-	
+
 	public final String label;
 	public final String description;
 	public final String notes;
 	public final int length;
 	public final SunSpecPoint[] points;
 	public final SunSpecModelType modelType;
-	
+
 	private FroniusSunSpecModel(String label, String description, String notes, int length, SunSpecPoint[] points,
 			SunSpecModelType modelType) {
 		this.label = label;
@@ -673,7 +658,7 @@ public enum FroniusSunSpecModel implements SunSpecModel {
 		this.points = points;
 		this.modelType = modelType;
 	}
-	
+
 	@Override
 	public SunSpecPoint[] points() {
 		return this.points;
