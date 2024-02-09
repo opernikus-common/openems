@@ -54,6 +54,19 @@ public class DataContainer {
 	}
 
 	/**
+	 * Gets the next record.
+	 * 
+	 * @return the next record
+	 */
+	public Float[] getNextRecord() {
+
+		if (this.currentIndex + 1 >= this.records.size()) {
+			return this.records.get(0);
+		}
+		return this.records.get(this.currentIndex + 1);
+	}
+
+	/**
 	 * Gets the value for the key from the current record. If no keys exist, get the
 	 * first value of the record.
 	 *
@@ -77,6 +90,33 @@ public class DataContainer {
 			return Optional.ofNullable(record[index]);
 		}
 		return Optional.empty();
+	}
+
+	/**
+	 * Gets the next value for the key from the current record. If no keys exist,
+	 * get the first value of the record.
+	 *
+	 * @param key the Channel-Id
+	 * @return the record value
+	 */
+	public Optional<Float> getNextValue(String key) {
+		Integer index;
+		if (this.keys.isEmpty()) {
+			// no keys -> first value
+			index = 0;
+		} else {
+			// find index of key
+			index = this.keys.get(key);
+			if (index == null) {
+				return Optional.empty();
+			}
+		}
+		Float[] record = this.getNextRecord();
+		if (index < record.length) {
+			return Optional.ofNullable(record[index]);
+		} else {
+			return Optional.empty();
+		}
 	}
 
 	/**

@@ -39,7 +39,7 @@ public enum Priority implements OptionsEnum {
 	public OptionsEnum getUndefined() {
 		return LOW;
 	}
-
+	
 	/**
 	 * Is this Priority at least as high as the other Level.
 	 *

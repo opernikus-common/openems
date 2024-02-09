@@ -86,14 +86,24 @@ public class WriteHandler implements Runnable {
 			if (valueOpt.isPresent()) {
 				int power = valueOpt.get();
 
-				// Minimum and maximum hardware power
-				int maxPower = this.parent.getMaximumHardwarePower()
-						.orElse(this.parent.getConfiguredMaximumHardwarePower());
-				int minPower = this.parent.getMinimumHardwarePower()
-						.orElse(this.parent.getConfiguredMinimumHardwarePower());
+				int minPower;
+				int maxPower;
 
+				if (this.parent.useFixMinMaxPowers()) {
+					// Minimum and maximum hardware power
+					maxPower = this.parent.getFixedMaximumHardwarePower()
+							.orElse(this.parent.getConfiguredMaximumHardwarePower());
+					minPower = this.parent.getFixedMinimumHardwarePower()
+							.orElse(this.parent.getConfiguredMinimumHardwarePower());
+				} else {
+					// Minimum and maximum hardware power
+					maxPower = this.parent.getMaximumHardwarePower()
+							.orElse(this.parent.getConfiguredMaximumHardwarePower());
+					minPower = this.parent.getMinimumHardwarePower()
+							.orElse(this.parent.getConfiguredMinimumHardwarePower());
+				}
 				// Adjust the power to the minimum and maximum power
-				int target = Math.min(maxPower, power);
+				var target = Math.min(maxPower, power);
 				target = target < minPower ? 0 : target;
 
 				/*

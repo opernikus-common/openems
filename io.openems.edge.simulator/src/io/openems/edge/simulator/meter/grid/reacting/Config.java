@@ -17,5 +17,9 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 	@AttributeDefinition(name = "Is enabled?", description = "Is this Component enabled?")
 	boolean enabled() default true;
 
+	@AttributeDefinition(name = "Filter Consumption_Not_Metered meters?", description = "Should Consumption_Not_Metered"
+			+ " meters be filtered out?")
+	boolean filterNotMeteredMeters() default false;
+
 	String webconsole_configurationFactory_nameHint() default "Simulator GridMeter Reacting [{id}]";
 }

@@ -1,6 +1,8 @@
 package io.openems.edge.simulator.evcs;
 
 import io.openems.common.test.AbstractComponentConfig;
+import io.openems.edge.evcs.api.PhaseRotation;
+import io.openems.edge.evcs.api.Priority;
 
 @SuppressWarnings("all")
 public class MyConfig extends AbstractComponentConfig implements Config {
@@ -9,6 +11,9 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 		private String id;
 		private int maxHwPower;
 		private int minHwPower;
+		private PhaseRotation phaseRotation;
+		private Priority priority;
+		private String datasourceId;
 
 		private Builder() {
 		}
@@ -25,6 +30,21 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 
 		public Builder setMinHwPower(int minHwPower) {
 			this.minHwPower = minHwPower;
+			return this;
+		}
+		
+		public Builder setPhaseRotation(PhaseRotation phaseRotation) {
+			this.phaseRotation = phaseRotation;
+			return this;
+		}
+		
+		public Builder setPriority(Priority priority) {
+			this.priority = priority;
+			return this;
+		}
+		
+		public Builder setDatasourceId(String id) {
+			this.datasourceId = id;
 			return this;
 		}
 
@@ -57,6 +77,21 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 	@Override
 	public int minHwPower() {
 		return this.builder.minHwPower;
+	}
+
+	@Override
+	public PhaseRotation phaseRotation() {
+		return this.builder.phaseRotation;
+	}
+
+	@Override
+	public Priority priority() {
+		return this.builder.priority;
+	}
+
+	@Override
+	public String datasource_id() {
+		return this.builder.datasourceId;
 	}
 
 }
