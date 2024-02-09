@@ -103,7 +103,7 @@ public class MeterHandler {
 			}
 			this.clusterLimiter._setFreeAvailableCurrentL3(null);
 		};
-		this.meter.getCurrentL2Channel().onSetNextValue(this.currentL3Consumer);
+		this.meter.getCurrentL3Channel().onSetNextValue(this.currentL3Consumer);
 
 		this.activePowerConsumer = value -> {
 			var val = value.orElse(EvcsUtils.currentToPower(this.safeOperationLimit(), Phases.THREE_PHASE.getValue()));
@@ -178,7 +178,7 @@ public class MeterHandler {
 		var safetyPower = EvcsUtils.currentToPower(this.safeOperationLimit(), Phases.THREE_PHASE.getValue());
 		var safeDistance = EvcsUtils.currentToPower(this.config().fuseSafetyOffset(), Phases.THREE_PHASE.getValue());
 
-		if (targetPower < (safetyPower - safeDistance)) {
+		if (targetPower <= (safetyPower - safeDistance)) {
 			return false;
 		}
 		return true;

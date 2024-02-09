@@ -1,11 +1,12 @@
 package io.openems.edge.evcs.cluster.chargemanagement;
 
 import static io.openems.edge.evcs.api.Evcs.DEFAULT_MINIMUM_HARDWARE_CURRENT;
+import static io.openems.edge.evcs.api.Evcs.DEFAULT_MINIMUM_HARDWARE_POWER;
+import static io.openems.edge.evcs.api.Evcs.DEFAULT_MAXIMUM_HARDWARE_POWER;
 
 import io.openems.common.exceptions.OpenemsError.OpenemsNamedException;
 import io.openems.edge.common.channel.Channel;
 import io.openems.edge.common.channel.IntegerWriteChannel;
-import io.openems.edge.evcs.api.Evcs;
 import io.openems.edge.evcs.api.ManagedEvcs;
 import io.openems.edge.evcs.api.Priority;
 import io.openems.edge.evcs.api.Status;
@@ -72,12 +73,12 @@ public class ClusterEvcs {
 	public Integer maxPower() {
 		// TODO wir muessen hier gelegentlich aufraeumen
 		// var val = this.evcs.getMaximumPower();
-		var val = this.evcs.getMaximumHardwarePower();
+		var val = this.evcs.getFixedMaximumHardwarePower();
 		this.diagnostics.raiseMaxWarning(this.evcs.id(), !val.isDefined());
 		if (val.isDefined()) {
 			return val.get();
 		}
-		return Evcs.DEFAULT_MINIMUM_HARDWARE_POWER;
+		return DEFAULT_MAXIMUM_HARDWARE_POWER;
 	}
 
 	/**
@@ -88,16 +89,17 @@ public class ClusterEvcs {
 	public Integer minPower() {
 		// TODO wir muessen hier gelegentlich aufraeumen
 		// var val = this.evcs.getMinimumPower();
-		var val = this.evcs.getMinimumHardwarePower();
+		var val = this.evcs.getFixedMinimumHardwarePower();
 		this.diagnostics.raiseMinWarning(this.evcs.id(), !val.isDefined());
 		if (val.isDefined()) {
 			return val.get();
 		}
-		return Evcs.DEFAULT_MINIMUM_HARDWARE_POWER;
+		return DEFAULT_MINIMUM_HARDWARE_POWER;
 	}
 
 	public Integer getChargePower() {
-		return this.evcs.getChargePower().orElse(Evcs.DEFAULT_MINIMUM_HARDWARE_POWER);
+		// TODO import static for consistency
+		return this.evcs.getChargePower().orElse(DEFAULT_MINIMUM_HARDWARE_POWER);
 	}
 
 	public Integer getCurrentL1() {

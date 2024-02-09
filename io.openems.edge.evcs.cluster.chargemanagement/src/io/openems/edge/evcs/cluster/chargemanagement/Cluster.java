@@ -143,7 +143,7 @@ public class Cluster {
 	 * @return the min power limit in W.
 	 */
 	public int getEvcsMinPowerLimit() {
-		return EvcsTools.getEvcsMinPowerLimit(this.clusterEvcss);
+		return EvcsTools.getEvcsMinPowerLimit(this.wannaChargeEvcss());
 	}
 
 	/**

@@ -26,7 +26,8 @@ public @interface Config {
 	@AttributeDefinition(name = "Fuse Safety Offset", description = "Fuse Safety Offset [A] - power per phase should always stay below (fuseLimit-fuseSafetyOffset).")
 	int fuseSafetyOffset() default 8; // A
 
-	@AttributeDefinition(name = "Target Power", description = "The targeted power [W] (for all phases). Controller tries to keep the meter around this level. This Limit is applied as sum on all three phases.")
+	@AttributeDefinition(name = "Target Power", description = "The targeted power [W] (for all phases). Controller tries to keep the meter around this level. "
+			+ "This Limit is applied as sum on all three phases. targetPower needs to stay below (fuseLimit-(2*fuseSafetyOffset)) * 230V * 3.")
 	int targetPower() default 7000; // W
 
 	@AttributeDefinition(name = "Mean Filter Time", description = "Average power and current is calculated over the given time period in seconds. Values less or equal to 0 are ignored")

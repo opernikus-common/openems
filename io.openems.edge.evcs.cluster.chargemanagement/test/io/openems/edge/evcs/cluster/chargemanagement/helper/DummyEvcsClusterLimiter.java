@@ -31,4 +31,10 @@ public class DummyEvcsClusterLimiter extends AbstractOpenemsComponent implements
 		return 1;
 	}
 
+	@Override
+	public boolean isPhaseImbalanceLimiter() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

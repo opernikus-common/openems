@@ -59,7 +59,7 @@ public class EvcsTools {
 		if (maxEvcs != null) {
 			return maxEvcs.maxPower();
 		}
-		return Evcs.DEFAULT_MINIMUM_HARDWARE_POWER;
+		return Evcs.DEFAULT_MAXIMUM_HARDWARE_POWER;
 	}
 
 	/**
