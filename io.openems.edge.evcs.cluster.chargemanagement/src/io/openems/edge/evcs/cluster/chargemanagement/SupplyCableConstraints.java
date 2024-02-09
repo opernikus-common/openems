@@ -203,7 +203,7 @@ public class SupplyCableConstraints {
 	 */
 	public PhaseImbalance getPhaseImbalance() {
 		var count = this.evcsClusterLimiters.get().stream() //
-				.filter(item -> item.getPhaseImbalanceCurrent().isDefined()) //
+				.filter(item -> item.isPhaseImbalanceLimiter()) //
 				.count();
 		if (count != 1) {
 			this.parent.channel(ChannelId.WARN_NO_PHASE_IMBALANCE).setNextValue(true);
@@ -213,7 +213,7 @@ public class SupplyCableConstraints {
 		}
 
 		var clusterLimiter = this.evcsClusterLimiters.get().stream() //
-				.filter(item -> item.getPhaseImbalance() != null) //
+				.filter(item -> item.isPhaseImbalanceLimiter()) //
 				.findAny();
 		// clusterLimiter is also responsible for phaseImbalanceCurrent
 		this.parent._setPhaseImbalanceCurrent(clusterLimiter.get().getPhaseImbalanceCurrent().get());

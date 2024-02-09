@@ -130,7 +130,7 @@ public class EvcsClusterLimiterControllerImpl extends AbstractOpenemsComponent
 			return;
 		}
 
-		if (this.meterHandler.config().isPhaseImbalanceLimiter()) {
+		if (this.isPhaseImbalanceLimiter()) {
 			var phaseImbalance = this.meterHandler.getPhaseImbalance();
 			this._setPhaseImbalance(phaseImbalance);
 			this._setPhaseImbalanceCurrent(this.meterHandler.getImbalanceCurrent());
@@ -148,6 +148,11 @@ public class EvcsClusterLimiterControllerImpl extends AbstractOpenemsComponent
 		 * TODO -in readme.adoc dokumentieren
 		 */
 
+	}
+	
+	@Override
+	public boolean isPhaseImbalanceLimiter() {
+		return this.config.isPhaseImbalanceLimiter();
 	}
 
 	@Override

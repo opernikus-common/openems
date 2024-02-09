@@ -453,6 +453,13 @@ public interface EvcsClusterLimiter extends Controller, OpenemsComponent {
 	public default void _setFreeAvailableCurrentL3(Integer minFreeCurrent) {
 		this.getFreeAvailableCurrentL3Channel().setNextValue(minFreeCurrent);
 	}
+	
+	/**
+	 * Asks whether phase imbalance is considered for this limiter.
+	 * 
+	 * @return true, if the limiter limits the phase imbalance
+	 */
+	public boolean isPhaseImbalanceLimiter();
 
 	/**
 	 * Gives back the Limiter ID.

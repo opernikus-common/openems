@@ -8,18 +8,16 @@ public class StateMachine extends AbstractStateMachine<State, Context> {
 
 	public StateMachine() {
 		super(State.RED);
+
 	}
 
 	@Override
 	public StateHandler<State, Context> getStateHandler(State state) {
-		switch (state) {
-		case GREEN:
-			return new GreenHandler();
-		case YELLOW:
-			return new YellowHandler();
-		case RED:
-			return new RedHandler();
-		}
-		throw new IllegalArgumentException("Unknown State [" + state + "]");
+		return switch (state) {
+			case GREEN -> new GreenHandler();
+			case YELLOW -> new YellowHandler();
+			case RED -> new RedHandler();
+		};
 	}
+
 }
