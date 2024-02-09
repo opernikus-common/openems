@@ -422,7 +422,20 @@ public class ComponentManagerImpl extends AbstractOpenemsComponent
 		for (var k = properties.keys(); k.hasMoreElements();) {
 			var property = k.nextElement();
 			if (property.endsWith(".target")) {
-				properties.put(property, "(enabled=true)");
+				// oEMS begin
+				// take care of components excluding service.factoryPid by filter
+				var sfFilter = "";
+				if (((String) properties.get(property)).indexOf("(!(service.factoryPid") >= 0) {
+					sfFilter = "(!(service.factoryPid=" + properties.get("service.factoryPid") + "))";
+				}
+				var spid = properties.get("service.pid");
+				if (spid != null) {
+					// avoid self referenced components
+					properties.put(property, "(&(enabled=true)" + sfFilter + "(!(service.pid=" + spid + ")))");
+				} else {
+					properties.put(property, "(enabled=true)");
+				}
+				// oEMS begin
 			}
 		}
 

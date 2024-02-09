@@ -3,6 +3,8 @@ package io.openems.edge.simulator.meter.nrc.acting;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
+import io.openems.edge.meter.api.MeterType;
+
 @ObjectClassDefinition(//
 		name = "Simulator NRCMeter Acting", //
 		description = "This simulates an 'acting' non-regulated-consumption meter using data provided by a data source.")
@@ -17,6 +19,9 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 	@AttributeDefinition(name = "Is enabled?", description = "Is this Component enabled?")
 	boolean enabled() default true;
 
+	@AttributeDefinition(name = "Meter-Type", description = "What is measured by this Meter?")
+	MeterType type() default MeterType.CONSUMPTION_NOT_METERED;
+
 	@AttributeDefinition(name = "Datasource-ID", description = "ID of Simulator Datasource.")
 	String datasource_id() default "datasource0";
 
@@ -24,4 +29,5 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 	String datasource_target() default "(enabled=true)";
 
 	String webconsole_configurationFactory_nameHint() default "Simulator NRCMeter Acting [{id}]";
+
 }

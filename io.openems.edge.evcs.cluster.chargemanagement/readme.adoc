@@ -1,0 +1,71 @@
+# Evcs Cluster Chargemanagement
+
+
+## Functionality
+
+*Provides*
+
+* (x) load management by leveling 
+* (x) load management by round robin
+* (x) chargepoint priorities - configured within each used chargepoint
+* (x) phase balancing against one limiter
+* (x) supports several supply cable limits
+* (untested) pv optimized charge
+* (NYI) better performance around or less than activePower <= 0W 
+* (NYI) ludicrousMode - full load charging for 5mins immediately after charge process has started
+
+
+*Relevant limits:*
+
+* (x) fuseLimit[A] (phase based) (Grid) - should never be reached
+* (x) fuseSafetyOffset[A] (phase based) - distance between fuse limit and safe operation mode
+* (x) targetPower[W] (three phase based) - note that the Range up to a power of (fuseLimit-fuseSafetyOffset)*3 * 230V is a valid range to operate.
+* (x) targetPower - expected operation power of charge park. if current power > targetpower it will be downpowered within 30-60s   
+
+
+
+## Configuration
+
+* `allowCharging`[true|false] - set to false to disable the full chargepark.
+* `evcsIds` - the list of evcs IDs to control.
+* `evcsClusterLimiter_Ids` - the list of cluster limiters to use for operation.
+* `redHoldTime`[s] - when in state red, the state will stay for this number of seconds before switching back to state yellow.
+* `roundRobinTime`[s] - cycle time for round robin activity.
+* `imbalancHoldTime`[s] - max unbalance time before switching a) from leveling to round robin or b) to cycle round robin, in case phase imbalance can not be resolve.
+* `currentStep`[A] - size of a current decrement/increment step (per phase). 1A on 10 three phase charging chargepoints means 30A = 3*10*1A. Be careful when changing this.  
+* `stepInterval`[s] - delay until next increment/decrement step.
+
+
+
+
+## Description 
+
+...
+		
+
+When working with simulated chargepoints config.stepInterval() should be at least 3. 
+
+		
+	
+*Internal States:*
+
+* green    - charge management by leveling
+* yellow   - charge management by round robin
+* red      - all off
+	
+		
+```mermaid		
+stateDiagram-v2
+    [*] --> Red
+    Red --> Red
+    Red --> Yellow: redHoldtime 
+    Yellow --> Green: below safety limit AND no disabled chargesession 
+    Green --> Yellow: above safetyLimit 
+    Yellow --> Red: above safetyLimit 
+```
+
+View using Mermaid, e.g. https://mermaid-js.github.io/mermaid-live-editor		
+
+
+
+https://github.com/OpenEMS/openems/tree/develop/io.openems.edge.evcs.cluster.chargemanagement[Source Code icon:github[]]

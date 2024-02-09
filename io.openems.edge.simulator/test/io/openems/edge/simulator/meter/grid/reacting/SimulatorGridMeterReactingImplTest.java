@@ -17,6 +17,7 @@ public class SimulatorGridMeterReactingImplTest {
 				.addReference("cm", new DummyConfigurationAdmin()) //
 				.activate(MyConfig.create() //
 						.setId(COMPONENT_ID) //
+						.setFilterNotMeteredMeters(false) //
 						.build()) //
 				.next(new TestCase());
 	}

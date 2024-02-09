@@ -48,6 +48,7 @@ public class SimulatorNrcMeterActingImpl extends AbstractOpenemsComponent
 	private final CalculateEnergyFromPower calculateConsumptionEnergy = new CalculateEnergyFromPower(this,
 			ElectricityMeter.ChannelId.ACTIVE_CONSUMPTION_ENERGY);
 
+	private Config config;
 	@Reference
 	private ConfigurationAdmin cm;
 
@@ -67,6 +68,7 @@ public class SimulatorNrcMeterActingImpl extends AbstractOpenemsComponent
 
 	@Activate
 	private void activate(ComponentContext context, Config config) throws IOException {
+		this.config = config;
 		super.activate(context, config.id(), config.alias(), config.enabled());
 
 		// update filter for 'datasource'
@@ -83,7 +85,7 @@ public class SimulatorNrcMeterActingImpl extends AbstractOpenemsComponent
 
 	@Override
 	public MeterType getMeterType() {
-		return MeterType.CONSUMPTION_NOT_METERED;
+		return this.config.type();
 	}
 
 	@Override

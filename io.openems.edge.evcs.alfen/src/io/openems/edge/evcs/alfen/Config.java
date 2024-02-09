@@ -1,11 +1,11 @@
 package io.openems.edge.evcs.alfen;
 
-import io.openems.edge.evcs.api.Priority;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 import io.openems.edge.evcs.api.Evcs;
 import io.openems.edge.evcs.api.PhaseRotation;
+import io.openems.edge.evcs.api.Priority;
 
 @ObjectClassDefinition(//
 		name = "EVCS Alfen", //

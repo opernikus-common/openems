@@ -19,6 +19,7 @@ public class SimulatorGridMeterActingImplTest {
 				.addReference("datasource", new SimulatorDatasourceCsvDirectImpl()) //
 				.activate(MyConfig.create() //
 						.setId(COMPONENT_ID) //
+						.setSubtractEss(true) //
 						.setDatasourceId(DATASOURCE_ID) //
 						.build()); //
 		// .next(new TestCase()); // TODO requires DummyDatasource

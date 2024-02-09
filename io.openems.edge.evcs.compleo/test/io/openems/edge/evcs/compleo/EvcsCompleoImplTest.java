@@ -3,7 +3,6 @@ package io.openems.edge.evcs.compleo;
 import java.time.Instant;
 import java.time.ZoneOffset;
 
-import io.openems.edge.evcs.api.Priority;
 import org.junit.Test;
 
 import io.openems.common.test.TimeLeapClock;
@@ -16,6 +15,7 @@ import io.openems.edge.common.test.DummyConfigurationAdmin;
 import io.openems.edge.core.timer.DummyTimerManager;
 import io.openems.edge.core.timer.TimerManager;
 import io.openems.edge.evcs.api.PhaseRotation;
+import io.openems.edge.evcs.api.Priority;
 import io.openems.edge.evcs.api.Status;
 import io.openems.edge.meter.test.DummyElectricityMeter;
 

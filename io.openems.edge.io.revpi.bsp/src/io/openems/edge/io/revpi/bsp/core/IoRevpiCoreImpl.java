@@ -42,6 +42,7 @@ import io.openems.edge.io.api.bsp.LedState;
 public class IoRevpiCoreImpl extends AbstractOpenemsComponent
 		implements BoardSupportPackage, IoRevpiCore, DigitalOutput, DigitalInput, OpenemsComponent, EventHandler {
 
+	private static final int MAX_MEM_CYCLES = 120;
 	private final Logger log = LoggerFactory.getLogger(IoRevpiCoreImpl.class);
 
 	private final BooleanWriteChannel[] digitalOutChannels;
@@ -52,6 +53,8 @@ public class IoRevpiCoreImpl extends AbstractOpenemsComponent
 
 	private final Instant systemStartTime;
 
+	private int memCycleCntr = 0;
+
 	@Reference
 	private ComponentManager componentManager;
 
@@ -59,8 +62,10 @@ public class IoRevpiCoreImpl extends AbstractOpenemsComponent
 	private Sum sum;
 
 	public IoRevpiCoreImpl() {
-		super(OpenemsComponent.ChannelId.values(), //
-				BoardSupportPackage.ChannelId.values() //
+		super(//
+				OpenemsComponent.ChannelId.values(), //
+				BoardSupportPackage.ChannelId.values(), //
+				IoRevpiCore.ChannelId.values() //
 		);
 		this.digitalOutChannels = new BooleanWriteChannel[] { this.getDigitalOut1WriteChannel() };
 		this.systemStartTime = Instant.now();
@@ -76,7 +81,7 @@ public class IoRevpiCoreImpl extends AbstractOpenemsComponent
 			this.board.setA1Red();
 			this.board.setA2Red();
 		} catch (IOException e) {
-			// ignore
+			;
 		}
 
 		this.logInfo(this.log, "activated");
@@ -100,18 +105,21 @@ public class IoRevpiCoreImpl extends AbstractOpenemsComponent
 		if (!this.isEnabled()) {
 			return;
 		}
-		try {
-			this.updateUptime(this.systemStartTime);
-			this.updateStatusLedEdge();
-			this.updateStatusLedBackend();
-			// TODO implement LED A3
-			this.updateOnboardRelais();
-
-			// TODO Don't set state channel directly. Use Error-Channel in the component
-			// instead.
-			this.getStateChannel().setNextValue(Level.OK);
-		} catch (Exception e) {
-			this.getStateChannel().setNextValue(Level.FAULT);
+		switch (event.getTopic()) {
+		case EdgeEventConstants.TOPIC_CYCLE_EXECUTE_WRITE -> {
+			try {
+				this.updateUptime(this.systemStartTime);
+				this.updateMemoryUsage();
+				this.updateStatusLedEdge();
+				this.updateStatusLedBackend();
+				// TODO implement LED A3
+				this.updateOnboardRelais();
+				// TODO Create State-Channel
+				this.getStateChannel().setNextValue(Level.OK);
+			} catch (Exception e) {
+				this.getStateChannel().setNextValue(Level.FAULT);
+			}
+		}
 		}
 	}
 
@@ -124,11 +132,25 @@ public class IoRevpiCoreImpl extends AbstractOpenemsComponent
 		}
 	}
 
+	private void updateMemoryUsage() {
+		if (this.memCycleCntr++ % MAX_MEM_CYCLES != 0) {
+			return;
+		}
+		var runtime = Runtime.getRuntime();
+		this.channel(IoRevpiCore.ChannelId.JRE_TOTAL_MEMORY).setNextValue(runtime.totalMemory());
+		this.channel(IoRevpiCore.ChannelId.JRE_FREE_MEMORY).setNextValue(runtime.freeMemory());
+	}
+
 	private void updateStatusLedEdge() throws IOException {
 
 		if (this.sum.getState().isAtLeast(Level.FAULT)) {
 			this.board.setA1Red();
 			this.setStatusLedEdgeValue(LedState.RED);
+
+			// }else if (this.sum.getState().isAtLeast(Level.WARNING)) {
+			// this.board.setA1Oragnge();
+			// this.setStatusLedEdgeValue(LedState.ORANGE);
+
 		} else {
 			this.board.setA1Green();
 			this.setStatusLedEdgeValue(LedState.GREEN);

@@ -1,10 +1,10 @@
 package io.openems.edge.evcs.stoehr.designtower;
 
-import io.openems.edge.evcs.api.Priority;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 import io.openems.edge.evcs.api.PhaseRotation;
+import io.openems.edge.evcs.api.Priority;
 
 @ObjectClassDefinition(//
 		name = "EVCS Stöhr Designtower", //

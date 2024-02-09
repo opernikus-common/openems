@@ -17,7 +17,7 @@ import io.openems.common.exceptions.OpenemsException;
 import io.openems.edge.common.component.AbstractOpenemsComponent;
 import io.openems.edge.common.component.OpenemsComponent;
 import io.openems.edge.ess.dccharger.api.EssDcCharger;
-import io.openems.edge.ess.sungrow.SungrowEss;
+import io.openems.edge.ess.sungrow.EssSungrow;
 
 @Designate(ocd = Config.class, factory = true)
 @Component(//
@@ -33,7 +33,7 @@ public class SungrowVirtualDcCharger extends AbstractOpenemsComponent implements
 	private ConfigurationAdmin cm;
 
 	@Reference(policy = ReferencePolicy.STATIC, policyOption = ReferencePolicyOption.GREEDY, cardinality = ReferenceCardinality.MANDATORY)
-	private SungrowEss ess;
+	private EssSungrow ess;
 
 	public SungrowVirtualDcCharger() {
 		super(//
@@ -54,19 +54,18 @@ public class SungrowVirtualDcCharger extends AbstractOpenemsComponent implements
 		this.mapChannelValues();
 	}
 
-	@Override
 	@Deactivate
 	protected void deactivate() {
 		super.deactivate();
 	}
 
 	private void mapChannelValues() throws OpenemsException {
-		this.ess.getTotalDcPowerChannel().onUpdate(newValue -> {
+		this.ess.getTotalDcPowerChannel().onUpdate((newValue) -> {
 			if (newValue.isDefined()) {
 				this._setActualPower(newValue.get());
 			}
 		});
-		this.ess.getTotalPvGenerationChannel().onUpdate(newValue -> {
+		this.ess.getTotalPvGenerationChannel().onUpdate((newValue) -> {
 			if (newValue.isDefined()) {
 				this._setActualEnergy(newValue.get());
 			}

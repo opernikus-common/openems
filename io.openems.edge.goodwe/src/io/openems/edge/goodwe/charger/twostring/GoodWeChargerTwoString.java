@@ -27,20 +27,20 @@ public interface GoodWeChargerTwoString extends OpenemsComponent, EssDcCharger, 
 
 	/**
 	 * Used PV port of the GoodWe inverter.
-	 * 
+	 *
 	 * @return Used PV port
 	 */
 	public PvPort pvPort();
 
 	/**
 	 * Calculate a value by rule of three.
-	 * 
+	 *
 	 * <p>
 	 * Solves proportions and calculate the unknown value.
-	 * 
+	 *
 	 * <p>
 	 * Assure that the unit of the divisor and relatedValue are the same.
-	 * 
+	 *
 	 * @param total   total optional of the required unit
 	 * @param divisor divisor of the known unit
 	 * @param related related optional with the known unit
@@ -61,7 +61,7 @@ public interface GoodWeChargerTwoString extends OpenemsComponent, EssDcCharger, 
 					/*
 					 * As the total power of the charger is sometimes less than the power of an
 					 * individual string, the minimum is taken.
-					 * 
+					 *
 					 * TODO: Remove it if it has been fixed by GoodWe
 					 */
 					result.set(Math.round((totalValue * relatedValue) / divisorValue.floatValue()));
