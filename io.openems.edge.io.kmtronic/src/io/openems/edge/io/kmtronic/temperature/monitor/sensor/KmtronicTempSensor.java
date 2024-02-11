@@ -10,7 +10,6 @@ public interface KmtronicTempSensor extends OpenemsComponent {
 
 	public enum ChannelId implements io.openems.edge.common.channel.ChannelId {
 		SENSOR_ID(Doc.of(OpenemsType.STRING)), //
-
 		SENSOR_NAME(Doc.of(OpenemsType.STRING));
 
 		private final Doc doc;

@@ -14,16 +14,20 @@ public interface EvcsClusterPeakShaving extends OpenemsComponent {
 
 	public enum ChannelId implements io.openems.edge.common.channel.ChannelId {
 		EVCS_CLUSTER_STATUS(Doc.of(EvcsClusterStatus.values()) //
-				.text("Status calculated from all given Evcss.")),
+				.text("Status calculated from all given Evcss.") //
+				.persistencePriority(PersistencePriority.HIGH)),
 		EVCS_BLOCKED_CHARGE_POWER(Doc.of(OpenemsType.INTEGER) //
 				.unit(Unit.WATT).accessMode(AccessMode.READ_ONLY) //
 				.persistencePriority(PersistencePriority.HIGH)), //
 		MAXIMUM_POWER_TO_DISTRIBUTE(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.WATT).text("Maximum power to distribute, for all given Evcss.")),
+				.unit(Unit.WATT) //
+				.persistencePriority(PersistencePriority.HIGH) //
+				.text("Maximum power to distribute, for all given Evcss.")),
 		MAXIMUM_AVAILABLE_ESS_POWER(Doc.of(OpenemsType.INTEGER) //
 				.unit(Unit.WATT).text("Maximum available ess power.")),
 		MAXIMUM_AVAILABLE_GRID_POWER(Doc.of(OpenemsType.INTEGER) //
-				.unit(Unit.WATT).text("Maximum available grid power.")),
+				.unit(Unit.WATT) //
+				.text("Maximum available grid power.")),
 		USED_ESS_MAXIMUM_DISCHARGE_POWER(Doc.of(OpenemsType.INTEGER) //
 				.unit(Unit.WATT)
 				.text("Dynamic maximum discharge power, that could be limited by us to ensure the possibility to discharge the battery."));

@@ -173,7 +173,7 @@ public class IoRevPiDigitalIoDeviceImpl extends AbstractOpenemsComponent
 			try {
 				ch.setNextWriteValue(setOn);
 			} catch (OpenemsNamedException e) {
-				// ignore
+				; // ignore
 			}
 		}
 	}

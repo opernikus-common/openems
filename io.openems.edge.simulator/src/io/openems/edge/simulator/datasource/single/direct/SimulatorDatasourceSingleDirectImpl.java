@@ -55,14 +55,13 @@ public class SimulatorDatasourceSingleDirectImpl extends AbstractCsvDatasource
 	protected void deactivate() {
 		super.deactivate();
 	}
-	
+
 	@Modified
 	private void modified(ComponentContext compContext, Config config) throws NumberFormatException, IOException {
 		this.config = config;
 		super.modified(compContext, config.id(), config.alias(), config.enabled());
 		this.data = this.getData();
 	}
-	
 
 	@Override
 	protected ComponentManager getComponentManager() {

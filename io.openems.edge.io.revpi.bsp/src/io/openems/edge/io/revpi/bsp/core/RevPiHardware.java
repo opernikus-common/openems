@@ -52,7 +52,7 @@ public class RevPiHardware {
 
 			@Override
 			public void close() throws IOException {
-				// we silently ignore a close request
+				; // we silently ignore a close request
 			}
 		};
 	}

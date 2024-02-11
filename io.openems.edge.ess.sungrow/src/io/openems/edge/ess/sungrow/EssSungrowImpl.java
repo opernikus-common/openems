@@ -52,22 +52,28 @@ import io.openems.edge.ess.sungrow.enums.EmsMode;
 		immediate = true, //
 		configurationPolicy = ConfigurationPolicy.REQUIRE //
 )
-public class SungrowEssImpl extends AbstractOpenemsModbusComponent implements SungrowEss, SymmetricEss,
+public class EssSungrowImpl extends AbstractOpenemsModbusComponent implements EssSungrow, SymmetricEss,
 		ManagedSymmetricEss, HybridEss, StartStoppable, ModbusComponent, OpenemsComponent {
+
+	private static final ElementToChannelConverter GRID_MODE_CONVERTER = new ElementToChannelConverter(value -> {
+		if (value.equals(0x55)) {
+			return GridMode.ON_GRID;
+		}
+		if (value.equals(0xAA)) {
+			return GridMode.OFF_GRID;
+		}
+		return GridMode.UNDEFINED;
+	});
 
 	private static final ElementToChannelConverter START_STOP_CONVERTER = new ElementToChannelConverter(//
 			value -> {
-				try {
-					if (value.equals(0xCF)) {
-						return StartStop.START;
-					}
-					if (value.equals(0xCE)) {
-						return StartStop.STOP;
-					}
-					return StartStop.UNDEFINED;
-				} catch (NullPointerException e) {
-					return StartStop.UNDEFINED;
+				if (value.equals(0xCF)) {
+					return StartStop.START;
 				}
+				if (value.equals(0xCE)) {
+					return StartStop.STOP;
+				}
+				return StartStop.UNDEFINED;
 			}, //
 			value -> {
 				if (value.equals(StartStop.START)) {
@@ -84,9 +90,9 @@ public class SungrowEssImpl extends AbstractOpenemsModbusComponent implements Su
 
 	private Config config = null;
 
-	private int heartbeat = 500;
+	private int heartbeat = 1;
 
-	public SungrowEssImpl() {
+	public EssSungrowImpl() {
 		super(//
 				OpenemsComponent.ChannelId.values(), //
 				ModbusComponent.ChannelId.values(), //
@@ -94,14 +100,13 @@ public class SungrowEssImpl extends AbstractOpenemsModbusComponent implements Su
 				ManagedSymmetricEss.ChannelId.values(), //
 				HybridEss.ChannelId.values(), //
 				StartStoppable.ChannelId.values(), //
-				SungrowEss.ChannelId.values() //
+				EssSungrow.ChannelId.values() //
 		);
 	}
 
 	@Reference
 	protected ConfigurationAdmin cm;
 
-	@Override
 	@Reference(policy = ReferencePolicy.STATIC, policyOption = ReferencePolicyOption.GREEDY, cardinality = ReferenceCardinality.MANDATORY)
 	protected void setModbus(BridgeModbus modbus) {
 		super.setModbus(modbus);
@@ -122,32 +127,16 @@ public class SungrowEssImpl extends AbstractOpenemsModbusComponent implements Su
 		// NOTE: This should normally be read from the device
 		this._setGridMode(GridMode.ON_GRID);
 
-		this.installPowerListener();
-		this.installEnergyListener();
+		this.installListener();
 	}
 
-	@Override
 	@Deactivate
 	protected void deactivate() {
 		super.deactivate();
 	}
 
-	private void installPowerListener() {
-		this.getBatteryPowerChannel().onUpdate(value -> {
-			if (!value.isDefined()) {
-				return;
-			}
-			var power = value.get();
-			if (this.isCharging()) {
-				this._setDcDischargePower(-power);
-			} else {
-				this._setDcDischargePower(power);
-			}
-		});
-	}
-
-	private void installEnergyListener() {
-		final Consumer<Value<Long>> acChargeEnergy = value -> {
+	private void installListener() {
+		final Consumer<Value<Long>> acChargeEnergy = (value) -> {
 			var dcChrg = this.getDcChargeEnergy();
 			var pvChrg = this.getTotalBatteryChargeEnergyFromPv();
 			if (dcChrg.isDefined() && pvChrg.isDefined()) {
@@ -165,176 +154,178 @@ public class SungrowEssImpl extends AbstractOpenemsModbusComponent implements Su
 
 		return new ModbusProtocol(this, //
 				new FC4ReadInputRegistersTask(4989, Priority.HIGH, //
-						this.m(SungrowEss.ChannelId.SERIAL_NUMBER, new StringWordElement(4989, 10)), //
+						m(EssSungrow.ChannelId.SERIAL_NUMBER, new StringWordElement(4989, 10)), //
 						new DummyRegisterElement(4999), // Device type code
-						this.m(SungrowEss.ChannelId.NOMINAL_OUTPUT_POWER, new UnsignedWordElement(5000), //
+						m(EssSungrow.ChannelId.NOMINAL_OUTPUT_POWER, new UnsignedWordElement(5000), //
 								ElementToChannelConverter.SCALE_FACTOR_2), //
 						new DummyRegisterElement(5001), // Output type
-						this.m(SungrowEss.ChannelId.DAILY_OUTPUT_ENERGY, new UnsignedWordElement(5002), //
+						m(EssSungrow.ChannelId.DAILY_OUTPUT_ENERGY, new UnsignedWordElement(5002), //
 								ElementToChannelConverter.SCALE_FACTOR_2), //
-						this.m(SymmetricEss.ChannelId.ACTIVE_DISCHARGE_ENERGY, //
+						m(SymmetricEss.ChannelId.ACTIVE_DISCHARGE_ENERGY, //
 								new UnsignedDoublewordElement(5003).wordOrder(WordOrder.LSWMSW), //
 								ElementToChannelConverter.SCALE_FACTOR_2), //
 						new DummyRegisterElement(5005, 5006), //
-						this.m(SungrowEss.ChannelId.INSIDE_TEMPERATURE, new SignedWordElement(5007)), //
+						m(EssSungrow.ChannelId.INSIDE_TEMPERATURE, new SignedWordElement(5007)), //
 						new DummyRegisterElement(5008, 5009), //
-						this.m(SungrowEss.ChannelId.MPPT1_VOLTAGE, new UnsignedWordElement(5010), //
+						m(EssSungrow.ChannelId.MPPT1_VOLTAGE, new UnsignedWordElement(5010), //
 								ElementToChannelConverter.SCALE_FACTOR_MINUS_1), //
-						this.m(SungrowEss.ChannelId.MPPT1_CURRENT, new UnsignedWordElement(5011), //
+						m(EssSungrow.ChannelId.MPPT1_CURRENT, new UnsignedWordElement(5011), //
 								ElementToChannelConverter.SCALE_FACTOR_MINUS_1), //
-						this.m(SungrowEss.ChannelId.MPPT2_VOLTAGE, new UnsignedWordElement(5012), //
+						m(EssSungrow.ChannelId.MPPT2_VOLTAGE, new UnsignedWordElement(5012), //
 								ElementToChannelConverter.SCALE_FACTOR_MINUS_1), //
-						this.m(SungrowEss.ChannelId.MPPT2_CURRENT, new UnsignedWordElement(5013), //
+						m(EssSungrow.ChannelId.MPPT2_CURRENT, new UnsignedWordElement(5013), //
 								ElementToChannelConverter.SCALE_FACTOR_MINUS_1), //
 						new DummyRegisterElement(5014, 5015), //
-						this.m(SungrowEss.ChannelId.TOTAL_DC_POWER, //
+						m(EssSungrow.ChannelId.TOTAL_DC_POWER, //
 								new UnsignedDoublewordElement(5016).wordOrder(WordOrder.LSWMSW)), //
-						this.m(SungrowEss.ChannelId.VOLTAGE_L1, new UnsignedWordElement(5018), //
+						m(EssSungrow.ChannelId.VOLTAGE_L1, new UnsignedWordElement(5018), //
 								ElementToChannelConverter.SCALE_FACTOR_2), //
-						this.m(SungrowEss.ChannelId.VOLTAGE_L2, new UnsignedWordElement(5019), //
+						m(EssSungrow.ChannelId.VOLTAGE_L2, new UnsignedWordElement(5019), //
 								ElementToChannelConverter.SCALE_FACTOR_2), //
-						this.m(SungrowEss.ChannelId.VOLTAGE_L3, new UnsignedWordElement(5020), //
+						m(EssSungrow.ChannelId.VOLTAGE_L3, new UnsignedWordElement(5020), //
 								ElementToChannelConverter.SCALE_FACTOR_2), //
 						new DummyRegisterElement(5021, 5031), //
-						this.m(SymmetricEss.ChannelId.REACTIVE_POWER, //
+						m(SymmetricEss.ChannelId.REACTIVE_POWER, //
 								new SignedDoublewordElement(5032).wordOrder(WordOrder.LSWMSW)), //
-						this.m(SungrowEss.ChannelId.POWER_FACTOR, new SignedWordElement(5034)), //
-						this.m(SungrowEss.ChannelId.GRID_FREQUENCY, new UnsignedWordElement(5035), //
+						m(EssSungrow.ChannelId.POWER_FACTOR, new SignedWordElement(5034)), //
+						m(EssSungrow.ChannelId.GRID_FREQUENCY, new UnsignedWordElement(5035), //
 								ElementToChannelConverter.SCALE_FACTOR_2)), //
 
 				new FC4ReadInputRegistersTask(5621, Priority.LOW, //
-						this.m(SungrowEss.ChannelId.EXPORT_LIMIT_MIN, new UnsignedWordElement(5621), //
+						m(EssSungrow.ChannelId.EXPORT_LIMIT_MIN, new UnsignedWordElement(5621), //
 								ElementToChannelConverter.SCALE_FACTOR_1), //
-						this.m(SungrowEss.ChannelId.EXPORT_LIMIT_MAX, new UnsignedWordElement(5622), //
+						m(EssSungrow.ChannelId.EXPORT_LIMIT_MAX, new UnsignedWordElement(5622), //
 								ElementToChannelConverter.SCALE_FACTOR_1), //
 						new DummyRegisterElement(5623, 5626), //
-						this.m(SungrowEss.ChannelId.BDC_RATED_POWER, new UnsignedWordElement(5627), //
+						m(EssSungrow.ChannelId.BDC_RATED_POWER, new UnsignedWordElement(5627), //
 								ElementToChannelConverter.SCALE_FACTOR_2), //
 						new DummyRegisterElement(5628, 5633), //
-						this.m(SungrowEss.ChannelId.CHARGE_MAX_CURRENT, new UnsignedWordElement(5634)), //
-						this.m(SungrowEss.ChannelId.DISCHARGE_MAX_CURRENT, new UnsignedWordElement(5635)) //
+						m(EssSungrow.ChannelId.CHARGE_MAX_CURRENT, new UnsignedWordElement(5634)), //
+						m(EssSungrow.ChannelId.DISCHARGE_MAX_CURRENT, new UnsignedWordElement(5635)) //
 				), //
 
 				new FC4ReadInputRegistersTask(12999, Priority.HIGH, //
-						this.m(SungrowEss.ChannelId.SYSTEM_STATE, new UnsignedWordElement(12999)), //
-						this.m(new BitsWordElement(13000, this) //
-								.bit(0, SungrowEss.ChannelId.POWER_GENERATED_FROM_PV) //
-								.bit(1, SungrowEss.ChannelId.BATTERY_CHARGING) //
-								.bit(2, SungrowEss.ChannelId.BATTERY_DISCHARGING) //
-								.bit(3, SungrowEss.ChannelId.POSITIVE_LOAD_POWER) //
-								.bit(4, SungrowEss.ChannelId.FEED_IN_POWER) //
-								.bit(5, SungrowEss.ChannelId.IMPORT_POWER_FROM_GRID) //
-								.bit(7, SungrowEss.ChannelId.NEGATIVE_LOAD_POWER) //
+						m(EssSungrow.ChannelId.SYSTEM_STATE, new UnsignedWordElement(12999)), //
+						m(new BitsWordElement(13000, this) //
+								.bit(0, EssSungrow.ChannelId.POWER_GENERATED_FROM_PV) //
+								.bit(1, EssSungrow.ChannelId.BATTERY_CHARGING) //
+								.bit(2, EssSungrow.ChannelId.BATTERY_DISCHARGING) //
+								.bit(3, EssSungrow.ChannelId.POSITIVE_LOAD_POWER) //
+								.bit(4, EssSungrow.ChannelId.FEED_IN_POWER) //
+								.bit(5, EssSungrow.ChannelId.IMPORT_POWER_FROM_GRID) //
+								.bit(7, EssSungrow.ChannelId.NEGATIVE_LOAD_POWER) //
 						), //
-						this.m(SungrowEss.ChannelId.DAILY_PV_GENERATION, new UnsignedWordElement(13001), //
+						m(EssSungrow.ChannelId.DAILY_PV_GENERATION, new UnsignedWordElement(13001), //
 								ElementToChannelConverter.SCALE_FACTOR_2), //
-						this.m(SungrowEss.ChannelId.TOTAL_PV_GENERATION, //
+						m(EssSungrow.ChannelId.TOTAL_PV_GENERATION, //
 								new UnsignedDoublewordElement(13002).wordOrder(WordOrder.LSWMSW), //
 								ElementToChannelConverter.SCALE_FACTOR_2), //
-						this.m(SungrowEss.ChannelId.DAILY_EXPORT_POWER_FROM_PV, new UnsignedWordElement(13004), //
+						m(EssSungrow.ChannelId.DAILY_EXPORT_POWER_FROM_PV, new UnsignedWordElement(13004), //
 								ElementToChannelConverter.SCALE_FACTOR_2), //
-						this.m(SungrowEss.ChannelId.TOTAL_EXPORT_ENERGY_FROM_PV, //
+						m(EssSungrow.ChannelId.TOTAL_EXPORT_ENERGY_FROM_PV, //
 								new UnsignedDoublewordElement(13005).wordOrder(WordOrder.LSWMSW), //
 								ElementToChannelConverter.SCALE_FACTOR_2), //
-						this.m(SungrowEss.ChannelId.LOAD_POWER,
+						m(EssSungrow.ChannelId.LOAD_POWER,
 								new SignedDoublewordElement(13007).wordOrder(WordOrder.LSWMSW)), //
-						this.m(SungrowEss.ChannelId.EXPORT_POWER, //
+						m(EssSungrow.ChannelId.EXPORT_POWER, //
 								new SignedDoublewordElement(13009).wordOrder(WordOrder.LSWMSW)), //
-						this.m(SungrowEss.ChannelId.DAILY_BATTERY_CHARGE_ENERGY_FROM_PV, new UnsignedWordElement(13011), //
+						m(EssSungrow.ChannelId.DAILY_BATTERY_CHARGE_ENERGY_FROM_PV, new UnsignedWordElement(13011), //
 								ElementToChannelConverter.SCALE_FACTOR_2), //
-						this.m(SungrowEss.ChannelId.TOTAL_BATTERY_CHARGE_ENERGY_FROM_PV, //
+						m(EssSungrow.ChannelId.TOTAL_BATTERY_CHARGE_ENERGY_FROM_PV, //
 								new UnsignedDoublewordElement(13012).wordOrder(WordOrder.LSWMSW), //
 								ElementToChannelConverter.SCALE_FACTOR_2), //
-						this.m(SungrowEss.ChannelId.CO2_REDUCTION, //
+						m(EssSungrow.ChannelId.CO2_REDUCTION, //
 								new UnsignedDoublewordElement(13014).wordOrder(WordOrder.LSWMSW), //
 								ElementToChannelConverter.SCALE_FACTOR_MINUS_1), //
-						this.m(SungrowEss.ChannelId.DAILY_DIRECT_ENERGY_CONSUMPTION, new UnsignedWordElement(13016), //
+						m(EssSungrow.ChannelId.DAILY_DIRECT_ENERGY_CONSUMPTION, new UnsignedWordElement(13016), //
 								ElementToChannelConverter.SCALE_FACTOR_2), //
-						this.m(SungrowEss.ChannelId.TOTAL_DIRECT_ENERGY_CONSUMPTION, //
+						m(EssSungrow.ChannelId.TOTAL_DIRECT_ENERGY_CONSUMPTION, //
 								new UnsignedDoublewordElement(13017).wordOrder(WordOrder.LSWMSW), //
 								ElementToChannelConverter.SCALE_FACTOR_2), //
-						this.m(SungrowEss.ChannelId.BATTERY_VOLTAGE, new UnsignedWordElement(13019), //
+						m(EssSungrow.ChannelId.BATTERY_VOLTAGE, new UnsignedWordElement(13019), //
 								ElementToChannelConverter.SCALE_FACTOR_MINUS_1), //
-						this.m(SungrowEss.ChannelId.BATTERY_CURRENT, new UnsignedWordElement(13020), //
+						m(EssSungrow.ChannelId.BATTERY_CURRENT, new UnsignedWordElement(13020), //
 								ElementToChannelConverter.SCALE_FACTOR_MINUS_1), //
-						this.m(SungrowEss.ChannelId.BATTERY_POWER, new UnsignedWordElement(13021)), //
-						this.m(SymmetricEss.ChannelId.SOC, new UnsignedWordElement(13022), //
+						m(HybridEss.ChannelId.DC_DISCHARGE_POWER, new UnsignedWordElement(13021), //
+								ElementToChannelConverter.INVERT_IF_TRUE(this.isCharging())), //
+						m(SymmetricEss.ChannelId.SOC, new UnsignedWordElement(13022), //
 								ElementToChannelConverter.SCALE_FACTOR_MINUS_1), //
-						this.m(SungrowEss.ChannelId.SOH, new UnsignedWordElement(13023), //
+						m(EssSungrow.ChannelId.SOH, new UnsignedWordElement(13023), //
 								ElementToChannelConverter.SCALE_FACTOR_MINUS_1), //
-						this.m(SungrowEss.ChannelId.BATTERY_TEMPERATURE, new SignedWordElement(13024)), //
-						this.m(SungrowEss.ChannelId.DAILY_BATTERY_DISCHARGE_ENERGY, new UnsignedWordElement(13025), //
+						m(EssSungrow.ChannelId.BATTERY_TEMPERATURE, new SignedWordElement(13024)), //
+						m(EssSungrow.ChannelId.DAILY_BATTERY_DISCHARGE_ENERGY, new UnsignedWordElement(13025), //
 								ElementToChannelConverter.SCALE_FACTOR_2), //
-						this.m(HybridEss.ChannelId.DC_DISCHARGE_ENERGY, //
+						m(HybridEss.ChannelId.DC_DISCHARGE_ENERGY, //
 								new UnsignedDoublewordElement(13026).wordOrder(WordOrder.LSWMSW), //
 								ElementToChannelConverter.SCALE_FACTOR_2), //
-						this.m(SungrowEss.ChannelId.SELF_CONSUMPTION_OF_TODAY, new UnsignedWordElement(13028), //
+						m(EssSungrow.ChannelId.SELF_CONSUMPTION_OF_TODAY, new UnsignedWordElement(13028), //
 								ElementToChannelConverter.SCALE_FACTOR_MINUS_1), //
-						new DummyRegisterElement(13029), // Grid mode, not working properly
-						this.m(SungrowEss.ChannelId.CURRENT_L1, new SignedWordElement(13030), //
+						m(SymmetricEss.ChannelId.GRID_MODE, new UnsignedWordElement(13029), //
+								GRID_MODE_CONVERTER), //
+						m(EssSungrow.ChannelId.CURRENT_L1, new SignedWordElement(13030), //
 								ElementToChannelConverter.SCALE_FACTOR_2), //
-						this.m(SungrowEss.ChannelId.CURRENT_L2, new SignedWordElement(13031), //
+						m(EssSungrow.ChannelId.CURRENT_L2, new SignedWordElement(13031), //
 								ElementToChannelConverter.SCALE_FACTOR_2), //
-						this.m(SungrowEss.ChannelId.CURRENT_L3, new SignedWordElement(13032), //
+						m(EssSungrow.ChannelId.CURRENT_L3, new SignedWordElement(13032), //
 								ElementToChannelConverter.SCALE_FACTOR_2), //
-						this.m(SymmetricEss.ChannelId.ACTIVE_POWER, new SignedDoublewordElement(13033))
+						m(SymmetricEss.ChannelId.ACTIVE_POWER, new SignedDoublewordElement(13033))
 								.wordOrder(WordOrder.LSWMSW), //
-						this.m(SungrowEss.ChannelId.DAILY_IMPORT_ENERGY, new UnsignedWordElement(13035), //
+						m(EssSungrow.ChannelId.DAILY_IMPORT_ENERGY, new UnsignedWordElement(13035), //
 								ElementToChannelConverter.SCALE_FACTOR_2), //
-						this.m(SungrowEss.ChannelId.TOTAL_IMPORT_ENERGY,
+						m(EssSungrow.ChannelId.TOTAL_IMPORT_ENERGY,
 								new UnsignedDoublewordElement(13036).wordOrder(WordOrder.LSWMSW), //
 								ElementToChannelConverter.SCALE_FACTOR_2), //
-						this.m(SymmetricEss.ChannelId.CAPACITY, new UnsignedWordElement(13038), //
+						m(SymmetricEss.ChannelId.CAPACITY, new UnsignedWordElement(13038), //
 								ElementToChannelConverter.SCALE_FACTOR_2), //
-						this.m(SungrowEss.ChannelId.DAILY_CHARGE_ENERGY, new UnsignedWordElement(13039), //
+						m(EssSungrow.ChannelId.DAILY_CHARGE_ENERGY, new UnsignedWordElement(13039), //
 								ElementToChannelConverter.SCALE_FACTOR_2), //
-						this.m(HybridEss.ChannelId.DC_CHARGE_ENERGY,
+						m(SymmetricEss.ChannelId.ACTIVE_CHARGE_ENERGY, //
 								new UnsignedDoublewordElement(13040).wordOrder(WordOrder.LSWMSW), //
 								ElementToChannelConverter.SCALE_FACTOR_2), //
 						new DummyRegisterElement(13042, 13043), //
-						this.m(SungrowEss.ChannelId.DAILY_EXPORT_ENERGY, new UnsignedWordElement(13044), //
+						m(EssSungrow.ChannelId.DAILY_EXPORT_ENERGY, new UnsignedWordElement(13044), //
 								ElementToChannelConverter.SCALE_FACTOR_2), //
-						this.m(SungrowEss.ChannelId.TOTAL_EXPORT_ENERGY,
+						m(EssSungrow.ChannelId.TOTAL_EXPORT_ENERGY,
 								new UnsignedDoublewordElement(13045).wordOrder(WordOrder.LSWMSW), //
 								ElementToChannelConverter.SCALE_FACTOR_2) //
 				), //
 				new FC3ReadRegistersTask(12999, Priority.LOW, //
-						this.m(StartStoppable.ChannelId.START_STOP, new UnsignedWordElement(12999), //
+						m(StartStoppable.ChannelId.START_STOP, new UnsignedWordElement(12999), //
 								START_STOP_CONVERTER) //
 				), //
 				new FC3ReadRegistersTask(13049, Priority.HIGH, //
-						this.m(SungrowEss.ChannelId.EMS_MODE, new UnsignedWordElement(13049)), //
-						this.m(SungrowEss.ChannelId.CHARGE_DISCHARGE_COMMAND, new UnsignedWordElement(13050)), //
-						this.m(SungrowEss.ChannelId.CHARGE_DISCHARGE_POWER, new UnsignedWordElement(13051)), //
+						m(EssSungrow.ChannelId.EMS_MODE, new UnsignedWordElement(13049)), //
+						m(EssSungrow.ChannelId.CHARGE_DISCHARGE_COMMAND, new UnsignedWordElement(13050)), //
+						m(EssSungrow.ChannelId.CHARGE_DISCHARGE_POWER, new UnsignedWordElement(13051)), //
 						new DummyRegisterElement(13052, 13056), //
-						this.m(SungrowEss.ChannelId.MAX_SOC, new UnsignedWordElement(13057), //
+						m(EssSungrow.ChannelId.MAX_SOC, new UnsignedWordElement(13057), //
 								ElementToChannelConverter.SCALE_FACTOR_MINUS_1), //
-						this.m(SungrowEss.ChannelId.MIN_SOC, new UnsignedWordElement(13058), //
+						m(EssSungrow.ChannelId.MIN_SOC, new UnsignedWordElement(13058), //
 								ElementToChannelConverter.SCALE_FACTOR_MINUS_1), //
 						new DummyRegisterElement(13059, 13078), //
-						this.m(SungrowEss.ChannelId.HEARTBEAT, new UnsignedWordElement(13079)), //
+						m(EssSungrow.ChannelId.HEARTBEAT, new UnsignedWordElement(13079)), //
 						new DummyRegisterElement(13080, 13084), //
-						this.m(SungrowEss.ChannelId.METER_COMM_DETECTION, new UnsignedWordElement(13085)), //
-						this.m(SungrowEss.ChannelId.EXPORT_POWER_LIMITATION, new UnsignedWordElement(13086)), //
+						m(EssSungrow.ChannelId.METER_COMM_DETECTION, new UnsignedWordElement(13085)), //
+						m(EssSungrow.ChannelId.EXPORT_POWER_LIMITATION, new UnsignedWordElement(13086)), //
 						new DummyRegisterElement(13087, 13098), //
-						this.m(SungrowEss.ChannelId.RESERVED_SOC_FOR_BACKUP, new UnsignedWordElement(13099)) //
+						m(EssSungrow.ChannelId.RESERVED_SOC_FOR_BACKUP, new UnsignedWordElement(13099)) //
 				), //
 
 				new FC16WriteRegistersTask(13049, //
-						this.m(SungrowEss.ChannelId.EMS_MODE, new UnsignedWordElement(13049)), //
-						this.m(SungrowEss.ChannelId.CHARGE_DISCHARGE_COMMAND, new UnsignedWordElement(13050)), //
-						this.m(SungrowEss.ChannelId.CHARGE_DISCHARGE_POWER, new UnsignedWordElement(13051)) //
+						m(EssSungrow.ChannelId.EMS_MODE, new UnsignedWordElement(13049)), //
+						m(EssSungrow.ChannelId.CHARGE_DISCHARGE_COMMAND, new UnsignedWordElement(13050)), //
+						m(EssSungrow.ChannelId.CHARGE_DISCHARGE_POWER, new UnsignedWordElement(13051)) //
 				), //
 				new FC6WriteRegisterTask(13079, //
-						this.m(SungrowEss.ChannelId.HEARTBEAT, new UnsignedWordElement(13079)) //
+						m(EssSungrow.ChannelId.HEARTBEAT, new UnsignedWordElement(13079)) //
 				) //
 
 		);
 	}
 
 	private boolean isCharging() {
-		return this.getBatteryChargingChannel().value().orElse(//
-				!this.getBatteryDischargingChannel().value().orElse(true));
+		return (this.getBatteryChargingChannel().value().orElse(//
+				!this.getBatteryDischargingChannel().value().orElse(true)));
 	}
 
 	@Override
@@ -353,14 +344,10 @@ public class SungrowEssImpl extends AbstractOpenemsModbusComponent implements Su
 			this.getEmsModeChannel().setNextWriteValue(EmsMode.SELF_CONSUMPTION);
 			return;
 		}
-		if (this.heartbeat == 500) {
-			this.heartbeat = 600;
-		} else {
-			this.heartbeat = 500;
-		}
+		this.heartbeat++;
+		this.heartbeat = (this.heartbeat - 1) % 1000 + 1;
 		this.getHeartbeatChannel().setNextWriteValue(this.heartbeat);
-		this.channel(SungrowEss.ChannelId.DEBUG_HEARTBEAT).setNextValue(this.heartbeat);
-
+		this.channel(EssSungrow.ChannelId.DEBUG_HEARTBEAT).setNextValue(this.heartbeat);
 		this.getEmsModeChannel().setNextWriteValue(EmsMode.EXTERNAL_EMS_MODE);
 
 		if (activePower > 0) {

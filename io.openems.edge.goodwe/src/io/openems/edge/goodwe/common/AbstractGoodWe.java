@@ -1179,7 +1179,7 @@ public abstract class AbstractGoodWe extends AbstractOpenemsModbusComponent
 
 		/*
 		 * Handles different GoodWe Types.
-		 * 
+		 *
 		 * Register 35011: GoodWeType as String (Not supported for GoodWe 20 & 30)
 		 * Register 35003: Serial number as String (Fallback for GoodWe 20 & 30)
 		 */
@@ -1267,7 +1267,7 @@ public abstract class AbstractGoodWe extends AbstractOpenemsModbusComponent
 
 	/**
 	 * Get GoodWe type from the GoodWe string representation.
-	 * 
+	 *
 	 * @param stringValue GoodWe type as String
 	 * @return type as {@link GoodWeType}
 	 */
@@ -1317,11 +1317,11 @@ public abstract class AbstractGoodWe extends AbstractOpenemsModbusComponent
 
 	/**
 	 * Handle multiple string chargers.
-	 * 
+	 *
 	 * <p>
 	 * For MPPT connectors e.g. two string on one MPPT the power information is
 	 * spread over several registers that should be read as complete blocks.
-	 * 
+	 *
 	 * @param protocol current protocol
 	 * @throws OpenemsException on error
 	 */

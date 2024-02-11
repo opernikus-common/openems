@@ -16,9 +16,9 @@ import io.openems.common.exceptions.OpenemsError.OpenemsNamedException;
 import io.openems.common.exceptions.OpenemsException;
 import io.openems.edge.common.component.AbstractOpenemsComponent;
 import io.openems.edge.common.component.OpenemsComponent;
-import io.openems.edge.ess.sungrow.SungrowEss;
-import io.openems.edge.meter.api.ElectricityMeter;
+import io.openems.edge.ess.sungrow.EssSungrow;
 import io.openems.edge.meter.api.MeterType;
+import io.openems.edge.meter.api.ElectricityMeter;
 
 @Designate(ocd = Config.class, factory = true)
 @Component(//
@@ -34,7 +34,7 @@ public class SungrowVirtualGridMeter extends AbstractOpenemsComponent implements
 	private ConfigurationAdmin cm;
 
 	@Reference(policy = ReferencePolicy.STATIC, policyOption = ReferencePolicyOption.GREEDY, cardinality = ReferenceCardinality.MANDATORY)
-	private SungrowEss ess;
+	private EssSungrow ess;
 
 	public SungrowVirtualGridMeter() {
 		super(//
@@ -55,29 +55,28 @@ public class SungrowVirtualGridMeter extends AbstractOpenemsComponent implements
 		this.mapChannelValues();
 	}
 
-	@Override
 	@Deactivate
 	protected void deactivate() {
 		super.deactivate();
 	}
 
 	private void mapChannelValues() throws OpenemsException {
-		this.ess.getExportPowerChannel().onUpdate(newValue -> {
+		this.ess.getExportPowerChannel().onUpdate((newValue) -> {
 			if (newValue.isDefined()) {
 				this._setActivePower(-newValue.get());
 			}
 		});
-		this.ess.getTotalExportEnergyChannel().onUpdate(newValue -> {
+		this.ess.getTotalExportEnergyChannel().onUpdate((newValue) -> {
 			if (newValue.isDefined()) {
 				this._setActiveConsumptionEnergy(newValue.get());
 			}
 		});
-		this.ess.getTotalImportEnergyChannel().onUpdate(newValue -> {
+		this.ess.getTotalImportEnergyChannel().onUpdate((newValue) -> {
 			if (newValue.isDefined()) {
 				this._setActiveProductionEnergy(newValue.get());
 			}
 		});
-		this.ess.getGridFrequencyChannel().onUpdate(newValue -> {
+		this.ess.getGridFrequencyChannel().onUpdate((newValue) -> {
 			if (newValue.isDefined()) {
 				this._setFrequency(newValue.get());
 			}

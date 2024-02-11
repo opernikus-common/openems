@@ -22,7 +22,7 @@ public abstract class AbstractCsvDatasource extends AbstractOpenemsComponent
 
 	private int timeDelta;
 	private LocalDateTime lastIteration = LocalDateTime.MIN;
-	
+
 	protected DataContainer data;
 
 	protected abstract ComponentManager getComponentManager();

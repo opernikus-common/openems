@@ -1,15 +1,17 @@
-package io.openems.edge.simulator.meter.grid.acting;
+package io.openems.edge.simulator.evcs;
 
 import io.openems.common.test.AbstractComponentConfig;
-import io.openems.common.utils.ConfigUtils;
+import io.openems.edge.evcs.api.PhaseRotation;
+import io.openems.edge.evcs.api.Priority;
 
 @SuppressWarnings("all")
 public class MyConfig extends AbstractComponentConfig implements Config {
 
 	protected static class Builder {
 		private String id;
-		private boolean subtractEss;
-		private String datasourceId;
+		private int maxHwPower;
+		private int minHwPower;
+		private Priority priority;
 
 		private Builder() {
 		}
@@ -19,13 +21,13 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 			return this;
 		}
 
-		public Builder setSubtractEss(boolean subtract) {
-			this.subtractEss = subtract;
+		public Builder setMaxHwPower(int maxHwPower) {
+			this.maxHwPower = maxHwPower;
 			return this;
 		}
 
-		public Builder setDatasourceId(String datasourceId) {
-			this.datasourceId = datasourceId;
+		public Builder setMinHwPower(int minHwPower) {
+			this.minHwPower = minHwPower;
 			return this;
 		}
 
@@ -51,18 +53,30 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 	}
 
 	@Override
-	public boolean subtractEss() {
-		return this.builder.subtractEss;
+	public int maxHwPower() {
+		return this.builder.maxHwPower;
+	}
+
+	@Override
+	public int minHwPower() {
+		return this.builder.minHwPower;
+	}
+
+	@Override
+	public PhaseRotation phaseRotation() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
 	public String datasource_id() {
-		return this.builder.datasourceId;
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
-	public String datasource_target() {
-		return ConfigUtils.generateReferenceTargetFilter(this.id(), this.datasource_id());
+	public Priority priority() {
+		return this.builder.priority;
 	}
 
 }

@@ -16,7 +16,7 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 			this.id = id;
 			return this;
 		}
-		
+
 		public Builder setFilterNotMeteredMeters(boolean filter) {
 			this.filter = filter;
 			return this;

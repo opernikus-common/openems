@@ -8,49 +8,48 @@ import java.net.URL;
 
 import com.google.gson.JsonObject;
 
+import io.openems.common.exceptions.OpenemsError;
 import io.openems.common.exceptions.OpenemsError.OpenemsNamedException;
 import io.openems.common.exceptions.OpenemsException;
 import io.openems.common.utils.JsonUtils;
 
 public class GoeApi {
 	private final String ipAddress;
-	private final int executeEveryCycle = 10;
-	private int cycle;
-	private JsonObject jsonStatus;
+	private final int executeEveryCycle;
+	private int cycleCount;
+	private JsonObject jsonStatusCache;
 	private final EvcsGoeChargerHomeImpl parent;
 
 	public GoeApi(EvcsGoeChargerHomeImpl p) {
 		this.ipAddress = p.config.ip();
-		this.cycle = 0;
-		this.jsonStatus = null;
+		this.jsonStatusCache = null;
 		this.parent = p;
+		this.executeEveryCycle = p.config.executeCycle();
+		this.cycleCount = this.executeEveryCycle - 1;
 	}
 
 	/**
-	 * Gets the status from go-e. See https://github.com/goecharger
+	 * Gets the status from go-e on every config.executeCycle(). See
+	 * https://github.com/goecharger
 	 *
-	 * @return the boolean value
+	 * @return the json object
 	 * @throws OpenemsNamedException on error
 	 */
-	public JsonObject getStatus() {
+	public JsonObject getStatus() throws OpenemsNamedException {
 
 		try {
-			// Execute every x-Cycle
-			if (this.cycle == 0 || this.cycle % this.executeEveryCycle == 0) {
-				var json = new JsonObject();
+			if (++this.cycleCount % this.executeEveryCycle == 0) {
+				// Execute every x-Cycle
 				var url = "http://" + this.ipAddress + "/status";
-				json = this.sendRequest(url, "GET");
-
-				this.cycle = 1;
-				this.jsonStatus = json;
+				var json = this.sendRequest(url, "GET");
+				this.jsonStatusCache = json;
 				return json;
 			}
-			this.cycle++;
-			return this.jsonStatus;
+			return this.jsonStatusCache;
 
 		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
+			this.parent.debugLog("get Status ex: " + e.getMessage());
+			throw new OpenemsNamedException(OpenemsError.GENERIC, "get Status ex: " + e.getMessage());
 		}
 	}
 
@@ -61,28 +60,19 @@ public class GoeApi {
 	 * See https://github.com/goecharger.
 	 *
 	 * @param active boolean if the charger should be set to active
-	 * @return JsonObject with new settings
 	 */
-	public JsonObject setActive(boolean active) {
+	public void setActive(boolean active) throws OpenemsException {
 
 		try {
-			if (active == this.parent.isActive) {
-				return this.jsonStatus;
-			}
-			var json = new JsonObject();
 			Integer status = 0;
 			if (active) {
 				status = 1;
 			}
 			var url = "http://" + this.ipAddress + "/mqtt?payload=alw=" + Integer.toString(status);
-			json = this.sendRequest(url, "PUT");
-			this.parent.isActive = active;
-			this.jsonStatus = json;
-			return json;
-
+			this.putRequest(url, "setActive failed " + active);
 		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
+			this.parent.debugLog("setActive ex: " + e.getMessage());
+			throw new OpenemsException(e.getMessage());
 		}
 	}
 
@@ -90,80 +80,55 @@ public class GoeApi {
 	 * Sets the Current in Ampere for go-e See https://github.com/goecharger.
 	 *
 	 * @param current current in mA
-	 * @return JsonObject with new settings
 	 */
-	public JsonObject setCurrent(int current) {
+	public void setCurrent(int current) throws OpenemsNamedException {
 
-		try {
-			Integer currentAmpere = current / 1000;
-			if (currentAmpere != this.parent.activeCurrent / 1000) {
-				var json = new JsonObject();
-				var url = "http://" + this.ipAddress + "/mqtt?payload=amp=" + Integer.toString(currentAmpere);
-				json = this.sendRequest(url, "PUT");
-				this.parent.activeCurrent = currentAmpere * 1000;
-				this.jsonStatus = json;
-				return json;
-			}
-			return this.jsonStatus;
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
+		Integer currentAmpere = current / 1000;
+		// use non-persistent data point "amx" in order to preserve
+		// precious flash memory
+		var url = "http://" + this.ipAddress + "/mqtt?payload=amx=" + Integer.toString(currentAmpere);
+		this.putRequest(url, "setCurrent failed " + current);
 	}
 
 	/**
 	 * Limit MaxEnergy for go-e See https://github.com/goecharger.
 	 *
 	 * @param limit maximum energy limit enabled
-	 * @return JsonObject with new settings
 	 */
-	public boolean limitMaxEnergy(boolean limit) {
+	public void limitMaxEnergy(boolean limit) throws OpenemsNamedException {
 
-		try {
-			var json = new JsonObject();
-			var stp = 0;
-			if (limit) {
-				stp = 2;
-			}
-			var url = "http://" + this.ipAddress + "/mqtt?payload=stp=" + Integer.toString(stp);
-			json = this.sendRequest(url, "PUT");
-			if (json != null) {
-				this.jsonStatus = json;
-				return true;
-			}
-			return false;
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
+		var stp = 0;
+		if (limit) {
+			stp = 2;
 		}
+		var url = "http://" + this.ipAddress + "/mqtt?payload=stp=" + Integer.toString(stp);
+		this.putRequest(url, "limitMaxEnergy failed " + limit);
 	}
 
 	/**
 	 * Sets the MaxEnergy in 0.1 kWh for go-e See https://github.com/goecharger.
 	 *
 	 * @param maxEnergy maximum allowed energy
-	 * @return JsonObject with new settings
 	 */
-	public boolean setMaxEnergy(int maxEnergy) {
+	public void setMaxEnergy(int maxEnergy) throws OpenemsNamedException {
+
+		if (maxEnergy > 0) {
+			this.limitMaxEnergy(true);
+		} else {
+			this.limitMaxEnergy(false);
+		}
+		var url = "http://" + this.ipAddress + "/mqtt?payload=dwo=" + Integer.toString(maxEnergy);
+		this.putRequest(url, "setMaxEnergy failed " + maxEnergy);
+	}
+
+	private void putRequest(String url, String exText) throws OpenemsNamedException {
 
 		try {
-			var json = new JsonObject();
-			if (maxEnergy > 0) {
-				this.limitMaxEnergy(true);
-			} else {
-				this.limitMaxEnergy(false);
-			}
-			var url = "http://" + this.ipAddress + "/mqtt?payload=dwo=" + Integer.toString(maxEnergy);
-			json = this.sendRequest(url, "PUT");
-			if (json != null) {
-				this.jsonStatus = json;
-				return true;
-			}
-			return false;
+			this.sendRequest(url, "PUT");
+
 		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
+			this.parent.debugLog(exText + " x: " + e.getMessage());
+			throw new OpenemsNamedException(OpenemsError.GENERIC, exText + " x: " + e.getMessage());
 		}
 	}
 
@@ -177,6 +142,7 @@ public class GoeApi {
 	 */
 	private JsonObject sendRequest(String urlString, String requestMethod) throws OpenemsNamedException {
 		try {
+			this.parent.debugLog("Request " + urlString);
 			var url = new URL(urlString);
 			var con = (HttpURLConnection) url.openConnection();
 			con.setRequestMethod(requestMethod);

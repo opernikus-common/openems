@@ -5,6 +5,7 @@ Bundle-Version: 1.0.0.${tstamp}
 
 -buildpath: \
 	${buildpath},\
+	com.google.gson,\
 	io.openems.common,\
 	io.openems.edge.battery.api,\
 	io.openems.edge.bridge.modbus,\
@@ -16,6 +17,8 @@ Bundle-Version: 1.0.0.${tstamp}
 	io.openems.edge.pvinverter.api,\
 	io.openems.edge.thermometer.api,\
 	io.openems.edge.timedata.api,\
+	slf4j.api,\
+	com.google.guava,\
 
 -testpath: \
 	${testpath}

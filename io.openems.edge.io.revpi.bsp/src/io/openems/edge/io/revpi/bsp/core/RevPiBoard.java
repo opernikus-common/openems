@@ -72,7 +72,7 @@ public class RevPiBoard {
 		if (setRelais) {
 			this.revPiHardwareAccess.setValue(REVPI_LED, value | DataInOut.PICONTROL_X2_DOUT);
 		} else {
-			this.revPiHardwareAccess.setValue(REVPI_LED, value & ~DataInOut.PICONTROL_X2_DOUT & 0xff);
+			this.revPiHardwareAccess.setValue(REVPI_LED, ((value & ~DataInOut.PICONTROL_X2_DOUT) & 0xff));
 		}
 	}
 

@@ -49,6 +49,8 @@ import io.openems.edge.timedata.api.utils.CalculateEnergyFromPower;
 public class SimulatorGridMeterActingImpl extends AbstractOpenemsComponent
 		implements SimulatorGridMeterActing, ElectricityMeter, OpenemsComponent, TimedataProvider, EventHandler {
 
+	private Config config;
+
 	private final CalculateEnergyFromPower calculateProductionEnergy = new CalculateEnergyFromPower(this,
 			ElectricityMeter.ChannelId.ACTIVE_PRODUCTION_ENERGY);
 	private final CalculateEnergyFromPower calculateConsumptionEnergy = new CalculateEnergyFromPower(this,
@@ -76,12 +78,14 @@ public class SimulatorGridMeterActingImpl extends AbstractOpenemsComponent
 
 	@Activate
 	private void activate(ComponentContext context, Config config) throws IOException {
+		this.config = config;
 		super.activate(context, config.id(), config.alias(), config.enabled());
 
 		// update filter for 'datasource'
 		if (OpenemsComponent.updateReferenceFilter(this.cm, this.servicePid(), "datasource", config.datasource_id())) {
 			return;
 		}
+		ElectricityMeter.calculateSumCurrentFromPhases(this);
 	}
 
 	@Override
@@ -122,19 +126,25 @@ public class SimulatorGridMeterActingImpl extends AbstractOpenemsComponent
 		 * Calculate Active Power
 		 */
 		var activePower = simulatedActivePower;
-		for (ManagedSymmetricEss ess : this.symmetricEsss) {
-			if (ess instanceof MetaEss) {
-				// ignore this Ess
-				continue;
+		if (this.config.subtractEss()) {
+			for (ManagedSymmetricEss ess : this.symmetricEsss) {
+				if (ess instanceof MetaEss) {
+					// ignore this Ess
+					continue;
+				}
+				activePower = TypeUtils.subtract(activePower, ess.getActivePower().get());
 			}
-			activePower = TypeUtils.subtract(activePower, ess.getActivePower().get());
 		}
 
 		this._setActivePower(activePower);
-		var activePowerByThree = TypeUtils.divide(activePower, 3);
-		this._setActivePowerL1(activePowerByThree);
-		this._setActivePowerL2(activePowerByThree);
-		this._setActivePowerL3(activePowerByThree);
+		var phasePower = TypeUtils.divide(activePower, 3);
+		this._setActivePowerL1(phasePower);
+		this._setActivePowerL2(phasePower);
+		this._setActivePowerL3(phasePower);
+		var phaseCurrent = TypeUtils.divide(phasePower * 1000, 230);
+		this._setCurrentL1(phaseCurrent);
+		this._setCurrentL2(phaseCurrent);
+		this._setCurrentL3(phaseCurrent);
 	}
 
 	@Override

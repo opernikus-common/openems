@@ -17,7 +17,7 @@ import io.openems.edge.ess.sungrow.enums.EmsMode;
 import io.openems.edge.ess.sungrow.enums.EnableDisable;
 import io.openems.edge.ess.sungrow.enums.SystemState;
 
-public interface SungrowEss extends OpenemsComponent {
+public interface EssSungrow extends OpenemsComponent {
 
 	public enum ChannelId implements io.openems.edge.common.channel.ChannelId {
 		SERIAL_NUMBER(Doc.of(OpenemsType.STRING) //
@@ -119,100 +119,104 @@ public interface SungrowEss extends OpenemsComponent {
 				.persistencePriority(PersistencePriority.MEDIUM)), //
 		EXPORT_POWER(Doc.of(OpenemsType.INTEGER).unit(Unit.WATT) //
 				.accessMode(AccessMode.READ_ONLY) //
-				.persistencePriority(PersistencePriority.MEDIUM)), //
-		DAILY_BATTERY_CHARGE_ENERGY_FROM_PV(Doc.of(OpenemsType.INTEGER).unit(Unit.WATT_HOURS) //
+				.persistencePriority(PersistencePriority.MEDIUM)),
+		DAILY_BATTERY_CHARGE_ENERGY_FROM_PV(Doc.of(OpenemsType.INTEGER).unit(Unit.WATT_HOURS)
+				//
 				.accessMode(AccessMode.READ_ONLY) //
-				.persistencePriority(PersistencePriority.LOW)), //
-		TOTAL_BATTERY_CHARGE_ENERGY_FROM_PV(Doc.of(OpenemsType.LONG).unit(Unit.WATT_HOURS) //
+				.persistencePriority(PersistencePriority.LOW)),
+		TOTAL_BATTERY_CHARGE_ENERGY_FROM_PV(Doc.of(OpenemsType.LONG).unit(Unit.WATT_HOURS)
+				//
 				.accessMode(AccessMode.READ_ONLY) //
-				.persistencePriority(PersistencePriority.LOW)), //
+				.persistencePriority(PersistencePriority.LOW)),
 		CO2_REDUCTION(Doc.of(OpenemsType.INTEGER).unit(Unit.NONE) //
 				.accessMode(AccessMode.READ_ONLY) //
-				.persistencePriority(PersistencePriority.VERY_LOW).text("kg")), //
-		DAILY_DIRECT_ENERGY_CONSUMPTION(Doc.of(OpenemsType.INTEGER).unit(Unit.WATT_HOURS) //
+				.persistencePriority(PersistencePriority.VERY_LOW).text("kg")),
+		DAILY_DIRECT_ENERGY_CONSUMPTION(Doc.of(OpenemsType.INTEGER).unit(Unit.WATT_HOURS)
+				//
 				.accessMode(AccessMode.READ_ONLY) //
-				.persistencePriority(PersistencePriority.LOW)), //
+				.persistencePriority(PersistencePriority.LOW)),
 		TOTAL_DIRECT_ENERGY_CONSUMPTION(Doc.of(OpenemsType.LONG).unit(Unit.WATT_HOURS) //
 				.accessMode(AccessMode.READ_ONLY) //
-				.persistencePriority(PersistencePriority.LOW)), //
+				.persistencePriority(PersistencePriority.LOW)),
 		BATTERY_VOLTAGE(Doc.of(OpenemsType.INTEGER).unit(Unit.VOLT) //
 				.accessMode(AccessMode.READ_ONLY) //
-				.persistencePriority(PersistencePriority.MEDIUM)), //
+				.persistencePriority(PersistencePriority.MEDIUM)),
 		BATTERY_CURRENT(Doc.of(OpenemsType.INTEGER).unit(Unit.AMPERE) //
 				.accessMode(AccessMode.READ_ONLY) //
 				.persistencePriority(PersistencePriority.MEDIUM)),
 		BATTERY_POWER(Doc.of(OpenemsType.INTEGER).unit(Unit.WATT) //
 				.accessMode(AccessMode.READ_ONLY) //
-				.persistencePriority(PersistencePriority.MEDIUM)), //
+				.persistencePriority(PersistencePriority.MEDIUM)),
 		SOH(Doc.of(OpenemsType.INTEGER).unit(Unit.PERCENT) //
 				.accessMode(AccessMode.READ_ONLY) //
-				.persistencePriority(PersistencePriority.LOW)), //
+				.persistencePriority(PersistencePriority.LOW)),
 		BATTERY_TEMPERATURE(Doc.of(OpenemsType.INTEGER).unit(Unit.DEZIDEGREE_CELSIUS) //
 				.accessMode(AccessMode.READ_ONLY) //
-				.persistencePriority(PersistencePriority.MEDIUM)), //
-		DAILY_BATTERY_DISCHARGE_ENERGY(Doc.of(OpenemsType.INTEGER).unit(Unit.WATT_HOURS) //
+				.persistencePriority(PersistencePriority.MEDIUM)),
+		DAILY_BATTERY_DISCHARGE_ENERGY(Doc.of(OpenemsType.INTEGER).unit(Unit.WATT_HOURS)
+				//
 				.accessMode(AccessMode.READ_ONLY) //
 				.persistencePriority(PersistencePriority.VERY_LOW)),
 		SELF_CONSUMPTION_OF_TODAY(Doc.of(OpenemsType.INTEGER).unit(Unit.PERCENT) //
 				.accessMode(AccessMode.READ_ONLY) //
-				.persistencePriority(PersistencePriority.LOW)), //
+				.persistencePriority(PersistencePriority.LOW)),
 		CURRENT_L1(Doc.of(OpenemsType.INTEGER).unit(Unit.MILLIAMPERE) //
 				.accessMode(AccessMode.READ_ONLY) //
-				.persistencePriority(PersistencePriority.LOW)), //
+				.persistencePriority(PersistencePriority.LOW)),
 		CURRENT_L2(Doc.of(OpenemsType.INTEGER).unit(Unit.MILLIAMPERE) //
 				.accessMode(AccessMode.READ_ONLY) //
-				.persistencePriority(PersistencePriority.LOW)), //
+				.persistencePriority(PersistencePriority.LOW)),
 		CURRENT_L3(Doc.of(OpenemsType.INTEGER).unit(Unit.MILLIAMPERE) //
 				.accessMode(AccessMode.READ_ONLY) //
-				.persistencePriority(PersistencePriority.LOW)), //
+				.persistencePriority(PersistencePriority.LOW)),
 		DAILY_IMPORT_ENERGY(Doc.of(OpenemsType.INTEGER).unit(Unit.WATT_HOURS) //
 				.accessMode(AccessMode.READ_ONLY) //
-				.persistencePriority(PersistencePriority.VERY_LOW)), //
+				.persistencePriority(PersistencePriority.VERY_LOW)),
 		TOTAL_IMPORT_ENERGY(Doc.of(OpenemsType.LONG).unit(Unit.WATT_HOURS) //
 				.accessMode(AccessMode.READ_ONLY) //
-				.persistencePriority(PersistencePriority.LOW)), //
+				.persistencePriority(PersistencePriority.LOW)),
 		DAILY_CHARGE_ENERGY(Doc.of(OpenemsType.INTEGER).unit(Unit.WATT_HOURS) //
 				.accessMode(AccessMode.READ_ONLY) //
-				.persistencePriority(PersistencePriority.VERY_LOW)), //
+				.persistencePriority(PersistencePriority.VERY_LOW)),
 		DAILY_EXPORT_ENERGY(Doc.of(OpenemsType.INTEGER).unit(Unit.WATT_HOURS) //
 				.accessMode(AccessMode.READ_ONLY) //
-				.persistencePriority(PersistencePriority.VERY_LOW)), //
+				.persistencePriority(PersistencePriority.VERY_LOW)),
 		TOTAL_EXPORT_ENERGY(Doc.of(OpenemsType.LONG).unit(Unit.WATT_HOURS) //
 				.accessMode(AccessMode.READ_ONLY) //
-				.persistencePriority(PersistencePriority.LOW)), //
+				.persistencePriority(PersistencePriority.LOW)),
 
 		EMS_MODE(Doc.of(EmsMode.values()) //
 				.accessMode(AccessMode.READ_WRITE) //
-				.persistencePriority(PersistencePriority.VERY_LOW)), //
+				.persistencePriority(PersistencePriority.VERY_LOW)),
 		CHARGE_DISCHARGE_COMMAND(Doc.of(ChargeDischargeCommand.values()) //
 				.accessMode(AccessMode.READ_WRITE) //
-				.persistencePriority(PersistencePriority.HIGH)), //
+				.persistencePriority(PersistencePriority.HIGH)),
 		CHARGE_DISCHARGE_POWER(Doc.of(OpenemsType.INTEGER).unit(Unit.PERCENT) //
 				.accessMode(AccessMode.READ_WRITE) //
-				.persistencePriority(PersistencePriority.HIGH)), //
+				.persistencePriority(PersistencePriority.HIGH)),
 		MAX_SOC(Doc.of(OpenemsType.INTEGER).unit(Unit.PERCENT) //
 				.accessMode(AccessMode.READ_WRITE) //
-				.persistencePriority(PersistencePriority.VERY_LOW)), //
+				.persistencePriority(PersistencePriority.VERY_LOW)),
 		MIN_SOC(Doc.of(OpenemsType.INTEGER).unit(Unit.PERCENT) //
 				.accessMode(AccessMode.READ_WRITE) //
-				.persistencePriority(PersistencePriority.VERY_LOW)), //
+				.persistencePriority(PersistencePriority.VERY_LOW)),
 		EXPORT_POWER_LIMIT(Doc.of(OpenemsType.INTEGER).unit(Unit.WATT) //
 				.accessMode(AccessMode.READ_WRITE) //
-				.persistencePriority(PersistencePriority.VERY_LOW)), //
+				.persistencePriority(PersistencePriority.VERY_LOW)),
 		OFF_GRID_OPTION(Doc.of(EnableDisable.values()) //
 				.accessMode(AccessMode.READ_WRITE) //
-				.persistencePriority(PersistencePriority.VERY_LOW)), //
+				.persistencePriority(PersistencePriority.VERY_LOW)),
 		HEARTBEAT(Doc.of(OpenemsType.INTEGER).unit(Unit.NONE) //
 				.accessMode(AccessMode.READ_WRITE) //
-				.persistencePriority(PersistencePriority.VERY_LOW)), //
-		DEBUG_HEARTBEAT(Doc.of(OpenemsType.INTEGER).accessMode(AccessMode.READ_ONLY) //
-				.persistencePriority(PersistencePriority.VERY_HIGH)), //
+				.persistencePriority(PersistencePriority.VERY_LOW)),
+		DEBUG_HEARTBEAT(Doc.of(OpenemsType.INTEGER).accessMode(AccessMode.READ_ONLY)
+				.persistencePriority(PersistencePriority.VERY_HIGH)),
 		METER_COMM_DETECTION(Doc.of(EnableDisable.values()) //
 				.accessMode(AccessMode.READ_WRITE) //
-				.persistencePriority(PersistencePriority.VERY_LOW)), //
+				.persistencePriority(PersistencePriority.VERY_LOW)),
 		EXPORT_POWER_LIMITATION(Doc.of(EnableDisable.values()) //
 				.accessMode(AccessMode.READ_WRITE) //
-				.persistencePriority(PersistencePriority.VERY_LOW)), //
+				.persistencePriority(PersistencePriority.VERY_LOW)),
 		RESERVED_SOC_FOR_BACKUP(Doc.of(OpenemsType.INTEGER).unit(Unit.PERCENT) //
 				.accessMode(AccessMode.READ_WRITE) //
 				.persistencePriority(PersistencePriority.VERY_LOW));
@@ -275,10 +279,6 @@ public interface SungrowEss extends OpenemsComponent {
 
 	public default LongReadChannel getTotalPvGenerationChannel() {
 		return this.channel(ChannelId.TOTAL_PV_GENERATION);
-	}
-
-	public default IntegerReadChannel getBatteryPowerChannel() {
-		return this.channel(ChannelId.BATTERY_POWER);
 	}
 
 	public default LongReadChannel getTotalImportEnergyChannel() {

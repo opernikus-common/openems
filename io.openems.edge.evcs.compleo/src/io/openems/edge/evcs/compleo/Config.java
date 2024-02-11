@@ -1,10 +1,10 @@
 package io.openems.edge.evcs.compleo;
 
-import io.openems.edge.evcs.api.Priority;
 import org.osgi.service.metatype.annotations.AttributeDefinition;
 import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 
 import io.openems.edge.evcs.api.PhaseRotation;
+import io.openems.edge.evcs.api.Priority;
 
 @ObjectClassDefinition(//
 		name = "EVCS Compleo/Wallbe Eco2.0/Pro ", //

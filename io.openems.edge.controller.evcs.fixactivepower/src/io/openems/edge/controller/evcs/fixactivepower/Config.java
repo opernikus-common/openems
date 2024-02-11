@@ -24,7 +24,7 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 	int power();
 
 	@AttributeDefinition(name = "Update Frequency [s]", description = "Timeout to write the value to the EVCS. Recommended minimum: 60s or more for optimal settings.")
-	int updateFrequency() default 60;
+	int updateFrequency() default 1;
 
 	String webconsole_configurationFactory_nameHint() default "Controller Electric Vehicle Charging Station: Fix Active Power [{id}]";
 

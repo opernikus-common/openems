@@ -28,7 +28,7 @@ import io.openems.edge.evcs.api.Priority;
 
 	@AttributeDefinition(name = "Phase rotation", description = "The way the phases are physically swapped")
 	PhaseRotation phaseRotation() default PhaseRotation.L1_L2_L3;
-	
+
 	@AttributeDefinition(name = "Charge Priority", description = "Priority in comparison to other chargepoints.")
 	Priority priority() default Priority.LOW;
 
