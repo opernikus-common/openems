@@ -18,9 +18,10 @@ Production State: *-experimental-*
 
 Open Issues:
 
-* Fronius Symo GEN24 can NOT be used with existing OpenEMS controllers. It can charge and discharge an attached battery. 
-But due to a BUG in the Fronius Symo GEN24 hardware implementation it can not switch from charging to discharging without goint to 0 for a few seconds.
- 
+* Right now Fronius Symo GEN24 can NOT be used with existing OpenEMS controllers. It can charge and discharge an attached battery. 
+But due to a limitation in the Fronius Symo GEN24 hardware implementation it can not switch from charging to discharging without goint to 0 for a few seconds. A possible solution for the problem is described in the discussion here: https://community.openems.io/t/laden-entladen-am-fronius-symo-gen24-hybridwechselrichter-mit-modbus/1549/3?u=c.lehne
+
+
 * backported and untested Version
 
 https://github.com/OpenEMS/openems/tree/develop/io.openems.edge.ess.fronius[Source Code icon:github[]]
