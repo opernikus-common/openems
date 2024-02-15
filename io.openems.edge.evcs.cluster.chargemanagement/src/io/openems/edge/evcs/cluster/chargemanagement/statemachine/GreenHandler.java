@@ -2,20 +2,24 @@ package io.openems.edge.evcs.cluster.chargemanagement.statemachine;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.function.BiConsumer;
 
 import io.openems.common.exceptions.OpenemsError.OpenemsNamedException;
+import io.openems.edge.common.channel.value.Value;
 import io.openems.edge.evcs.cluster.chargemanagement.EvcsClusterChargeMgmt;
 import io.openems.edge.evcs.cluster.chargemanagement.EvcsClusterChargeMgmtImpl;
 import io.openems.edge.evcs.cluster.chargemanagement.State;
 import io.openems.edge.evcs.cluster.chargemanagement.utils.EvcsTools;
+import io.openems.edge.evcs.cluster.chargemanagement.utils.TargetPowerZone;
 
 public class GreenHandler extends BaseHandler {
 
 	private boolean resetLimitsOnEntry;
+	private Context context;
 	protected int stepInterval;
 	protected Instant lastLimitChangeTime = Instant.MIN;
-	private Integer resPowerMaxSoftBorder = null;
-	private Integer resPowerMinSoftBorder = null;
+	private TargetPowerZone targetPowerZone;
+	private BiConsumer<Value<Integer>, Value<Integer>> numberChangeCallback;
 
 	public GreenHandler() {
 		super();
@@ -23,17 +27,19 @@ public class GreenHandler extends BaseHandler {
 
 	@Override
 	protected void onEntry(Context context) throws OpenemsNamedException {
+		this.context = context;
 		this.stepInterval = context.getConfig().stepInterval() - 1;
 		this.resetLimitsOnEntry = true;
 		this.lastLimitChangeTime = Instant.now();
-		context.getImbalanceHoldTimer().reset();
-		context.getLimitsExceededTimer().reset();
-		context.getSoftBorderResetTimer().reset();
-		context.getCluster().limitPowerAll(context.getCluster().getEvcsMinPowerLimit());
+		this.context.getImbalanceHoldTimer().reset();
+		this.context.getLimitsExceededTimer().reset();
+		this.context.getCluster().limitPowerAll(context.getCluster().getEvcsMinPowerLimit());
+		this.reinitTargetPowerZone();
 	}
 
 	@Override
 	public State runAndGetNextState(Context context) throws OpenemsNamedException {
+		this.context = context;
 		var cluster = context.getParent();
 
 		if (cluster.hasFaults()) {
@@ -45,128 +51,100 @@ public class GreenHandler extends BaseHandler {
 		if (!context.getCableConstraints().safeOperationMode()) {
 			return State.RED;
 		}
+		// check phase imbalance
 		if (context.getCableConstraints().isUnbalanced()) {
-			if (this.hasDurationPassed(context.getImbalanceHoldTimer())) {
-				// give green handler some time to fix unbalance, before going to yellow
+			if (context.getImbalanceHoldTimer().checkAndReset()) {
 				return State.YELLOW;
 			}
 		} else {
 			context.getImbalanceHoldTimer().reset();
 		}
 
-		if (context.getCableConstraints().isAboveTargetLimit()) {
-			if (this.hasDurationPassed(context.getLimitsExceededTimer())) {
-				// unable to handle aboveTargetLimit-situation within time. Switch state.
+		// check target limits
+		if (context.getCableConstraints().exceedsTargetLimit()) {
+			// unable to handle aboveTargetLimit-situation within time. Switch state.
+			if (context.getLimitsExceededTimer().checkAndReset()) {
 				return State.YELLOW;
 			}
 		} else {
 			context.getLimitsExceededTimer().reset();
 		}
 
-		// TODO wenn alle charge evcss bereits auf minPower sind und residualPower == 0
-		// ist, sofort in gelb umschalten
+		// TODO switch to yellow immediately, when all charging evcss are at minPower
+		// and MIN_FREE_AVAILABLE_POWER < 0
 
-		this.adoptLimits(context);
+		this.adoptLimits();
 		return State.GREEN;
 	}
 
-	private void adoptLimits(Context context) throws OpenemsNamedException {
+	private void reinitTargetPowerZone() {
+		this.context.getTargetPowerZoneTimer().reset();
+		this.targetPowerZone = new TargetPowerZone();
 
-		if ((!context.getCableConstraints().isUnbalanced())
-				&& context.getCableConstraints().getMinFreeAvailablePower() > 0) {
+		if (this.numberChangeCallback == null) {
+			this.numberChangeCallback = (t,u) -> {
+					GreenHandler.this.targetPowerZone.disableTemporarily(GreenHandler.this.context);
+			};
+		}
+		this.context.getParent().getNumberOfChargingEvcsChannel().removeOnChangeCallback(this.numberChangeCallback);
+		this.context.getParent().getNumberOfChargingEvcsChannel().onChange(this.numberChangeCallback);
+		this.context.getParent().getNumberOfChargingEvcsPrioChannel().removeOnChangeCallback(this.numberChangeCallback);
+		this.context.getParent().getNumberOfChargingEvcsPrioChannel().onChange(this.numberChangeCallback);
+	}
 
-			// increase charge power
+	private void adoptLimits() throws OpenemsNamedException {
 
-			if (!this.resetLimitsOnEntry) {
-				this.resetLimitsOnEntry = true;
-				this.setResPowerMaxSoftLimit(context, context.getCableConstraints().getMinFreeAvailablePower());
-			}
-			if (this.fitsWithinSoftBorder(context)) {
-				return;
-			}
-			if (context.getConfig().verboseDebug()) {
-				context.getParent()
-						.logInfo(" GREEN ---                                 Increase "
-								+ context.getCableConstraints().getMinFreeAvailablePower() + " cluster "
-								+ context.getParent().getChargePower());
-			}
-			if (this.incrPrioLimits(context.getParent())) {
-				return;
-			}
-			this.incrLimits(context.getParent());
+		if ((!this.context.getCableConstraints().isUnbalanced())
+				&& this.context.getCableConstraints().getMinFreeAvailablePower() > 0) {
+			this.increaseChargePower();
 
 		} else {
-
-			// decrease charge power
-
-			if (context.getConfig().verboseDebug()) {
-
-				context.getParent()
-						.logInfo(" GREEN ---                                 Decrease "
-								+ context.getCableConstraints().getMinFreeAvailablePower() + " cluster "
-								+ context.getParent().getChargePower());
-			}
-			// only very few power available (close to yellow) or unbalanced
-			if (this.resetLimitsOnEntry) {
-				this.resetLimitsOnEntry = false;
-				// context.getCluster().reinitPrioLimits();
-				// context.getCluster().reinitLimits();
-				this.setResPowerMinLimit(context.getCableConstraints().getMinFreeAvailablePower());
-				return;
-			}
-			if (this.decrLimits(context.getParent())) {
-				return;
-			}
-			this.decrPrioLimits(context.getParent());
+			this.decreaseChargePower();
 		}
 	}
 
-	private void setResPowerMinLimit(int curResidualPower) {
-		// called when having residual power minimum
-		if (this.resPowerMaxSoftBorder == null) {
-			this.resPowerMinSoftBorder = curResidualPower;
+	private void increaseChargePower() throws OpenemsNamedException {
+		if (!this.resetLimitsOnEntry) {
+			this.resetLimitsOnEntry = true;
+			this.targetPowerZone.setHigherBorder(this.context,
+					this.context.getCableConstraints().getMinFreeAvailablePower());
 		}
+		// do not increase if within target power zone
+		if (this.targetPowerZone.fitsTargetPowerZone(this.context)) {
+			this.holdLimit();
+			return;
+		}
+		this.logInfo(this.context,
+				" GREEN ---                                 Increase "
+						+ this.context.getCableConstraints().getMinFreeAvailablePower() + " cluster "
+						+ this.context.getParent().getChargePower());
+		if (this.incrPrioLimits(this.context.getParent())) {
+			return;
+		}
+		this.incrLimits(this.context.getParent());
 	}
 
-	private void setResPowerMaxSoftLimit(Context context, int curResidualPower) {
-		// called when having residual power maximum
-
-		if (this.resPowerMinSoftBorder != null && this.resPowerMaxSoftBorder == null) {
-
-			var offset = 0;
-			if (this.resPowerMinSoftBorder < 0) {
-				// readjust higher/lower soft border, because residual power should be > 0
-				offset = -this.resPowerMinSoftBorder;
-				this.resPowerMinSoftBorder = 0;
-			}
-			this.resPowerMaxSoftBorder = curResidualPower + offset;
-			context.getParent().logInfo("-----------  Updated Soft Limits " + this.resPowerMinSoftBorder + " - "
-					+ this.resPowerMaxSoftBorder);
-			context.getSoftBorderResetTimer().reset();
+	private void decreaseChargePower() throws OpenemsNamedException {
+		this.logInfo(this.context,
+				" GREEN ---                                 Decrease "
+						+ this.context.getCableConstraints().getMinFreeAvailablePower() + " cluster "
+						+ this.context.getParent().getChargePower());
+		// only very few power available (close to yellow) or unbalanced
+		if (this.resetLimitsOnEntry) {
+			this.resetLimitsOnEntry = false;
+			// context.getCluster().reinitPrioLimits();
+			// context.getCluster().reinitLimits();
+			this.targetPowerZone.setLowerBorder(this.context.getCableConstraints().getMinFreeAvailablePower());
+			return;
 		}
+		if (this.decrLimits(this.context.getParent())) {
+			return;
+		}
+		this.decrPrioLimits(this.context.getParent());
+
 	}
 
-	private boolean fitsWithinSoftBorder(Context context) {
-		var residualPower = context.getCableConstraints().getMinFreeAvailablePower();
-		if (this.resPowerMinSoftBorder == null || this.resPowerMaxSoftBorder == null) {
-			return false;
-		}
-		if (this.hasDurationPassed(context.getSoftBorderResetTimer())) {
-			this.resPowerMinSoftBorder = null;
-			this.resPowerMaxSoftBorder = null;
-			return false;
-		}
-		if (residualPower >= this.resPowerMinSoftBorder.intValue()
-				&& residualPower <= this.resPowerMaxSoftBorder.intValue()) {
-			// context.getParent().logInfo(" GREEN --- fitsSoftBorder " +
-			// context.getCableConstraints().getResidualPower()
-			// + " cluster " + context.getParent().getChargePower());
-			return true;
-		}
-		return false;
-	}
-
-	private boolean hasDurationPassed(boolean decreasing) {
+	private boolean hasStepIntervalTimePassed(boolean decreasing) {
 		var si = this.stepInterval;
 		if (decreasing) {
 			si = Math.max(0, (int) (si / 2));
@@ -195,7 +173,7 @@ public class GreenHandler extends BaseHandler {
 			EvcsTools.decreaseDistributedPower(parent);
 			return true;
 		}
-		if (this.hasDurationPassed(true)) {
+		if (this.hasStepIntervalTimePassed(true)) {
 			EvcsTools.decreaseDistributedPower(parent);
 		}
 		return true;
@@ -219,7 +197,7 @@ public class GreenHandler extends BaseHandler {
 			parent.getContext().getCluster().limitPowerPrio(minEvcsLimit, false);
 			return false;
 		}
-		if (this.hasDurationPassed(true)) {
+		if (this.hasStepIntervalTimePassed(true)) {
 			EvcsTools.decreaseDistributedPowerPrio(parent);
 		}
 		return true;
@@ -233,6 +211,15 @@ public class GreenHandler extends BaseHandler {
 	 * @throws OpenemsNamedException on write error
 	 */
 	private boolean incrLimits(EvcsClusterChargeMgmtImpl parent) throws OpenemsNamedException {
+
+		/*
+		 * TODO 10 active chargingpoints a 3 phases => one increase step of 1A means
+		 * 10*3*230 ~ 6kW power change. -> space for improvement. Do not increase 1A for
+		 * all chargepoints. Maybe increase only 5 chargepoints and in the next step
+		 * increase another 5 chargepoints. Same for incrPrioLimits. Maybe same for
+		 * decrease
+		 */
+
 		if (EvcsTools.hasPowerLimitReachedMaxPower(parent)) {
 			var maxEvcsLimit = parent.getContext().getCluster().getEvcsMaxPowerLimit();
 			parent.getContext().getCluster().limitPower(maxEvcsLimit, true);
@@ -243,7 +230,7 @@ public class GreenHandler extends BaseHandler {
 			parent.getContext().getCluster().limitPower(maxEvcsLimit, true);
 			return false;
 		}
-		if (this.hasDurationPassed(false)) {
+		if (this.hasStepIntervalTimePassed(false)) {
 			EvcsTools.increaseDistributedPower(parent);
 		}
 		return true;
@@ -267,10 +254,14 @@ public class GreenHandler extends BaseHandler {
 			parent.getContext().getCluster().limitPowerPrio(maxEvcsLimit, true);
 			return true;
 		}
-		if (this.hasDurationPassed(false)) {
+		if (this.hasStepIntervalTimePassed(false)) {
 			EvcsTools.increaseDistributedPowerPrio(parent);
 		}
 		return true;
+	}
+	
+	private void holdLimit() throws OpenemsNamedException {
+		EvcsTools.holdDistributedPowerAll(this.context.getParent());
 	}
 
 }

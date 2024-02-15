@@ -7,7 +7,7 @@ import io.openems.edge.common.test.AbstractComponentTest.TestCase;
 import io.openems.edge.common.test.DummyComponentManager;
 import io.openems.edge.evcs.cluster.chargemanagement.config.ConfigDefault;
 import io.openems.edge.evcs.cluster.chargemanagement.config.MyConfig;
-import io.openems.edge.evcs.cluster.chargemanagement.helper.FairShareClusterTestComponent;
+import io.openems.edge.evcs.cluster.chargemanagement.helper.ChargeManagementClusterTestComponent;
 import io.openems.edge.evcs.cluster.chargemanagement.helper.TestUtils;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -16,17 +16,17 @@ public class SafetyTest {
 	private DummyComponentManager cpm;
 	private MyConfig config;
 
-	private FairShareClusterTestComponent baseTestController() throws Exception {
+	private ChargeManagementClusterTestComponent baseTestController() throws Exception {
 		this.config = ConfigDefault.createDefaultConfig().build();
-		var test = new FairShareClusterTestComponent(new EvcsClusterChargeMgmtImpl());
+		var test = new ChargeManagementClusterTestComponent(new EvcsClusterChargeMgmtImpl());
 		this.cpm = ConfigDefault.setBaseReferences(test);
 		test.activate(this.config); //
 		return test;
 	}
 
-	private FairShareClusterTestComponent invalidChargeTestController() throws Exception {
+	private ChargeManagementClusterTestComponent invalidChargeTestController() throws Exception {
 		this.config = ConfigDefault.createForbidConfig().build();
-		var test = new FairShareClusterTestComponent(new EvcsClusterChargeMgmtImpl());
+		var test = new ChargeManagementClusterTestComponent(new EvcsClusterChargeMgmtImpl());
 		this.cpm = ConfigDefault.setBaseReferences(test);
 		test.activate(this.config); //
 		return test;
@@ -35,9 +35,10 @@ public class SafetyTest {
 	/*
 	 * private FairShareClusterTestComponent meterBrokenTestController() throws
 	 * Exception { this.config = ConfigBrokenMeter.createDefaultConfig().build();
-	 * var test = new FairShareClusterTestComponent(new EvcsClusterChargeMgmtImpl());
-	 * this.cpm = ConfigBrokenMeter.setBaseReferences(test);
-	 * test.activate(this.config); // return test; }
+	 * var test = new FairShareClusterTestComponent(new
+	 * EvcsClusterChargeMgmtImpl()); this.cpm =
+	 * ConfigBrokenMeter.setBaseReferences(test); test.activate(this.config); //
+	 * return test; }
 	 * 
 	 * @Test public void test01MeterBroken() throws Exception { var test =
 	 * this.meterBrokenTestController(); TestCase tc1 = new TestCase();

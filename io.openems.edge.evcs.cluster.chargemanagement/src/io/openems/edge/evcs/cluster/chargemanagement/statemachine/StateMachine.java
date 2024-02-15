@@ -14,9 +14,9 @@ public class StateMachine extends AbstractStateMachine<State, Context> {
 	@Override
 	public StateHandler<State, Context> getStateHandler(State state) {
 		return switch (state) {
-			case GREEN -> new GreenHandler();
-			case YELLOW -> new YellowHandler();
-			case RED -> new RedHandler();
+		case GREEN -> new GreenHandler();
+		case YELLOW -> new YellowHandler();
+		case RED -> new RedHandler();
 		};
 	}
 

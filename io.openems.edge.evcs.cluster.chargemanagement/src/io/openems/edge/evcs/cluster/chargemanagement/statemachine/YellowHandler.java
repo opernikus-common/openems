@@ -47,7 +47,7 @@ public class YellowHandler extends BaseHandler {
 		if (!context.getCableConstraints().safeOperationMode()) {
 			return State.RED;
 		}
-		if (this.hasDurationPassed(context.getLimitsExceededCheckTimer())) {
+		if (context.getLimitsExceededCheckTimer().checkAndReset()) {
 			if (this.roundRobin.adoptMaxAllowedChargeSessions(true)) {
 				return State.RED;
 			}
@@ -56,30 +56,26 @@ public class YellowHandler extends BaseHandler {
 				return State.GREEN;
 			}
 		}
-		if (!context.getCableConstraints().isAboveTargetLimit()) {
+		if (!context.getCableConstraints().exceedsTargetLimit()) {
 			context.getLimitsExceededTimer().reset();
 		}
-		if (this.hasDurationPassed(context.getLimitsExceededTimer())) {
+		if (context.getLimitsExceededTimer().checkAndReset()) {
 			return State.RED;
 		}
 
 		// TODO
 		//
-		// -wenn nur noch eine charge evcss bereits auf minPower ist und residualPower
-		// == 0 ist, sofort in rot umschalten
+		// switch to red immediately when all charging evcss are at minPower and
+		// MIN_FREE_AVAILABLE_POWER < 0
 		//
-		// -bei phasenschieflast intelligent und schnell handeln
-		// 1. Phasenschieflast erkannen
-		// 2. 5s konstante phasenschieflast detektieren
-		// 3. eine ladesaeule ausschalten
-		// 4. nach +10s eine weitere ladesaeule ausschalten
-		// 5. nach +10s eine weitere ladesaeule ausschalten
-		// 6. nach config.unbalancedHoldTime() seit Beginn der Phasenschieflast in
-		// zustand rot wechseln
-		//
+		// improve phase imbalance handling
+		// 1. detect phase imbalance
+		// 2. switch off one chargepoint
+		// 3. switch off another chargepoint every 10s
+		// 4. switch to red when config.unbalancedHoldTime() is exceeded.
 
 		this.roundRobin.update();
-		if (this.hasDurationPassed(context.getRoundRobinTimer())) {
+		if (context.getRoundRobinTimer().checkAndReset()) {
 			if (this.roundRobin.adoptMaxAllowedChargeSessions(false)) {
 				return State.RED;
 			}

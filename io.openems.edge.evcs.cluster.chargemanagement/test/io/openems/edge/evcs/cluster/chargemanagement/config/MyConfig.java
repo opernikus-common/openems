@@ -21,8 +21,8 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 		private boolean enabled = true;
 		private boolean allowPrioritization = true;
 		private String[] evcsClusterLimiterIds;
-		private int residualExcessHoldTime;
 		private String evcsClusterLimiterTarget;
+		private int limitsExceededTime;
 
 		private Builder() {
 		}
@@ -92,8 +92,8 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 			return this;
 		}
 
-		public Builder setResidualExcessHoldTime(int residualExcessHoldTime) {
-			this.residualExcessHoldTime = residualExcessHoldTime;
+		public Builder setLimitsExceededTime(int limitsExceededTime) {
+			this.limitsExceededTime = limitsExceededTime;
 			return this;
 		}
 
@@ -175,7 +175,7 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 
 	@Override
 	public int limitsExceededTime() {
-		return this.builder.residualExcessHoldTime;
+		return this.builder.limitsExceededTime;
 	}
 
 	@Override

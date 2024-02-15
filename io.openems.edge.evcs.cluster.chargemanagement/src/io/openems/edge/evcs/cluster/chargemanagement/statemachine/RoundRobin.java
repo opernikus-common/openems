@@ -162,7 +162,7 @@ public class RoundRobin {
 		var chargeSessionDiff = this.context.getNumberOfSimultaneousChargeSessionsToAddRemove();
 		var cur = this.getMaxAllowedChargeSessions();
 		if (chargeSessionDiff == 0) {
-			if (this.context.getCableConstraints().isAboveTargetLimit()) {
+			if (this.context.getCableConstraints().exceedsTargetLimit()) {
 				if (cur > 1) {
 					this.setMaxAllowedChargeSessions(cur - 1);
 					this.nextRound();

@@ -77,6 +77,8 @@ public class SupplyCableConstraints {
 
 	private int diff(int p1, int p2) {
 		// TODO pruefen, dass der richtige limiter zurückgegeben wird.
+		// TODO Ist das nicht einfach return (p1 - p2)? Oder sollte das eigentlich
+		// return Math.abs(p1 - p2) sein?
 		if (p1 < p2) {
 			return (p1 - p2);
 		} else if (p1 > p2) {
@@ -172,12 +174,11 @@ public class SupplyCableConstraints {
 	}
 
 	/**
-	 * Checks if we have enough residual power or better if we are above
-	 * targetPower.
+	 * Checks if the current power exceeds the targetPower.
 	 * 
-	 * @return true if residualPower is less than 100W, false else.
+	 * @return true if power is exceeded.
 	 */
-	public boolean isAboveTargetLimit() {
+	public boolean exceedsTargetLimit() {
 		if (this.getMinFreeAvailablePower() < 0) {
 			return true;
 		}
@@ -185,7 +186,7 @@ public class SupplyCableConstraints {
 	}
 
 	/**
-	 * Checks if this cable has an unbalanced load.
+	 * Checks if this supply cable has an unbalanced load.
 	 * 
 	 * @return true if the imbalance limit is reached.
 	 */

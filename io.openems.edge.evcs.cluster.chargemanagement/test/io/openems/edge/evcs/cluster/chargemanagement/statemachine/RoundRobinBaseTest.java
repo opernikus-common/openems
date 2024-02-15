@@ -14,7 +14,7 @@ import io.openems.edge.evcs.api.Evcs;
 import io.openems.edge.evcs.cluster.chargemanagement.EvcsClusterChargeMgmtImpl;
 import io.openems.edge.evcs.cluster.chargemanagement.config.ConfigDefault;
 import io.openems.edge.evcs.cluster.chargemanagement.config.MyConfig;
-import io.openems.edge.evcs.cluster.chargemanagement.helper.FairShareClusterTestComponent;
+import io.openems.edge.evcs.cluster.chargemanagement.helper.ChargeManagementClusterTestComponent;
 import io.openems.edge.evcs.cluster.chargemanagement.helper.TestUtils;
 import io.openems.edge.evcs.test.DummyManagedEvcs;
 
@@ -285,7 +285,7 @@ public class RoundRobinBaseTest {
 
 	}
 
-	private void applyCycleCheck(FairShareClusterTestComponent test, Context c, Integer[][] expectedValues)
+	private void applyCycleCheck(ChargeManagementClusterTestComponent test, Context c, Integer[][] expectedValues)
 			throws Exception {
 		// apply new cycle
 		this.roundRobinNextRound(test, c);
@@ -294,21 +294,21 @@ public class RoundRobinBaseTest {
 
 	}
 
-	private void setMaxChargeSessions(FairShareClusterTestComponent test, int number) {
+	private void setMaxChargeSessions(ChargeManagementClusterTestComponent test, int number) {
 		this.roundRobin.setMaxAllowedChargeSessions(number);
 		for (Channel<?> channel : test.getSut().channels()) {
 			channel.nextProcessImage();
 		}
 	}
 
-	private void roundRobinNextRound(FairShareClusterTestComponent test, Context c) throws Exception {
+	private void roundRobinNextRound(ChargeManagementClusterTestComponent test, Context c) throws Exception {
 		c.getParent().logInfo("Next round");
 		this.roundRobin.nextRound();
 		this.applyCycle(test, c);
 		this.assertAllChargePower(c, 0);
 	}
 
-	private void roundRobinUpdate(FairShareClusterTestComponent test, Context c) throws Exception {
+	private void roundRobinUpdate(ChargeManagementClusterTestComponent test, Context c) throws Exception {
 		c.getParent().logInfo("Update");
 		this.roundRobin.update();
 		this.applyCycle(test, c);
@@ -331,7 +331,7 @@ public class RoundRobinBaseTest {
 		}
 	}
 
-	private void applyCycle(FairShareClusterTestComponent test, Context c) throws Exception {
+	private void applyCycle(ChargeManagementClusterTestComponent test, Context c) throws Exception {
 		for (Channel<?> channel : test.getSut().channels()) {
 			channel.nextProcessImage();
 		}
@@ -342,9 +342,9 @@ public class RoundRobinBaseTest {
 		});
 	}
 
-	private FairShareClusterTestComponent baseTestController() throws Exception {
+	private ChargeManagementClusterTestComponent baseTestController() throws Exception {
 		this.config = ConfigDefault.createDefaultConfig().build();
-		var test = new FairShareClusterTestComponent(new EvcsClusterChargeMgmtImpl());
+		var test = new ChargeManagementClusterTestComponent(new EvcsClusterChargeMgmtImpl());
 		// this.cpm =
 		ConfigDefault.setBaseReferences(test);
 		test.activate(this.config); //

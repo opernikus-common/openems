@@ -30,8 +30,8 @@ public class Context extends AbstractContext<EvcsClusterChargeMgmtImpl> {
 	 * of limitsExceededTimer.
 	 */
 	private Timer limitsExceededCheckTimer;
-	/** SoftBorders will be resettet from time to time. */
-	private Timer softBorderResetTimer;
+	/** Timer used by TargetPowerZone to reinit cyclically. */
+	private Timer targetPowerZoneTimer;
 	private TimerManager tm;
 
 	public Context(EvcsClusterChargeMgmtImpl parent, Cluster cluster, SupplyCableConstraints cableConstraints) {
@@ -58,7 +58,7 @@ public class Context extends AbstractContext<EvcsClusterChargeMgmtImpl> {
 
 		// hardcoded timings
 		this.limitsExceededCheckTimer = this.tm.getTimerByTime(this.config.limitsExceededTime() / 3);
-		this.softBorderResetTimer = this.tm.getTimerByTime((int) Duration.ofMinutes(1).getSeconds());
+		this.targetPowerZoneTimer = this.tm.getTimerByTime((int) Duration.ofMinutes(1).getSeconds());
 		this.roundRobinSwitchTimer = this.tm.getTimerByCoreCycles(4);
 	}
 
@@ -107,8 +107,8 @@ public class Context extends AbstractContext<EvcsClusterChargeMgmtImpl> {
 		return this.limitsExceededCheckTimer;
 	}
 
-	public Timer getSoftBorderResetTimer() {
-		return this.softBorderResetTimer;
+	public Timer getTargetPowerZoneTimer() {
+		return this.targetPowerZoneTimer;
 	}
 
 	/**
