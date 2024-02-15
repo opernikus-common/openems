@@ -278,7 +278,9 @@ public class EvcsClusterChargeMgmtImpl extends AbstractManagedEvcs
 	 * @param text to log
 	 */
 	public void logInfo(String text) {
-		this.logInfo(this.log, text);
+		if (this.config.verboseDebug()) {
+			this.logInfo(this.log, text);
+		}
 	}
 
 	/**

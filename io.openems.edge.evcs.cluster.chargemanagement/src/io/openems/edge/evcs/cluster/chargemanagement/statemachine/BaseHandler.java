@@ -1,7 +1,6 @@
 package io.openems.edge.evcs.cluster.chargemanagement.statemachine;
 
 import io.openems.edge.common.statemachine.StateHandler;
-import io.openems.edge.common.timer.Timer;
 import io.openems.edge.evcs.cluster.chargemanagement.State;
 
 public abstract class BaseHandler extends StateHandler<State, Context> {
@@ -10,12 +9,10 @@ public abstract class BaseHandler extends StateHandler<State, Context> {
 		super();
 	}
 
-	protected boolean hasDurationPassed(Timer timer) {
-		if (timer.check()) {
-			timer.reset();
-			return true;
+	protected void logInfo(Context context, String txt) {
+		if (context.getConfig().verboseDebug()) {
+			context.getParent().logInfo(txt);
 		}
-		return false;
-	}
 
+	}
 }

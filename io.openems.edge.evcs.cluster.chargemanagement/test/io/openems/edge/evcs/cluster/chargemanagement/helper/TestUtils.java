@@ -29,7 +29,7 @@ public class TestUtils {
 	 * 
 	 * @param test the test which state should be checked
 	 */
-	public static void assertDefaultConfigSetValid(FairShareClusterTestComponent test) {
+	public static void assertDefaultConfigSetValid(ChargeManagementClusterTestComponent test) {
 		assertEquals(sutChannelInt(test, EvcsClusterChargeMgmt.ChannelId.NUMBER_OF_EVCS), 4);
 		assertEquals(sutChannelInt(test, EvcsClusterChargeMgmt.ChannelId.NUMBER_OF_EVCS_PRIO), 0);
 	}
@@ -39,7 +39,7 @@ public class TestUtils {
 	 * 
 	 * @param test the test which state should be checked
 	 */
-	public static void assertStateRedSafe(FairShareClusterTestComponent test) {
+	public static void assertStateRedSafe(ChargeManagementClusterTestComponent test) {
 		assertEquals(sutClusterState(test), State.RED);
 
 		assertEquals(sutChannelInt(test, EvcsClusterChargeMgmt.ChannelId.EVCS_POWER_LIMIT), 0);
@@ -55,7 +55,7 @@ public class TestUtils {
 	 * @param test the test which state should be checked
 	 * @return the evcsCluster object itself
 	 */
-	public static EvcsClusterChargeMgmtImpl sut(FairShareClusterTestComponent test) {
+	public static EvcsClusterChargeMgmtImpl sut(ChargeManagementClusterTestComponent test) {
 		return (EvcsClusterChargeMgmtImpl) test.getSut();
 	}
 
@@ -65,7 +65,7 @@ public class TestUtils {
 	 * @param test the test which state should be checked
 	 * @return the evcsCluster cluster state
 	 */
-	public static State sutClusterState(FairShareClusterTestComponent test) {
+	public static State sutClusterState(ChargeManagementClusterTestComponent test) {
 		return sut(test).getClusterState().asEnum();
 	}
 
@@ -76,7 +76,7 @@ public class TestUtils {
 	 * @param channelId the channel id to use
 	 * @return the evcsCluster error state level
 	 */
-	public static Boolean sutChannelBool(FairShareClusterTestComponent test, ChannelId channelId) {
+	public static Boolean sutChannelBool(ChargeManagementClusterTestComponent test, ChannelId channelId) {
 		return (Boolean) sutChannel(test, channelId).get();
 	}
 
@@ -87,7 +87,7 @@ public class TestUtils {
 	 * @param channelId the channel id to use
 	 * @return the value the channel value
 	 */
-	public static Value<?> sutChannel(FairShareClusterTestComponent test, ChannelId channelId) {
+	public static Value<?> sutChannel(ChargeManagementClusterTestComponent test, ChannelId channelId) {
 		return sut(test).channel(channelId).value();
 	}
 
@@ -98,7 +98,7 @@ public class TestUtils {
 	 * @param channelId the channel id to use
 	 * @return the value the channel value as integer
 	 */
-	public static int sutChannelInt(FairShareClusterTestComponent test, ChannelId channelId) {
+	public static int sutChannelInt(ChargeManagementClusterTestComponent test, ChannelId channelId) {
 		return (int) sutChannel(test, channelId).get();
 	}
 
@@ -108,7 +108,7 @@ public class TestUtils {
 	 * @param test  the test which state should be checked
 	 * @param state the reference state
 	 */
-	public static void assertEqualClusterState(FairShareClusterTestComponent test, State state) {
+	public static void assertEqualClusterState(ChargeManagementClusterTestComponent test, State state) {
 		assertEquals(sut(test).getClusterState().get(), state);
 	}
 
@@ -118,7 +118,7 @@ public class TestUtils {
 	 * @param test  Controller Test
 	 * @param power Expected Value
 	 */
-	public static void checkClusterPower(FairShareClusterTestComponent test, int power) {
+	public static void checkClusterPower(ChargeManagementClusterTestComponent test, int power) {
 		assertEquals(getClusterPowerFromSut(test.getSut()), power);
 	}
 
@@ -138,7 +138,7 @@ public class TestUtils {
 	 * @param test  Controller Test
 	 * @param power Expected Value
 	 */
-	public static void checkMeterPowerLessOrEquals(FairShareClusterTestComponent test, int power) {
+	public static void checkMeterPowerLessOrEquals(ChargeManagementClusterTestComponent test, int power) {
 		assertTrue((getMeterPowerFromSut(test.getSut()) <= power));
 	}
 
@@ -148,7 +148,7 @@ public class TestUtils {
 	 * @param test  Controller Test
 	 * @param power Expected Value
 	 */
-	public static void checkMeterPowerEquals(FairShareClusterTestComponent test, int power) {
+	public static void checkMeterPowerEquals(ChargeManagementClusterTestComponent test, int power) {
 		assertTrue((getMeterPowerFromSut(test.getSut()) == power));
 	}
 
@@ -158,7 +158,7 @@ public class TestUtils {
 	 * @param test  Controller Test
 	 * @param power Expected Value
 	 */
-	public static void checkMeterPowerGreaterOrEquals(FairShareClusterTestComponent test, int power) {
+	public static void checkMeterPowerGreaterOrEquals(ChargeManagementClusterTestComponent test, int power) {
 		assertTrue((getMeterPowerFromSut(test.getSut()) >= power));
 	}
 
@@ -173,16 +173,17 @@ public class TestUtils {
 	}
 
 	/**
-	 * Prepare the Test. 
-	 * @param c the context
-	 * @param oneEnabled boolean value for evcs one.
-	 * @param onePrio boolean value for evcs one.
-	 * @param twoEnabled boolean value for evcs two.
-	 * @param twoPrio boolean value for evcs two.
+	 * Prepare the Test.
+	 * 
+	 * @param c            the context
+	 * @param oneEnabled   boolean value for evcs one.
+	 * @param onePrio      boolean value for evcs one.
+	 * @param twoEnabled   boolean value for evcs two.
+	 * @param twoPrio      boolean value for evcs two.
 	 * @param threeEnabled boolean value for evcs three.
-	 * @param threePrio boolean value for evcs three.
-	 * @param fourEnabled boolean value for evcs four.
-	 * @param fourPrio boolean value for evcs four.
+	 * @param threePrio    boolean value for evcs three.
+	 * @param fourEnabled  boolean value for evcs four.
+	 * @param fourPrio     boolean value for evcs four.
 	 * @throws Exception in case of any error.
 	 */
 	public static void prepareTestCondition(Context c, //

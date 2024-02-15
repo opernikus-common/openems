@@ -5,15 +5,15 @@ import io.openems.edge.common.test.DummyComponentManager;
 import io.openems.edge.evcs.test.DummyManagedEvcs;
 import io.openems.edge.meter.test.DummyElectricityMeter;
 
-public class DummyFairShareMeter extends DummyElectricityMeter {
+public class DummyClusterChargemanagementMeter extends DummyElectricityMeter {
 
 	private int otherLoad = 0;
 
-	public DummyFairShareMeter(String id) {
+	public DummyClusterChargemanagementMeter(String id) {
 		super(id);
 	}
 
-	public DummyFairShareMeter(String id, int otherLoad) {
+	public DummyClusterChargemanagementMeter(String id, int otherLoad) {
 		super(id);
 		this.otherLoad = otherLoad;
 	}

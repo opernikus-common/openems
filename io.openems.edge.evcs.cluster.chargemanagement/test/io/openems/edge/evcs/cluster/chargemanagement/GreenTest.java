@@ -4,8 +4,8 @@ import io.openems.edge.common.test.AbstractComponentTest.TestCase;
 import io.openems.edge.common.test.DummyComponentManager;
 import io.openems.edge.evcs.cluster.chargemanagement.config.ConfigDefault;
 import io.openems.edge.evcs.cluster.chargemanagement.config.MyConfig;
+import io.openems.edge.evcs.cluster.chargemanagement.helper.ChargeManagementClusterTestComponent;
 import io.openems.edge.evcs.cluster.chargemanagement.helper.Consts;
-import io.openems.edge.evcs.cluster.chargemanagement.helper.FairShareClusterTestComponent;
 import io.openems.edge.evcs.cluster.chargemanagement.helper.TestUtils;
 
 public class GreenTest {
@@ -13,15 +13,15 @@ public class GreenTest {
 	private DummyComponentManager cpm;
 	private MyConfig config;
 
-	private FairShareClusterTestComponent baseTestController() throws Exception {
+	private ChargeManagementClusterTestComponent baseTestController() throws Exception {
 		this.config = ConfigDefault.createDefaultConfig().build();
-		var test = new FairShareClusterTestComponent(new EvcsClusterChargeMgmtImpl());
+		var test = new ChargeManagementClusterTestComponent(new EvcsClusterChargeMgmtImpl());
 		this.cpm = ConfigDefault.setBaseReferences(test);
 		test.activate(this.config); //
 		return test;
 	}
 
-	//@Test
+	// @Test
 	protected void testGreenState() throws Exception {
 		// var test =
 		this.baseTestController();

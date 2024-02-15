@@ -5,7 +5,7 @@ import io.openems.edge.evcs.api.Evcs;
 import io.openems.edge.evcs.cluster.chargemanagement.State;
 
 public class RedHandler extends BaseHandler {
-	
+
 	private boolean firstRun = true;
 
 	@Override
@@ -39,13 +39,13 @@ public class RedHandler extends BaseHandler {
 			context.getRedHoldTimer().reset();
 			return State.RED;
 		}
-		
+
 		if (this.firstRun) {
 			this.firstRun = false;
 			return State.GREEN;
 		}
-		
-		if (!this.hasDurationPassed(context.getRedHoldTimer())) {
+
+		if (!context.getRedHoldTimer().checkAndReset()) {
 			// delay state switch until redHoldTime has passed
 			return State.RED;
 		}

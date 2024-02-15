@@ -55,6 +55,11 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 				.persistencePriority(PersistencePriority.HIGH)), //
 		/**
 		 * Minimum free available power over all limiters.
+		 * 
+		 * <p>
+		 * When positive, there is freely available power for chargepoints. When
+		 * negative the target power limit is exceeded.
+		 * 
 		 */
 		MIN_FREE_AVAILABLE_POWER(Doc.of(OpenemsType.INTEGER) //
 				.unit(Unit.WATT) //
@@ -62,6 +67,11 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 		/**
 		 * Minimum free available current on L1 over all limiters. The free available
 		 * current between current situation and targetPower (in A).
+		 * 
+		 * <p>
+		 * positive values indicates a safe distance to the fuseLimit. Negative values
+		 * indicate that we are above the target power (available per phase) and it may
+		 * be close to the fuse limit.
 		 */
 		MIN_FREE_AVAILABLE_CURRENT_L1(Doc.of(OpenemsType.INTEGER) //
 				.unit(Unit.MILLIAMPERE) //
@@ -69,6 +79,11 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 		/**
 		 * Minimum free current on L2 over all limiters. The free available current
 		 * between current situation and targetPower (in A).
+		 * 
+		 * <p>
+		 * positive values indicates a safe distance to the fuseLimit. Negative values
+		 * indicate that we are above the target power (available per phase) and it may
+		 * be close to the fuse limit.
 		 */
 		MIN_FREE_AVAILABLE_CURRENT_L2(Doc.of(OpenemsType.INTEGER) //
 				.unit(Unit.MILLIAMPERE) //
@@ -76,19 +91,24 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 		/**
 		 * Minimum free current on L3 over all limiters. The free available current
 		 * between current situation and targetPower (in A).
+		 * 
+		 * <p>
+		 * positive values indicates a safe distance to the fuseLimit. Negative values
+		 * indicate that we are above the target power (available per phase) and it may
+		 * be close to the fuse limit.
 		 */
 		MIN_FREE_AVAILABLE_CURRENT_L3(Doc.of(OpenemsType.INTEGER) //
 				.unit(Unit.MILLIAMPERE) //
 				.persistencePriority(PersistencePriority.HIGH)),
 		/**
-		 * Each cluster can be supplied by multiple supply cable segments. This gives
-		 * the max transport capacity of the weakest segment.
+		 * Each cluster can be supplied by multiple supply cable segments. This
+		 * indicates the max transport capacity of the weakest segment (in W).
 		 */
 		TRANSPORT_CAPACITY(Doc.of(OpenemsType.INTEGER) //
 				.unit(Unit.WATT) //
 				.persistencePriority(PersistencePriority.HIGH)), //
 		/**
-		 * The id of the limiter currently in action.
+		 * The id of the limiter currently steering the cluster.
 		 */
 		RESPONSIBLE_LIMITER(Doc.of(OpenemsType.INTEGER) //
 				.unit(Unit.WATT) //
@@ -108,13 +128,26 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 		// ****************************************************************
 		// other channels
 
+		/**
+		 * Number of currently available EVCS with Priority.LOW or
+		 * Priority.EXCESS_POWER.
+		 */
 		NUMBER_OF_EVCS(Doc.of(OpenemsType.INTEGER) //
-				.persistencePriority(PersistencePriority.HIGH)),
+				.persistencePriority(PersistencePriority.HIGH)), //
+		/**
+		 * Number of currently available EVCS with Priority.HIGH.
+		 */
 		NUMBER_OF_EVCS_PRIO(Doc.of(OpenemsType.INTEGER) //
 				.persistencePriority(PersistencePriority.HIGH) //
 				.text("Number of prioritized evcs.")), //
+		/**
+		 * Number of currently charging EVCS with Priority.LOW or Priority.EXCESS_POWER.
+		 */
 		NUMBER_OF_CHARGING_EVCS(Doc.of(OpenemsType.INTEGER) //
 				.persistencePriority(PersistencePriority.HIGH)), //
+		/**
+		 * Number of currently charging EVCS with Priority.HIGH.
+		 */
 		NUMBER_OF_CHARGING_EVCS_PRIO(Doc.of(OpenemsType.INTEGER) //
 				.persistencePriority(PersistencePriority.HIGH)), //
 		EVCS_POWER_LIMIT(Doc.of(OpenemsType.INTEGER) //
@@ -623,7 +656,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 
 	/**
 	 * Gets the value for the channel {@link ChannelId#MIN_FREE_AVAILABLE_POWER}.
-	 *
+	 * 
 	 * @return the channel {@link Value}
 	 */
 	public default Value<Integer> getMinFreePower() {

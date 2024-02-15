@@ -11,14 +11,15 @@ import io.openems.edge.common.test.DummyComponentManager;
 import io.openems.edge.evcs.test.DummyManagedEvcs;
 import io.openems.edge.meter.test.DummyElectricityMeter;
 
-public class FairShareClusterTestComponent extends AbstractComponentTest<FairShareClusterTestComponent, OpenemsComponent> {
-	public FairShareClusterTestComponent(OpenemsComponent controller, OpenemsComponent... components)
+public class ChargeManagementClusterTestComponent
+		extends AbstractComponentTest<ChargeManagementClusterTestComponent, OpenemsComponent> {
+	public ChargeManagementClusterTestComponent(OpenemsComponent controller, OpenemsComponent... components)
 			throws OpenemsException {
 		super(controller);
 	}
-	
+
 	@Override
-	protected FairShareClusterTestComponent self() {
+	protected ChargeManagementClusterTestComponent self() {
 		return this;
 	}
 
@@ -45,7 +46,7 @@ public class FairShareClusterTestComponent extends AbstractComponentTest<FairSha
 			}
 
 			DummyElectricityMeter meter = cpm.getComponent(Consts.meterId);
-			if (meter instanceof DummyFairShareMeter me) {
+			if (meter instanceof DummyClusterChargemanagementMeter me) {
 				me.run(cpm);
 			}
 		}
@@ -64,8 +65,9 @@ public class FairShareClusterTestComponent extends AbstractComponentTest<FairSha
 	 * @param checks  the checks to apply
 	 * @throws Exception on any error.
 	 */
-	public void runSeconds(int seconds, TestCase tc, DummyComponentManager cpm, FairShareClusterTestComponent test,
-			Consumer<FairShareClusterTestComponent> checks) throws Exception {
+	public void runSeconds(int seconds, TestCase tc, DummyComponentManager cpm,
+			ChargeManagementClusterTestComponent test, Consumer<ChargeManagementClusterTestComponent> checks)
+			throws Exception {
 		for (var cnt = 0; cnt < seconds; cnt++) {
 			this.runSeconds(1, tc, cpm);
 			checks.accept(test);

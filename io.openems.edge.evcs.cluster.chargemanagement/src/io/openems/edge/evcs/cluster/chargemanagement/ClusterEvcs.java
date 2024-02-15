@@ -1,8 +1,8 @@
 package io.openems.edge.evcs.cluster.chargemanagement;
 
+import static io.openems.edge.evcs.api.Evcs.DEFAULT_MAXIMUM_HARDWARE_POWER;
 import static io.openems.edge.evcs.api.Evcs.DEFAULT_MINIMUM_HARDWARE_CURRENT;
 import static io.openems.edge.evcs.api.Evcs.DEFAULT_MINIMUM_HARDWARE_POWER;
-import static io.openems.edge.evcs.api.Evcs.DEFAULT_MAXIMUM_HARDWARE_POWER;
 
 import io.openems.common.exceptions.OpenemsError.OpenemsNamedException;
 import io.openems.edge.common.channel.Channel;

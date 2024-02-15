@@ -7,9 +7,9 @@ import io.openems.edge.common.component.OpenemsComponent;
 import io.openems.edge.controller.api.Controller;
 import io.openems.edge.controller.evcs.cluster.chargemanagement.EvcsClusterLimiter;
 
-public class DummyEvcsClusterLimiter extends AbstractOpenemsComponent implements EvcsClusterLimiter {
+public class DummyChargeManagementLimiter extends AbstractOpenemsComponent implements EvcsClusterLimiter {
 
-	public DummyEvcsClusterLimiter(String id, int fuseLimit, int fuseSafetyOffset, int targetPower) {
+	public DummyChargeManagementLimiter(String id, int fuseLimit, int fuseSafetyOffset, int targetPower) {
 		super(OpenemsComponent.ChannelId.values(), //
 				Controller.ChannelId.values(), //
 				EvcsClusterLimiter.ChannelId.values() //
@@ -32,7 +32,7 @@ public class DummyEvcsClusterLimiter extends AbstractOpenemsComponent implements
 
 	@Override
 	public boolean isPhaseImbalanceLimiter() {
-		return false;
+		return true;
 	}
 
 }
