@@ -214,9 +214,6 @@ public class SimulatorEvcsImpl extends AbstractManagedEvcsComponent
 		var energyTransfered = timeDiff / 1000.0 / 60.0 / 60.0 * this.getChargePower().orElse(0);
 
 		this.exactEnergySession = this.exactEnergySession + energyTransfered;
-		if (this.exactEnergySession > this.config.maxEnergySession()) {
-			this.exactEnergySession = 0;
-		}
 		this._setEnergySession((int) this.exactEnergySession);
 
 		this.lastUpdate = LocalDateTime.now();
