@@ -27,13 +27,11 @@ import io.openems.edge.common.component.ComponentManager;
 import io.openems.edge.common.component.OpenemsComponent;
 import io.openems.edge.common.event.EdgeEventConstants;
 import io.openems.edge.common.filter.RampFilter;
-import io.openems.edge.common.type.TypeUtils;
 import io.openems.edge.evcs.api.AbstractManagedEvcsComponent;
 import io.openems.edge.evcs.api.Evcs;
 import io.openems.edge.evcs.api.EvcsPower;
 import io.openems.edge.evcs.api.EvcsUtils;
 import io.openems.edge.evcs.api.ManagedEvcs;
-import io.openems.edge.evcs.api.Phases;
 import io.openems.edge.evcs.api.Status;
 import io.openems.edge.simulator.datasource.api.SimulatorDatasource;
 import io.openems.edge.timedata.api.Timedata;
@@ -54,7 +52,7 @@ import io.openems.edge.timedata.api.utils.CalculateEnergyFromPower;
 public class SimulatorEvcsImpl extends AbstractManagedEvcsComponent
 		implements SimulatorEvcs, ManagedEvcs, Evcs, OpenemsComponent, TimedataProvider, EventHandler {
 
-	private static final int MAX_POWER_PER_PHASE = 7360;
+	private static final int MAX_CHANGE_PER_CYCLE = 1200;
 
 	@Reference
 	private EvcsPower evcsPower;
@@ -80,6 +78,9 @@ public class SimulatorEvcsImpl extends AbstractManagedEvcsComponent
 	private EventType oldEventType = EventType.UNDEFINED;
 	private boolean disableCharging = false;
 
+	// Workaround für E-World
+	private boolean modified = false;
+
 	public SimulatorEvcsImpl() {
 		super(//
 				OpenemsComponent.ChannelId.values(), //
@@ -92,16 +93,15 @@ public class SimulatorEvcsImpl extends AbstractManagedEvcsComponent
 	@Activate
 	private void activate(ComponentContext context, Config config) throws IOException, OpenemsNamedException {
 		super.activate(context, config.id(), config.alias(), config.enabled());
-
+		this.modified = false;
 		this.applyConfig(config);
 		this._setPowerPrecision(1);
 		this._setChargingstationCommunicationFailed(false);
-		this._setFixedMaximumHardwarePower(this.getConfiguredMaximumHardwarePower());
-		this._setFixedMinimumHardwarePower(this.getConfiguredMinimumHardwarePower());
 	}
 
 	@Modified
 	private void modified(ComponentContext context, Config config) throws OpenemsNamedException {
+		this.modified = true;
 		super.modified(context, config.id(), config.alias(), config.enabled());
 		this.applyConfig(config);
 	}
@@ -113,6 +113,8 @@ public class SimulatorEvcsImpl extends AbstractManagedEvcsComponent
 		this._setPhaseRotation(config.phaseRotation());
 		this._setPhases(3);
 		this._setPriority(config.priority());
+		this._setFixedMaximumHardwarePower(this.getConfiguredMaximumHardwarePower());
+		this._setFixedMinimumHardwarePower(this.getConfiguredMinimumHardwarePower());
 	}
 
 	@Override
@@ -126,7 +128,6 @@ public class SimulatorEvcsImpl extends AbstractManagedEvcsComponent
 		if (!this.isEnabled()) {
 			return;
 		}
-		super.handleEvent(event);
 		switch (event.getTopic()) {
 		case EdgeEventConstants.TOPIC_CYCLE_BEFORE_PROCESS_IMAGE -> {
 			this.updateChannels();
@@ -175,7 +176,6 @@ public class SimulatorEvcsImpl extends AbstractManagedEvcsComponent
 		case NO_CAR_CONNECTED -> {
 			this._setStatus(Status.NOT_READY_FOR_CHARGING);
 			this.disableCharging = true;
-			this.resetChargingChannels();
 		}
 		case CAR_CONNECTED -> {
 			if (!this.oldEventType.equals(EventType.CAR_CONNECTED)) {
@@ -189,33 +189,21 @@ public class SimulatorEvcsImpl extends AbstractManagedEvcsComponent
 			this.disableCharging = true;
 		}
 		case UNDEFINED -> {
-			this.resetChargingChannels();
 			this._setStatus(Status.ERROR);
 			this.disableCharging = true;
 		}
 		}
 
 		this.oldEventType = eventType;
-	}
 
-	private void resetChargingChannels() {
-		this._setChargePower(0);
-		this._setCurrentL1(0);
-		this._setCurrentL2(0);
-		this._setCurrentL3(0);
-		this._setPhases(3);
+		if (this.modified) {
+			this.modified = false;
+			this._setStatus(Status.NOT_READY_FOR_CHARGING);
+		}
 	}
 
 	private void calculateEnergy() {
-		// Calculate Energy
-		var activePower = this.getChargePower().get();
-		if (activePower == null) {
-			this.calculateConsumptionEnergy.update(null);
-		} else {
-
-			this.calculateConsumptionEnergy.update(activePower);
-		}
-
+		this.calculateConsumptionEnergy.update(this.getChargePower().get());
 		this.calculateEnergySession();
 	}
 
@@ -232,7 +220,7 @@ public class SimulatorEvcsImpl extends AbstractManagedEvcsComponent
 
 	private void resetEnergy() {
 		this.exactEnergySession = 0;
-		this._setEnergySession((int) this.exactEnergySession);
+		this._setEnergySession(0);
 		this.lastUpdate = LocalDateTime.now();
 	}
 
@@ -258,33 +246,29 @@ public class SimulatorEvcsImpl extends AbstractManagedEvcsComponent
 
 	@Override
 	public boolean applyChargePowerLimit(int power) throws OpenemsException {
-		int chargePower = this.getChargePower().orElse(0);
+
+		var powerPerPhase = power / 3;
+		var chargePowerPerPhase = this.getChargePower().orElse(0) / this.getPhases().getValue();
 
 		// increas chargePowerLimit slowly
-		var request = Float.valueOf(power);
-		var stepSize = Math.max(Math.abs(chargePower - request.intValue()) / 3, 2000);
-		chargePower = this.rampFilter.getFilteredValueAsInteger(request, stepSize);
+		var request = Float.valueOf(powerPerPhase);
+		chargePowerPerPhase = this.rampFilter.getFilteredValueAsInteger(Float.valueOf(chargePowerPerPhase), request,
+				MAX_CHANGE_PER_CYCLE);
 
 		if (this.disableCharging) {
-			chargePower = 0;
+			chargePowerPerPhase = 0;
 		}
+
+		// gets used phases from datasource
+		int phases = this.datasource.getValue(OpenemsType.INTEGER, new ChannelAddress(this.id(), "Phases"));
+		this._setPhases(phases);
 
 		Integer maxEvPower = this.datasource.getValue(OpenemsType.INTEGER, new ChannelAddress(this.id(), "MaxEvPower"));
 		this.channel(SimulatorEvcs.ChannelId.MAX_EV_POWER).setNextValue(maxEvPower);
-		var sentPower = Math.min(chargePower, maxEvPower);
+		var sentPowerPerPhase = Math.min(chargePowerPerPhase, maxEvPower / phases);
 
-		// gets used phases from datasource
-
-		int phases = this.datasource.getValue(OpenemsType.INTEGER, new ChannelAddress(this.id(), "Phases"));
-		if (this.disableCharging) {
-			phases = 3;
-		}
-		this._setPhases(phases);
-
-		Integer simulatedActivePowerByPhases = Math.min(TypeUtils.divide(sentPower, Phases.THREE_PHASE.getValue()),
-				MAX_POWER_PER_PHASE);
-
-		var simulatedCurrent = EvcsUtils.powerToCurrentInMilliampere(simulatedActivePowerByPhases, 1); // mA
+		var simulatedCurrentPerPhase = EvcsUtils.powerToCurrentInMilliampere(sentPowerPerPhase, 1); // mA
+		this._setChargePower(sentPowerPerPhase * phases);
 
 		// Current is divided on the phases 1,...,phases
 
@@ -295,25 +279,24 @@ public class SimulatorEvcsImpl extends AbstractManagedEvcsComponent
 			this.channel(this.config.phaseRotation().getThirdPhase()).setNextValue(0);
 		}
 		case 1 -> {
-			this.channel(this.config.phaseRotation().getFirstPhase()).setNextValue(simulatedCurrent);
+			this.channel(this.config.phaseRotation().getFirstPhase()).setNextValue(simulatedCurrentPerPhase);
 			this.channel(this.config.phaseRotation().getSecondPhase()).setNextValue(0);
 			this.channel(this.config.phaseRotation().getThirdPhase()).setNextValue(0);
 		}
 		case 2 -> {
-			this.channel(this.config.phaseRotation().getFirstPhase()).setNextValue(simulatedCurrent);
-			this.channel(this.config.phaseRotation().getSecondPhase()).setNextValue(simulatedCurrent);
+			this.channel(this.config.phaseRotation().getFirstPhase()).setNextValue(simulatedCurrentPerPhase);
+			this.channel(this.config.phaseRotation().getSecondPhase()).setNextValue(simulatedCurrentPerPhase);
 			this.channel(this.config.phaseRotation().getThirdPhase()).setNextValue(0);
 		}
 		case 3 -> {
-			this.channel(this.config.phaseRotation().getFirstPhase()).setNextValue(simulatedCurrent);
-			this.channel(this.config.phaseRotation().getSecondPhase()).setNextValue(simulatedCurrent);
-			this.channel(this.config.phaseRotation().getThirdPhase()).setNextValue(simulatedCurrent);
+			this.channel(this.config.phaseRotation().getFirstPhase()).setNextValue(simulatedCurrentPerPhase);
+			this.channel(this.config.phaseRotation().getSecondPhase()).setNextValue(simulatedCurrentPerPhase);
+			this.channel(this.config.phaseRotation().getThirdPhase()).setNextValue(simulatedCurrentPerPhase);
 		}
 		default -> {
 		}
 		}
-		this._setChargePower(phases * simulatedActivePowerByPhases);
-		this._setCurrent(simulatedCurrent * phases);
+		this._setCurrent(simulatedCurrentPerPhase * phases);
 
 		this.calculateEnergy();
 		return true;
