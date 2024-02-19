@@ -1,9 +1,8 @@
-package io.openems.edge.core.timer;
+package io.openems.edge.common.timer;
 
 import java.time.Clock;
 
 import io.openems.edge.common.channel.Channel;
-import io.openems.edge.common.timer.Timer;
 
 public class TimerByTime extends AbstractTimer implements Timer {
 

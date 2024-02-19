@@ -7,7 +7,7 @@ import io.openems.common.test.TimeLeapClock;
 import io.openems.edge.common.filter.DisabledRampFilter;
 import io.openems.edge.common.test.DummyComponentManager;
 import io.openems.edge.common.test.DummyConfigurationAdmin;
-import io.openems.edge.core.timer.DummyTimerManager;
+import io.openems.edge.common.timer.DummyTimerManager;
 import io.openems.edge.evcs.cluster.chargemanagement.helper.ChargeManagementClusterTestComponent;
 import io.openems.edge.evcs.cluster.chargemanagement.helper.Consts;
 import io.openems.edge.evcs.cluster.chargemanagement.helper.DummyChargeManagementLimiter;

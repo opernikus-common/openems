@@ -17,6 +17,10 @@ import io.openems.edge.common.component.ComponentManager;
 import io.openems.edge.common.component.OpenemsComponent;
 import io.openems.edge.common.event.EdgeEventConstants;
 import io.openems.edge.common.timer.Timer;
+import io.openems.edge.common.timer.TimerByCoreCycles;
+import io.openems.edge.common.timer.TimerByCount;
+import io.openems.edge.common.timer.TimerByTime;
+import io.openems.edge.common.timer.TimerManager;
 
 @Designate(ocd = Config.class, factory = false)
 @Component(//
@@ -63,7 +67,8 @@ public class TimerManagerImpl extends AbstractOpenemsComponent implements TimerM
 		this.coreCyclesCount++;
 	}
 
-	protected int getCoreCyclesCount() {
+	@Override
+	public int getCoreCyclesCount() {
 		return this.coreCyclesCount;
 	}
 

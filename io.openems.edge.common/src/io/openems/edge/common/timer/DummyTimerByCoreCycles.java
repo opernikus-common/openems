@@ -1,7 +1,6 @@
-package io.openems.edge.core.timer;
+package io.openems.edge.common.timer;
 
 import io.openems.edge.common.channel.Channel;
-import io.openems.edge.common.timer.Timer;
 
 public class DummyTimerByCoreCycles extends AbstractTimer implements Timer {
 
