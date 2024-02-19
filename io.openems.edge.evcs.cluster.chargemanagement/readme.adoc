@@ -1,26 +1,49 @@
 # Evcs Cluster Chargemanagement
 
+The Evcs Cluster Chargemanagement is a collection of chargepoints (evcs) and one or more EvcsClusterLimiters. Each Cluster limiter is
+responsible for one physical supply cable segment on the path to the installed charge point cluster. Each supply cable segment may have
+its own transport capacity. The Evcs Cluster Chargemanagement takes care that none of the limits on all supply cable segments is exceeded.
 
-## Functionality
+In addition each limiter has a configured `targetPower` [in W]. The cluster regulates against this value. It may be exceeded for a few seconds. Measuring over a period 
+of 15min, it is <= `targetPower`. 
 
-*Provides*
+*Example:* 
+An industrial property may have a grid connection with 150A fuse. Within the customers property a 100kWp PV is installed. 
+Thus the parking lot may have a 200A fuse. This can be mapped to a 150A evcs limiter, a 200A evcs limiter and an evcs cluster for the parking lot.
+The Evcs Cluster Chargemanagment will now limit the chargepoint either to the more critical limit on the grid or to the more critical limit on the parking lot. 
+ 
 
-* (x) load management by leveling 
-* (x) load management by round robin
-* (x) chargepoint priorities - configured within each used chargepoint
-* (x) phase balancing against one limiter
-* (x) supports several supply cable limits
-* (untested) pv optimized charge
-* (NYI) better performance around or less than activePower <= 0W 
-* (NYI) ludicrousMode - full load charging for 5mins immediately after charge process has started
+The Evcs Cluster Chargemanagement provides three states: 
+
+* State `RED` - all chargepoints are switched to off. This state is reached when 
+ ** at least on one phase on at least one of the limiters a current of `fuseLimit` - `fuseSafetyOffset` has been reached.
+ ** the phase imbalance on the responsible phase imbalance limiter is exceeded for `imbalanceHoldTime` s.   
+ ** in case of any meter error on any limiter.
+* State `YELLOW` - charge management is done by a round robin algorithm. This state is reached, when the minimum power of all charge points, that want to 
+charge exceeds the configured `targetPower`. In that case one or more charge points are switched off. And the others will be activated/switched off
+based on a prioritized round robin algorithm. In State `YELLOW` all chargepoints will always be operated with minimum possible power.    
+* State `GREEN` - all requested charge points are allowed to charge. They will be operated in between min and max power. The management is done by leveling.
+ 
+*Additional Functionality:*
+
+* the module offers charge point priorities (`HIGH`, `LOW`). Chargepoints with priority `HIGH` will get more power than the other chargepoints.
+* the module takes care of phase imbalance. If a phase imbalance is detected, chargepower will be reduced in state `GREEN` and if that is not enough state is switched 
+to `YELLOW`. Note that the phase imbalance mechanism is non-perfomant (regarding the `targetPower`).
+* in general PV optimized charge is possible. Divide chargepoints in two segments: cluster pv1 and cluster power1. Establish two grid limiters, one for the grid limitation (e.g. 45kW) and one 
+for pv optimized charge (0W). Assign the limiters appropriately to the charge clusters pv1 and power1. The cluster power1 can always charge. The cluster pv1 will charge only on 
+excess power.    
+* `MeterEvcsClusterCmVirtual` - virtual meter which can be put in front of a ecvs cluster chargemanagement. It provides an `ElectricityMeter` for the cluster. this meter
+than can be used by a cluster limiter which can be given to the same cluster. With this meter a cluster can be limited on its own. OSGI-Circular dependency is avoided by the way
+the meter is implemented.     
+
 
 
 *Relevant limits:*
 
 * (x) fuseLimit[A] (phase based) (Grid) - should never be reached
-* (x) fuseSafetyOffset[A] (phase based) - distance between fuse limit and safe operation mode
-* (x) targetPower[W] (three phase based) - note that the Range up to a power of (fuseLimit-fuseSafetyOffset)*3 * 230V is a valid range to operate.
-* (x) targetPower - expected operation power of charge park. if current power > targetpower it will be downpowered within 30-60s   
+* (x) fuseSafetyOffset[A] (phase based) - the upper limit of the safe operation mode (`fuseLimit` - `fuseSafetyOffset`).
+* (x) targetPower[W] (three phase based) - expected operation power of charge park. if current power > targetpower it will be downpowered within 30-60s   
+* (x) the safe operation range is the range between targetPower[W](three phase) and (`fuseLimit` - `fuseSafetyOffset`)[A](per Phase) targetPower[W] (three phase based). This is per definition a valid range to operate.
 
 
 
@@ -38,20 +61,16 @@
 
 
 
-## Description 
+*Nice to have features*
 
-...
-		
+* (NYI) full load charging for 5mins immediately after charge process has started. This solves the "Renault Zoe" issue.
 
-When working with simulated chargepoints config.stepInterval() should be at least 3. 
+*Additional notes*
 
-		
-	
-*Internal States:*
-
-* green    - charge management by leveling
-* yellow   - charge management by round robin
-* red      - all off
+* When working with simulated chargepoints config.stepInterval() should be at least 2.
+* to avoid continuously incrementation/decrementation around the `targetpower` limit a "TargetPowerZone" is introduced. When the cluster is operated within the  
+"TargetPowerZone" it freezes the current charging situation for some time. This is more intuitive to viewers of the OpenEMS UI.
+* junit test does not work right now. 
 	
 		
 ```mermaid		
@@ -59,6 +78,7 @@ stateDiagram-v2
     [*] --> Red
     Red --> Red
     Red --> Yellow: redHoldtime 
+    Red --> Green: redHoldtime 
     Yellow --> Green: below safety limit AND no disabled chargesession 
     Green --> Yellow: above safetyLimit 
     Yellow --> Red: above safetyLimit 
