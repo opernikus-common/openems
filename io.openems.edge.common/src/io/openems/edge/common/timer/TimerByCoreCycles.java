@@ -1,15 +1,14 @@
-package io.openems.edge.core.timer;
+package io.openems.edge.common.timer;
 
 import io.openems.edge.common.channel.Channel;
-import io.openems.edge.common.timer.Timer;
 
 public class TimerByCoreCycles extends AbstractTimer implements Timer {
 
 	private final int maxCoreCycles;
-	private final TimerManagerImpl tm;
+	private final TimerManager tm;
 	private int refCount;
 
-	public TimerByCoreCycles(TimerManagerImpl tm, //
+	public TimerByCoreCycles(TimerManager tm, //
 			Channel<Integer> channel, //
 			int maxCoreCycles, //
 			int startDelayInSecs) {

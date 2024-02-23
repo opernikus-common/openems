@@ -1,18 +1,18 @@
 package io.openems.edge.common.statemachine;
 
-import io.openems.common.exceptions.OpenemsException;
-import io.openems.edge.common.channel.Channel;
-import io.openems.edge.common.channel.EnumReadChannel;
+import static org.junit.Assert.assertThrows;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 import io.openems.common.exceptions.OpenemsError;
+import io.openems.common.exceptions.OpenemsException;
 import io.openems.common.types.OptionsEnum;
+import io.openems.edge.common.channel.Channel;
 import io.openems.edge.common.channel.Doc;
+import io.openems.edge.common.channel.EnumReadChannel;
 import io.openems.edge.common.component.AbstractOpenemsComponent;
 import io.openems.edge.common.component.OpenemsComponent;
-
-import static org.junit.Assert.assertThrows;
 
 public class StateMachineTest {
 

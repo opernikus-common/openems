@@ -1,8 +1,7 @@
-package io.openems.edge.core.timer;
+package io.openems.edge.common.timer;
 
 import io.openems.edge.common.channel.Channel;
 import io.openems.edge.common.component.OpenemsComponent;
-import io.openems.edge.common.timer.Timer;
 
 /**
  * TimerManager - This package provides easy access to different kind of timers.
@@ -182,4 +181,11 @@ public interface TimerManager extends OpenemsComponent {
 	 * @return true if the given count has been reached, false else
 	 */
 	public Timer getTimerByTime(Channel<Integer> channel, int seconds, int startDelayInSecs);
+
+	/**
+	 * Gets the core cycle count.
+	 * 
+	 * @return the core cycle count
+	 */
+	public int getCoreCyclesCount();
 }

@@ -1,4 +1,4 @@
-package io.openems.edge.core.timer;
+package io.openems.edge.common.timer;
 
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventHandler;
@@ -9,7 +9,6 @@ import io.openems.edge.common.component.AbstractOpenemsComponent;
 import io.openems.edge.common.component.ComponentManager;
 import io.openems.edge.common.component.OpenemsComponent;
 import io.openems.edge.common.event.EdgeEventConstants;
-import io.openems.edge.common.timer.Timer;
 
 @EventTopics({ //
 		EdgeEventConstants.TOPIC_CYCLE_AFTER_PROCESS_IMAGE//

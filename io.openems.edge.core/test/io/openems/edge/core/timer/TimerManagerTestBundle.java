@@ -6,6 +6,7 @@ import io.openems.common.utils.JsonUtils;
 import io.openems.edge.common.test.ComponentTest;
 import io.openems.edge.common.test.DummyComponentManager;
 import io.openems.edge.common.test.DummyConfigurationAdmin;
+import io.openems.edge.common.timer.TimerManager;
 
 public class TimerManagerTestBundle {
 	public final DummyConfigurationAdmin cm;

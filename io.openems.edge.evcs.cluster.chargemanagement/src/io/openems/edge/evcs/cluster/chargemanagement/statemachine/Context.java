@@ -4,7 +4,7 @@ import java.time.Duration;
 
 import io.openems.edge.common.statemachine.AbstractContext;
 import io.openems.edge.common.timer.Timer;
-import io.openems.edge.core.timer.TimerManager;
+import io.openems.edge.common.timer.TimerManager;
 import io.openems.edge.evcs.cluster.chargemanagement.Cluster;
 import io.openems.edge.evcs.cluster.chargemanagement.Config;
 import io.openems.edge.evcs.cluster.chargemanagement.EvcsClusterChargeMgmtImpl;

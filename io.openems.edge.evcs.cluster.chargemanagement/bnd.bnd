@@ -10,7 +10,6 @@ Bundle-Version: 1.0.0.${tstamp}
 	io.openems.edge.common,\
 	io.openems.edge.controller.api,\
 	io.openems.edge.controller.api.common;version=latest,\
-	io.openems.edge.core,\
 	io.openems.edge.evcs.api,\
 	io.openems.edge.io.api;version=latest,\
 	io.openems.edge.meter.api
