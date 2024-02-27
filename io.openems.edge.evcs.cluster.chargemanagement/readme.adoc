@@ -4,25 +4,25 @@ The Evcs Cluster Chargemanagement is a collection of chargepoints (evcs) and one
 responsible for one physical supply cable segment on the path to the installed charge point cluster. Each supply cable segment may have
 its own transport capacity. The Evcs Cluster Chargemanagement takes care that none of the limits on all supply cable segments is exceeded.
 
-In addition each limiter has a configured `targetPower` [in W]. The cluster regulates against this value. It may be exceeded for a few seconds. Measuring over a period 
-of 15min, it is <= `targetPower`. 
+In addition each limiter has a configured `targetPower` [in W]. The cluster regulates against this value. It may be exceeded for a few seconds, 
+but over a period of 15 minutes, the power of the cluster will be less or equal to targetPower on average.
 
 *Example:* 
-An industrial property may have a grid connection with 150A fuse. Within the customers property a 100kWp PV is installed. 
+An industrial property may have a grid connection with a 150A fuse. Within the customers property a 100kWp PV is installed. 
 Thus the parking lot may have a 200A fuse. This can be mapped to a 150A evcs limiter, a 200A evcs limiter and an evcs cluster for the parking lot.
-The Evcs Cluster Chargemanagment will now limit the chargepoint either to the more critical limit on the grid or to the more critical limit on the parking lot. 
+The Evcs Cluster Chargemanagement will take care that neither of the limits is exceeded. 
  
 
-The Evcs Cluster Chargemanagement provides three states: 
+The Evcs Cluster Chargemanagement has three states: 
 
-* State `RED` - all chargepoints are switched to off. This state is reached when 
+* State `RED` - all chargepoints are switched off. This state is reached when 
  ** at least on one phase on at least one of the limiters a current of `fuseLimit` - `fuseSafetyOffset` has been reached.
  ** the phase imbalance on the responsible phase imbalance limiter is exceeded for `imbalanceHoldTime` s.   
  ** in case of any meter error on any limiter.
-* State `YELLOW` - charge management is done by a round robin algorithm. This state is reached, when the minimum power of all charge points, that want to 
-charge exceeds the configured `targetPower`. In that case one or more charge points are switched off. And the others will be activated/switched off
-based on a prioritized round robin algorithm. In State `YELLOW` all chargepoints will always be operated with minimum possible power.    
-* State `GREEN` - all requested charge points are allowed to charge. They will be operated in between min and max power. The management is done by leveling.
+* State `YELLOW` - charge management is done by a round robin algorithm. This state is reached, when the minimum power on all charge points that want to 
+charge exceeds the configured `targetPower`. In that case one or more charge points are switched off. In State `YELLOW` all charge points will be 
+activated/switched off based on a prioritized round robin algorithm. All chargepoints will always be operated with minimum possible power.    
+* State `GREEN` - all requested charge points are allowed to charge. They will be operated in between min and max power so that `targetPower` is not exceeded.
  
 *Additional Functionality:*
 
@@ -32,8 +32,8 @@ to `YELLOW`. Note that the phase imbalance mechanism is non-perfomant (regarding
 * in general PV optimized charge is possible. Divide chargepoints in two segments: cluster pv1 and cluster power1. Establish two grid limiters, one for the grid limitation (e.g. 45kW) and one 
 for pv optimized charge (0W). Assign the limiters appropriately to the charge clusters pv1 and power1. The cluster power1 can always charge. The cluster pv1 will charge only on 
 excess power.    
-* `MeterEvcsClusterCmVirtual` - virtual meter which can be put in front of a ecvs cluster chargemanagement. It provides an `ElectricityMeter` for the cluster. this meter
-than can be used by a cluster limiter which can be given to the same cluster. With this meter a cluster can be limited on its own. OSGI-Circular dependency is avoided by the way
+* `MeterEvcsClusterCmVirtual` - virtual meter which can be put in front of an ecvs cluster chargemanagement. It provides an `ElectricityMeter` for the cluster. This meter can be used by a 
+cluster limiter for the same cluster. With this meter a cluster can be limited on its own. OSGi-Circular dependency is avoided by the way
 the meter is implemented.     
 
 
@@ -50,8 +50,8 @@ the meter is implemented.
 ## Configuration
 
 * `allowCharging`[true|false] - set to false to disable the full chargepark.
-* `evcsIds` - the list of evcs IDs to control.
-* `evcsClusterLimiter_Ids` - the list of cluster limiters to use for operation.
+* `evcs_ids` - IDs of the evcss to control.
+* `evcsClusterLimiter_ids` - the list of cluster limiters to use for operation.
 * `redHoldTime`[s] - when in state red, the state will stay for this number of seconds before switching back to state yellow.
 * `roundRobinTime`[s] - cycle time for round robin activity.
 * `imbalancHoldTime`[s] - max unbalance time before switching a) from leveling to round robin or b) to cycle round robin, in case phase imbalance can not be resolve.
@@ -68,9 +68,9 @@ the meter is implemented.
 *Additional notes*
 
 * When working with simulated chargepoints config.stepInterval() should be at least 2.
-* to avoid continuously incrementation/decrementation around the `targetpower` limit a "TargetPowerZone" is introduced. When the cluster is operated within the  
+* To avoid continuously incrementation/decrementation around the `targetpower` limit a "TargetPowerZone" is introduced. When the cluster is operated within the  
 "TargetPowerZone" it freezes the current charging situation for some time. This is more intuitive to viewers of the OpenEMS UI.
-* junit test does not work right now. 
+* JUnit test does not work right now. 
 	
 		
 ```mermaid		
@@ -86,6 +86,21 @@ stateDiagram-v2
 
 View using Mermaid, e.g. https://mermaid-js.github.io/mermaid-live-editor		
 
+
+
+## Controller Evcs Cluster Limiter
+
+Provides limits on a given meter. This controller is given to an EvcsClusterChargeManagement. It provides information about phase currents, target power and phase imbalance.
+
+### Configuration
+
+* `meter_id` - ID of the meter to monitor. 
+* `fuseLimit`[A] - Limit of the Fuse (per phase) for this power line segment 
+* `fuseSafetyOffset`[A] - Fuse Safety Offset - power per phase should always stay below (fuseLimit-fuseSafetyOffset).
+* `targetPower`[W] - The targeted power (for all phases). Controller tries to keep the meter around this level. "
+			+ "This Limit is applied as sum on all three phases. targetPower needs to stay below (fuseLimit-(2*fuseSafetyOffset)) * 230V * 3.
+* `isPhaseImbalanceLimiter`[true|false] - Set to true to make this controller the responsible phase imbalance limiter.
+* `phaseImbalanceCurrent`[A] - The max. phase imbalance current [A], 20 equals 4.5kW (see VDE-AR-N 4105).  
 
 
 https://github.com/OpenEMS/openems/tree/develop/io.openems.edge.evcs.cluster.chargemanagement[Source Code icon:github[]]

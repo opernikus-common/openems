@@ -20,7 +20,7 @@ public @interface Config {
 	@AttributeDefinition(name = "Meter-ID", description = "ID of the Meter to limit the power for.")
 	String meter_id() default "meter0";
 
-	@AttributeDefinition(name = "Fuse Limit", description = "Limit ([A]) of the Fuse (per phase) for this power line segment .")
+	@AttributeDefinition(name = "Fuse Limit", description = "Limit ([A]) of the Fuse (per phase) for this power line segment.")
 	int fuseLimit() default 32; // A
 
 	@AttributeDefinition(name = "Fuse Safety Offset", description = "Fuse Safety Offset [A] - power per phase should always stay below (fuseLimit-fuseSafetyOffset).")
