@@ -1,6 +1,5 @@
 package io.openems.edge.evcs.cluster.chargemanagement;
 
-import io.openems.edge.common.test.AbstractComponentTest.TestCase;
 import io.openems.edge.common.test.DummyComponentManager;
 import io.openems.edge.evcs.cluster.chargemanagement.config.ConfigDefault;
 import io.openems.edge.evcs.cluster.chargemanagement.config.MyConfig;
@@ -37,7 +36,7 @@ public class GreenTest {
 	// @Test
 	protected void testSafetyPower() throws Exception {
 		var test = this.baseTestController();
-		TestCase tc1 = TestUtils.setChargeConfigFullLoad();
+		var tc1 = TestUtils.setChargeConfigFullLoad();
 		test.runSeconds(1, tc1, this.cpm);
 		TestUtils.assertEqualClusterState(test, State.RED);
 		test.runSeconds(this.config.redHoldTime() + 1, tc1, this.cpm);

@@ -26,7 +26,7 @@ public class TestUtils {
 	/**
 	 * Asserts that the default configuration is correctly shown on the channel
 	 * side.
-	 * 
+	 *
 	 * @param test the test which state should be checked
 	 */
 	public static void assertDefaultConfigSetValid(ChargeManagementClusterTestComponent test) {
@@ -36,7 +36,7 @@ public class TestUtils {
 
 	/**
 	 * Asserts that all output channels are appropriate when in state red.
-	 * 
+	 *
 	 * @param test the test which state should be checked
 	 */
 	public static void assertStateRedSafe(ChargeManagementClusterTestComponent test) {
@@ -51,7 +51,7 @@ public class TestUtils {
 
 	/**
 	 * Gets the SUT (system-under-test), the evcs fair share cluster component.
-	 * 
+	 *
 	 * @param test the test which state should be checked
 	 * @return the evcsCluster object itself
 	 */
@@ -61,7 +61,7 @@ public class TestUtils {
 
 	/**
 	 * Gets the evcs fair share cluster state.
-	 * 
+	 *
 	 * @param test the test which state should be checked
 	 * @return the evcsCluster cluster state
 	 */
@@ -71,7 +71,7 @@ public class TestUtils {
 
 	/**
 	 * Gets the given state channels info level for the evcs fair share cluster.
-	 * 
+	 *
 	 * @param test      the test which state should be checked
 	 * @param channelId the channel id to use
 	 * @return the evcsCluster error state level
@@ -82,7 +82,7 @@ public class TestUtils {
 
 	/**
 	 * Gets the given channel value for the evcs fair share cluster.
-	 * 
+	 *
 	 * @param test      the test which state should be checked
 	 * @param channelId the channel id to use
 	 * @return the value the channel value
@@ -93,7 +93,7 @@ public class TestUtils {
 
 	/**
 	 * Gets the given channel value for the evcs fair share cluster as an integer.
-	 * 
+	 *
 	 * @param test      the test which state should be checked
 	 * @param channelId the channel id to use
 	 * @return the value the channel value as integer
@@ -104,7 +104,7 @@ public class TestUtils {
 
 	/**
 	 * Easy function to check the cluster state.
-	 * 
+	 *
 	 * @param test  the test which state should be checked
 	 * @param state the reference state
 	 */
@@ -114,7 +114,7 @@ public class TestUtils {
 
 	/**
 	 * Checks if the ChargePower Channel of the Cluster is a specific Value.
-	 * 
+	 *
 	 * @param test  Controller Test
 	 * @param power Expected Value
 	 */
@@ -124,7 +124,7 @@ public class TestUtils {
 
 	/**
 	 * Easy function to check the cluster state.
-	 * 
+	 *
 	 * @param sut the sut
 	 * @return the power channel value as an integer
 	 */
@@ -134,37 +134,37 @@ public class TestUtils {
 
 	/**
 	 * Checks if the ChargePower Channel of the Cluster is a specific Value.
-	 * 
+	 *
 	 * @param test  Controller Test
 	 * @param power Expected Value
 	 */
 	public static void checkMeterPowerLessOrEquals(ChargeManagementClusterTestComponent test, int power) {
-		assertTrue((getMeterPowerFromSut(test.getSut()) <= power));
+		assertTrue(getMeterPowerFromSut(test.getSut()) <= power);
 	}
 
 	/**
 	 * Checks if the ChargePower Channel of the Cluster is a specific Value.
-	 * 
+	 *
 	 * @param test  Controller Test
 	 * @param power Expected Value
 	 */
 	public static void checkMeterPowerEquals(ChargeManagementClusterTestComponent test, int power) {
-		assertTrue((getMeterPowerFromSut(test.getSut()) == power));
+		assertTrue(getMeterPowerFromSut(test.getSut()) == power);
 	}
 
 	/**
 	 * Checks if the ChargePower Channel of the Cluster is a specific Value.
-	 * 
+	 *
 	 * @param test  Controller Test
 	 * @param power Expected Value
 	 */
 	public static void checkMeterPowerGreaterOrEquals(ChargeManagementClusterTestComponent test, int power) {
-		assertTrue((getMeterPowerFromSut(test.getSut()) >= power));
+		assertTrue(getMeterPowerFromSut(test.getSut()) >= power);
 	}
 
 	/**
 	 * Gets the meter power channel value from the SUT.
-	 * 
+	 *
 	 * @param sut the sut
 	 * @return the meter power value
 	 */
@@ -174,7 +174,7 @@ public class TestUtils {
 
 	/**
 	 * Prepare the Test.
-	 * 
+	 *
 	 * @param c            the context
 	 * @param oneEnabled   boolean value for evcs one.
 	 * @param onePrio      boolean value for evcs one.
@@ -242,10 +242,9 @@ public class TestUtils {
 	public static void setEnergyLimitReached(Context c, ClusterEvcs evcs, boolean energyLimitReached) throws Exception {
 		if (energyLimitReached) {
 			evcs.setEnergyLimit(10000);
-			evcs._setEnergySession(10000);
 		} else {
 			evcs.setEnergyLimit(0);
-			evcs._setEnergySession(10000);
 		}
+		evcs._setEnergySession(10000);
 	}
 }

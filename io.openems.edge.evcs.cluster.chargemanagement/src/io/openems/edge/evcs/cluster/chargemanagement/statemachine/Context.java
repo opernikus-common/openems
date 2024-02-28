@@ -12,9 +12,9 @@ import io.openems.edge.evcs.cluster.chargemanagement.SupplyCableConstraints;
 
 public class Context extends AbstractContext<EvcsClusterChargeMgmtImpl> {
 
-	private Cluster cluster;
+	private final Cluster cluster;
+	private final SupplyCableConstraints cableConstraints;
 	private Config config;
-	private SupplyCableConstraints cableConstraints;
 	private Timer redHoldTimer;
 	private Timer imbalanceHoldTimer;
 	private Timer roundRobinWaitTimer;
@@ -46,7 +46,7 @@ public class Context extends AbstractContext<EvcsClusterChargeMgmtImpl> {
 
 	/**
 	 * Updates the configuration.
-	 * 
+	 *
 	 * @param config the config.
 	 */
 	public void updateConfig(Config config) {
@@ -114,7 +114,7 @@ public class Context extends AbstractContext<EvcsClusterChargeMgmtImpl> {
 	/**
 	 * Returns the number of chargesessions we can add (on positive value) or the
 	 * number of chargesessions we need to remove (on negative value).
-	 * 
+	 *
 	 * @return the number of chargesessions to add/remove.
 	 */
 	public int getNumberOfSimultaneousChargeSessionsToAddRemove() {

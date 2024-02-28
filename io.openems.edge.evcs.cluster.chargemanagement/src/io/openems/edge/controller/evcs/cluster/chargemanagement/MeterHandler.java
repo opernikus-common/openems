@@ -73,7 +73,7 @@ public class MeterHandler {
 				Phases.THREE_PHASE.getValue());
 
 		this.currentL1Consumer = value -> {
-			Integer average = this.getAverageValue(this.meter.getCurrentL1Channel(), value);
+			var average = this.getAverageValue(this.meter.getCurrentL1Channel(), value);
 			this.clusterLimiter._setMeterCurrentL1(average);
 			if (average != null) {
 				this.clusterLimiter._setFreeAvailableCurrentL1(targetCurrentPerPhase - average);
@@ -84,7 +84,7 @@ public class MeterHandler {
 		this.meter.getCurrentL1Channel().onSetNextValue(this.currentL1Consumer);
 
 		this.currentL2Consumer = value -> {
-			Integer average = this.getAverageValue(this.meter.getCurrentL2Channel(), value);
+			var average = this.getAverageValue(this.meter.getCurrentL2Channel(), value);
 			this.clusterLimiter._setMeterCurrentL2(average);
 			if (average != null) {
 				this.clusterLimiter._setFreeAvailableCurrentL2(targetCurrentPerPhase - average);
@@ -95,7 +95,7 @@ public class MeterHandler {
 		this.meter.getCurrentL2Channel().onSetNextValue(this.currentL2Consumer);
 
 		this.currentL3Consumer = value -> {
-			Integer average = this.getAverageValue(this.meter.getCurrentL3Channel(), value);
+			var average = this.getAverageValue(this.meter.getCurrentL3Channel(), value);
 			this.clusterLimiter._setMeterCurrentL3(average);
 			if (average != null) {
 				this.clusterLimiter._setFreeAvailableCurrentL3(targetCurrentPerPhase - average);
@@ -109,7 +109,7 @@ public class MeterHandler {
 			var val = value.orElse(EvcsUtils.currentToPower(this.safeOperationLimit(), Phases.THREE_PHASE.getValue()));
 			var map = this.meter.getActivePowerChannel().getPastValues()
 					.tailMap(LocalDateTime.now().minusSeconds(this.config.meanFilterTime()));
-			ArrayList<Integer> pastValues = new ArrayList<>();
+			var pastValues = new ArrayList<Integer>();
 			map.values().forEach(v -> {
 				pastValues.add(
 						v.orElse(EvcsUtils.currentToPower(this.safeOperationLimit(), Phases.THREE_PHASE.getValue())));
@@ -130,7 +130,7 @@ public class MeterHandler {
 	}
 
 	private static Integer average(ArrayList<Value<Integer>> pastValues) {
-		ArrayList<Integer> intValues = new ArrayList<>();
+		var intValues = new ArrayList<Integer>();
 		pastValues.forEach(value -> {
 			intValues.add(value.get());
 		});
@@ -143,7 +143,7 @@ public class MeterHandler {
 
 	/**
 	 * Get SafeOperationMode.
-	 * 
+	 *
 	 * @return true, if meter current for any of L1,L2,L3 is below (config.fuseLimit
 	 *         - config.fuseSafetyOffset), false else
 	 */
@@ -169,7 +169,7 @@ public class MeterHandler {
 	/**
 	 * Checks that there is enough power above targetPower before switching to
 	 * SAFE_OPERATION_MODE = false.
-	 * 
+	 *
 	 * @return true if distance between targetPower and safeOperationPower is too
 	 *         low.
 	 */
@@ -178,7 +178,7 @@ public class MeterHandler {
 		var safetyPower = EvcsUtils.currentToPower(this.safeOperationLimit(), Phases.THREE_PHASE.getValue());
 		var safeDistance = EvcsUtils.currentToPower(this.config().fuseSafetyOffset(), Phases.THREE_PHASE.getValue());
 
-		if (targetPower <= (safetyPower - safeDistance)) {
+		if (targetPower <= safetyPower - safeDistance) {
 			return false;
 		}
 		return true;
@@ -187,7 +187,7 @@ public class MeterHandler {
 	/**
 	 * Signed Current on a all phases. Method returns the current of the highest
 	 * phase.
-	 * 
+	 *
 	 * @return when returning a positive integer it represents the current of the
 	 *         phase with the highest consumption flow. When returning a negative
 	 *         integer it represents the current of the phase with the lowes
@@ -231,7 +231,7 @@ public class MeterHandler {
 	/**
 	 * Signed Current on a all phases. Method returns the current of the lowest
 	 * phase.
-	 * 
+	 *
 	 * @return when returning a positive integer it represents the current of the
 	 *         phase with the lowest consumption flow. When returning a negative
 	 *         integer it represents the current of the phase with the hightest
@@ -274,7 +274,7 @@ public class MeterHandler {
 
 	/**
 	 * Update the meter channel value.
-	 * 
+	 *
 	 * @return true if the meter is ok.
 	 */
 	public boolean isMeterOk() {
@@ -299,32 +299,28 @@ public class MeterHandler {
 	public PhaseImbalance getPhaseImbalance() {
 
 		if (!this.isUnbalanced()) {
-			var pi = PhaseImbalance.NO_IMBALANCE;
-			return pi;
+			return PhaseImbalance.NO_IMBALANCE;
 		}
 		var min = this.minSignedCurrentOnPhasesInMilliAmpere();
 		var max = this.maxSignedCurrentOnPhasesInMilliAmpere();
 		try {
 
-			var pi = this.phaseImbalancePureProductionOrConsumtion(min, max);
-			return pi;
+			return this.phaseImbalancePureProductionOrConsumtion(min, max);
 
 		} catch (Exception e) {
-			var pi = PhaseImbalance.NO_IMBALANCE;
-			return pi;
+			return PhaseImbalance.NO_IMBALANCE;
 		}
 	}
 
 	/**
 	 * The imbalance current.
-	 * 
+	 *
 	 * @return the imbalance current in mA.
 	 */
 	public int getImbalanceCurrent() {
 		var min = this.minSignedCurrentOnPhasesInMilliAmpere();
 		var max = this.maxSignedCurrentOnPhasesInMilliAmpere();
-		var current = Math.abs(max - min);
-		return current;
+		return Math.abs(max - min);
 	}
 
 	/**

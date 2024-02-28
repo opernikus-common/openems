@@ -57,7 +57,7 @@ public class SupplyCableConstraints {
 
 	/**
 	 * Checks if any of the cable limits is exceeded.
-	 * 
+	 *
 	 * @return if true cluster can be operated safe, if false cluster needs to
 	 *         immediately switch to state RED.
 	 */
@@ -65,9 +65,8 @@ public class SupplyCableConstraints {
 		if (this.hasMeterError()) {
 			return false;
 		}
-		var safeOpMode = this.evcsClusterLimiters.get().stream() //
+		return this.evcsClusterLimiters.get().stream() //
 				.allMatch(clusterLimiter -> clusterLimiter.getSafeOperationMode().orElse(false));
-		return safeOpMode;
 	}
 
 	private boolean hasMeterError() {
@@ -80,9 +79,10 @@ public class SupplyCableConstraints {
 		// TODO Ist das nicht einfach return (p1 - p2)? Oder sollte das eigentlich
 		// return Math.abs(p1 - p2) sein?
 		if (p1 < p2) {
-			return (p1 - p2);
-		} else if (p1 > p2) {
-			return (p1 - p2);
+			return p1 - p2;
+		}
+		if (p1 > p2) {
+			return p1 - p2;
 		}
 		return 0;
 	}
@@ -90,7 +90,7 @@ public class SupplyCableConstraints {
 	/**
 	 * Indicates how much min free power is available on the cable with the highest
 	 * restrictions.
-	 * 
+	 *
 	 * @return the power still available to use for evcss.
 	 */
 	public int getMinFreeAvailablePower() {
@@ -100,13 +100,12 @@ public class SupplyCableConstraints {
 			return this.diff(p1, p2);
 		});
 		this.responsibleLimiterId = relLimiter.get().getLimiterId();
-		var freePower = relLimiter.get().getFreeAvailablePower().orElse(0);
-		return freePower;
+		return relLimiter.get().getFreeAvailablePower().orElse(0);
 	}
 
 	/**
 	 * Gets the min free available current on L1.
-	 * 
+	 *
 	 * @return current in mA
 	 */
 	public Integer getMinFreeAvailableCurrentL1() {
@@ -115,13 +114,12 @@ public class SupplyCableConstraints {
 			var p2 = limiter2.getFreeAvailableCurrentL1().orElse(0);
 			return this.diff(p1, p2);
 		});
-		var freeCurrent = relLimiter.get().getFreeAvailableCurrentL1().orElse(0);
-		return freeCurrent;
+		return relLimiter.get().getFreeAvailableCurrentL1().orElse(0);
 	}
 
 	/**
 	 * Gets the min free available current on L2.
-	 * 
+	 *
 	 * @return current in mA
 	 */
 	public Integer getMinFreeAvailableCurrentL2() {
@@ -130,13 +128,12 @@ public class SupplyCableConstraints {
 			var p2 = limiter2.getFreeAvailableCurrentL2().orElse(0);
 			return this.diff(p1, p2);
 		});
-		var freeCurrent = relLimiter.get().getFreeAvailableCurrentL2().orElse(0);
-		return freeCurrent;
+		return relLimiter.get().getFreeAvailableCurrentL2().orElse(0);
 	}
 
 	/**
 	 * Gets the min free available current on L3.
-	 * 
+	 *
 	 * @return current in mA
 	 */
 	public Integer getMinFreeAvailableCurrentL3() {
@@ -145,13 +142,12 @@ public class SupplyCableConstraints {
 			var p2 = limiter2.getFreeAvailableCurrentL3().orElse(0);
 			return this.diff(p1, p2);
 		});
-		var freeCurrent = relLimiter.get().getFreeAvailableCurrentL3().orElse(0);
-		return freeCurrent;
+		return relLimiter.get().getFreeAvailableCurrentL3().orElse(0);
 	}
 
 	/**
 	 * Indicates how much power is theoretically available for the cluster.
-	 * 
+	 *
 	 * @return the theoretically available power of the weakest cable segment (the
 	 *         one with min max power).
 	 */
@@ -160,22 +156,22 @@ public class SupplyCableConstraints {
 			var p1 = limiter1.getTransportCapacity().orElse(0);
 			var p2 = limiter2.getTransportCapacity().orElse(0);
 			if (p1 < p2) {
-				return (p1 - p2);
-			} else if (p1 > p2) {
-				return (p1 - p2);
+				return p1 - p2;
+			}
+			if (p1 > p2) {
+				return p1 - p2;
 			}
 			return 0;
 		});
 
 		// TODO pruefen, dass der richtige limiter zurückgegeben wird.
 
-		var maxCapacity = relLimiter.get().getTransportCapacity().orElse(0);
-		return maxCapacity;
+		return relLimiter.get().getTransportCapacity().orElse(0);
 	}
 
 	/**
 	 * Checks if the current power exceeds the targetPower.
-	 * 
+	 *
 	 * @return true if power is exceeded.
 	 */
 	public boolean exceedsTargetLimit() {
@@ -187,7 +183,7 @@ public class SupplyCableConstraints {
 
 	/**
 	 * Checks if this supply cable has an unbalanced load.
-	 * 
+	 *
 	 * @return true if the imbalance limit is reached.
 	 */
 	public boolean isUnbalanced() {
@@ -199,22 +195,21 @@ public class SupplyCableConstraints {
 
 	/**
 	 * Returns the PhaseImbalance.
-	 * 
+	 *
 	 * @return the current PhaseImabalance.
 	 */
 	public PhaseImbalance getPhaseImbalance() {
 		var count = this.evcsClusterLimiters.get().stream() //
-				.filter(item -> item.isPhaseImbalanceLimiter()) //
+				.filter(EvcsClusterLimiter::isPhaseImbalanceLimiter) //
 				.count();
 		if (count != 1) {
 			this.parent.channel(ChannelId.WARN_NO_PHASE_IMBALANCE).setNextValue(true);
 			return PhaseImbalance.NO_IMBALANCE;
-		} else {
-			this.parent.channel(ChannelId.WARN_NO_PHASE_IMBALANCE).setNextValue(false);
 		}
+		this.parent.channel(ChannelId.WARN_NO_PHASE_IMBALANCE).setNextValue(false);
 
 		var clusterLimiter = this.evcsClusterLimiters.get().stream() //
-				.filter(item -> item.isPhaseImbalanceLimiter()) //
+				.filter(EvcsClusterLimiter::isPhaseImbalanceLimiter) //
 				.findAny();
 		// clusterLimiter is also responsible for phaseImbalanceCurrent
 		this.parent._setPhaseImbalanceCurrent(clusterLimiter.get().getPhaseImbalanceCurrent().get());

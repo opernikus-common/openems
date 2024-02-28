@@ -20,7 +20,7 @@ public interface Consts {
 	int FUSE_SAFETY_OFFSET = 20;
 	int TARGET_POWER = 10000;
 
-	String[] evcsIds = new String[] { evcsOne, evcsTwo, evcsThree, evcsFour };
+	String[] evcsIds = { evcsOne, evcsTwo, evcsThree, evcsFour };
 	ChannelAddress EVCS_ONE_CHARGE_POWER_LIMIT = new ChannelAddress(evcsOne, "SetChargePowerLimit");
 	ChannelAddress EVCS_TWO_CHARGE_POWER_LIMIT = new ChannelAddress(evcsTwo, "SetChargePowerLimit");
 	ChannelAddress EVCS_THREE_CHARGE_POWER_LIMIT = new ChannelAddress(evcsThree, "SetChargePowerLimit");

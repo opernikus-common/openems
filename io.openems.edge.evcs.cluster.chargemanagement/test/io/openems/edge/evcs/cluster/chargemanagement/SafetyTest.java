@@ -3,7 +3,6 @@ package io.openems.edge.evcs.cluster.chargemanagement;
 import org.junit.FixMethodOrder;
 import org.junit.runners.MethodSorters;
 
-import io.openems.edge.common.test.AbstractComponentTest.TestCase;
 import io.openems.edge.common.test.DummyComponentManager;
 import io.openems.edge.evcs.cluster.chargemanagement.config.ConfigDefault;
 import io.openems.edge.evcs.cluster.chargemanagement.config.MyConfig;
@@ -39,15 +38,15 @@ public class SafetyTest {
 	 * EvcsClusterChargeMgmtImpl()); this.cpm =
 	 * ConfigBrokenMeter.setBaseReferences(test); test.activate(this.config); //
 	 * return test; }
-	 * 
+	 *
 	 * @Test public void test01MeterBroken() throws Exception { var test =
 	 * this.meterBrokenTestController(); TestCase tc1 = new TestCase();
-	 * 
+	 *
 	 * // check that it continuously stays in red for longer than redHoldTime
 	 * test.runSeconds(this.config.redHoldTime() + 5, tc1, this.cpm, test, c -> {
 	 * TestUtils.assertDefaultConfigSetValid(test);
 	 * TestUtils.assertStateRedSafe(test); });
-	 * 
+	 *
 	 * // finally check other conditions assertEquals(TestUtils.sutChannelInt(test,
 	 * Evcs.ChannelId.CHARGE_POWER), 0); assertEquals(TestUtils.sutChannelBool(test,
 	 * EvcsClusterChargeMgmt.ChannelId.METER_ERROR), true); }
@@ -61,7 +60,7 @@ public class SafetyTest {
 	// @Test
 	protected void test10RedHoldTime() throws Exception {
 		var test = this.baseTestController();
-		TestCase tc1 = TestUtils.setChargeConfigFullLoad();
+		var tc1 = TestUtils.setChargeConfigFullLoad();
 		test.runSeconds(1, tc1, this.cpm);
 		TestUtils.assertEqualClusterState(test, State.RED);
 		test.runSeconds(1, tc1, this.cpm);
@@ -77,7 +76,7 @@ public class SafetyTest {
 	// @Test
 	protected void test11ForbidChargingConfig() throws Exception {
 		var test = this.invalidChargeTestController();
-		TestCase tc1 = TestUtils.setChargeConfigFullLoad();
+		var tc1 = TestUtils.setChargeConfigFullLoad();
 		test.runSeconds(1, tc1, this.cpm);
 		TestUtils.assertEqualClusterState(test, State.RED);
 		test.runSeconds(this.config.redHoldTime() - 4, tc1, this.cpm);

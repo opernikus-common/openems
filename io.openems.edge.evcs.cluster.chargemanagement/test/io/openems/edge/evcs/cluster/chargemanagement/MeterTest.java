@@ -16,7 +16,7 @@ public class MeterTest {
 
 	private static final String METER_ID = "meter0";
 
-	private SupplyCableConstraints m;
+	private final SupplyCableConstraints m;
 
 	public MeterTest() {
 		this.m = new SupplyCableConstraints(new EvcsClusterChargeMgmtImpl());
@@ -176,7 +176,7 @@ public class MeterTest {
 	}
 
 	@SuppressWarnings("unused")
-	private Config testConfig = new Config() {
+	private final Config testConfig = new Config() {
 
 		@Override
 		public Class<? extends Annotation> annotationType() {

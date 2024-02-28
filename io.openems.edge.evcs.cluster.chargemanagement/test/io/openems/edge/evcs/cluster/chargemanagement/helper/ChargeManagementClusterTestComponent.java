@@ -9,7 +9,6 @@ import io.openems.edge.common.component.OpenemsComponent;
 import io.openems.edge.common.test.AbstractComponentTest;
 import io.openems.edge.common.test.DummyComponentManager;
 import io.openems.edge.evcs.test.DummyManagedEvcs;
-import io.openems.edge.meter.test.DummyElectricityMeter;
 
 public class ChargeManagementClusterTestComponent
 		extends AbstractComponentTest<ChargeManagementClusterTestComponent, OpenemsComponent> {
@@ -25,27 +24,27 @@ public class ChargeManagementClusterTestComponent
 
 	/**
 	 * Runs the controller under test conditions for the given number of seconds.
-	 * 
+	 *
 	 * @param seconds the number of seconds to run the controller
 	 * @param tc      the testcase to run
 	 * @param cpm     reference to the dummy component manager
 	 * @throws Exception on any error.
 	 */
 	public void runSeconds(int seconds, TestCase tc, DummyComponentManager cpm) throws Exception {
-		for (int i = 0; i < seconds; i++) {
+		for (var i = 0; i < seconds; i++) {
 			this.next(tc//
 					.timeleap((TimeLeapClock) cpm.getClock(), 1, ChronoUnit.SECONDS));
 			// Execute Run of the EVCS
-			for (int n = 0; n < Consts.evcsIds.length; n++) {
+			for (String evcsId : Consts.evcsIds) {
 				try {
-					DummyManagedEvcs evcs = cpm.getComponent(Consts.evcsIds[n]);
+					DummyManagedEvcs evcs = cpm.getComponent(evcsId);
 					evcs.writeHandlerRun();
 				} catch (Exception e) {
 					continue;
 				}
 			}
 
-			DummyElectricityMeter meter = cpm.getComponent(Consts.meterId);
+			var meter = cpm.getComponent(Consts.meterId);
 			if (meter instanceof DummyClusterChargemanagementMeter me) {
 				me.run(cpm);
 			}
@@ -54,10 +53,10 @@ public class ChargeManagementClusterTestComponent
 
 	/**
 	 * Runs the controller under test conditions for the given number of seconds.
-	 * 
+	 *
 	 * <p>
 	 * Beginning each second it will apply the checks.
-	 * 
+	 *
 	 * @param seconds the number of seconds to run the controller
 	 * @param tc      the testcase to run
 	 * @param cpm     reference to the dummy component manager

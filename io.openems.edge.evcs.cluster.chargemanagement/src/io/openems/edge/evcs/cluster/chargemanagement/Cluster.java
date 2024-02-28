@@ -1,7 +1,6 @@
 package io.openems.edge.evcs.cluster.chargemanagement;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,7 +12,7 @@ import io.openems.edge.evcs.cluster.chargemanagement.utils.EvcsTools;
 
 /**
  * Cluster holding all connected charge points.
- * 
+ *
  * <p>
  * Also responsible for Channels
  * <ul>
@@ -48,24 +47,24 @@ public class Cluster {
 
 	/**
 	 * Add a managed evcs to the cluster.
-	 * 
+	 *
 	 * @param managedEvcs the managed evcs to add.
 	 */
 	public void add(ManagedEvcs managedEvcs) {
-		ClusterEvcs clusterEvcs = new ClusterEvcs(this.parent.getDiagnostics(), managedEvcs);
+		var clusterEvcs = new ClusterEvcs(this.parent.getDiagnostics(), managedEvcs);
 		clusterEvcs.setIsClustered(true);
 		this.clusterEvcss.add(clusterEvcs);
 	}
 
 	/**
 	 * Remove a managed evcs from the cluster.
-	 * 
+	 *
 	 * @param managedEvcs the managed evcs to add.
 	 */
 	public void remove(ManagedEvcs managedEvcs) {
-		Iterator<ClusterEvcs> it = this.clusterEvcss.iterator();
+		var it = this.clusterEvcss.iterator();
 		while (it.hasNext()) {
-			ClusterEvcs ce = it.next();
+			var ce = it.next();
 			if (ce.has(managedEvcs)) {
 				ce.setIsClustered(false);
 				it.remove();
@@ -76,7 +75,7 @@ public class Cluster {
 
 	/**
 	 * Gets the list of all Evcss.
-	 * 
+	 *
 	 * @return the list
 	 */
 	public List<ClusterEvcs> getAllEvcss() {
@@ -85,7 +84,7 @@ public class Cluster {
 
 	/**
 	 * Gets the list of Evcss which are connected to a car.
-	 * 
+	 *
 	 * @return the list
 	 */
 	public List<ClusterEvcs> connectedEvcss() {
@@ -99,7 +98,7 @@ public class Cluster {
 
 	/**
 	 * Gets the list of Evcss which are ready for charging or already charging.
-	 * 
+	 *
 	 * @return the list
 	 */
 	public List<ClusterEvcs> wannaChargeEvcss() {
@@ -116,7 +115,7 @@ public class Cluster {
 	 * @return the list
 	 */
 	public List<ClusterEvcs> prioEvcss() {
-		return this.clusterEvcss.stream().filter(evcs -> evcs.isPrioritized()).toList();
+		return this.clusterEvcss.stream().filter(ClusterEvcs::isPrioritized).toList();
 	}
 
 	/**
@@ -130,7 +129,7 @@ public class Cluster {
 
 	/**
 	 * Max Power Limit of the highest charge point.
-	 * 
+	 *
 	 * @return the max power limit in W.
 	 */
 	public int getEvcsMaxPowerLimit() {
@@ -139,7 +138,7 @@ public class Cluster {
 
 	/**
 	 * Min Power Limit of the lowest charge point.
-	 * 
+	 *
 	 * @return the min power limit in W.
 	 */
 	public int getEvcsMinPowerLimit() {
@@ -149,7 +148,7 @@ public class Cluster {
 	/**
 	 * The min power to drive all plugged charge points with min power over all
 	 * charge points.
-	 * 
+	 *
 	 * @return sum in W.
 	 */
 	public int getClusterMinimumPower() {
@@ -164,7 +163,7 @@ public class Cluster {
 	/**
 	 * The max power to drive all plugged charge points with min power over all
 	 * charge points.
-	 * 
+	 *
 	 * @return sum in W.
 	 */
 	public int getClusterMaximumPower() {
@@ -256,8 +255,8 @@ public class Cluster {
 	}
 
 	private void updateNumberOfChargingEvcs() {
-		int prioCharge = 0;
-		int unprioCharge = 0;
+		var prioCharge = 0;
+		var unprioCharge = 0;
 		for (ClusterEvcs evcs : this.clusterEvcss) {
 			if (EvcsTools.equalsStatus(evcs, Status.CHARGING)) {
 				if (evcs.isPrioritized()) {
@@ -277,7 +276,7 @@ public class Cluster {
 	 * @return the number of charging evcs.
 	 */
 	public int countAllChargingReadyEvcs() {
-		int count = 0;
+		var count = 0;
 		for (ClusterEvcs evcs : this.clusterEvcss) {
 			if (EvcsTools.equalsStatus(evcs, Status.CHARGING)) {
 				count++;
@@ -293,7 +292,7 @@ public class Cluster {
 	 */
 	public boolean hasChargingPrioEvcs() {
 		return EvcsTools.hasChargingEvcs(
-				this.clusterEvcss.stream().filter(x -> x.isPrioritized()).collect(Collectors.toList()));
+				this.clusterEvcss.stream().filter(ClusterEvcs::isPrioritized).collect(Collectors.toList()));
 	}
 
 	/**
@@ -335,7 +334,7 @@ public class Cluster {
 
 	/**
 	 * Debug Information.
-	 * 
+	 *
 	 * @return debug info.
 	 */
 	@Override

@@ -52,28 +52,28 @@ public class ClusterChannelMapping {
 
 		ElectricityMeter.calculateSumCurrentFromPhases(this.parent);
 
-		this.stateConsumer = this.stateChannel.onSetNextValue((newVal) -> {
+		this.stateConsumer = this.stateChannel.onSetNextValue(newVal -> {
 			this.parent.channel(OpenemsComponent.ChannelId.STATE).setNextValue(newVal);
 		});
-		this.chargePowerConsumer = this.chargePowerChannel.onSetNextValue((newVal) -> {
+		this.chargePowerConsumer = this.chargePowerChannel.onSetNextValue(newVal -> {
 			this.parent.channel(ElectricityMeter.ChannelId.ACTIVE_POWER).setNextValue(newVal);
 		});
-		this.currentL1Consumer = this.currentL1Channel.onSetNextValue((newVal) -> {
+		this.currentL1Consumer = this.currentL1Channel.onSetNextValue(newVal -> {
 			this.parent.channel(ElectricityMeter.ChannelId.CURRENT_L1).setNextValue(newVal);
 			this.parent.channel(ElectricityMeter.ChannelId.ACTIVE_POWER_L1)
-					.setNextValue((newVal.isDefined() ? EvcsUtils.currentInMilliampereToPower(newVal.get(), 1) : null));
+					.setNextValue(newVal.isDefined() ? EvcsUtils.currentInMilliampereToPower(newVal.get(), 1) : null);
 		});
-		this.currentL2Consumer = this.currentL2Channel.onSetNextValue((newVal) -> {
+		this.currentL2Consumer = this.currentL2Channel.onSetNextValue(newVal -> {
 			this.parent.channel(ElectricityMeter.ChannelId.CURRENT_L2).setNextValue(newVal);
 			this.parent.channel(ElectricityMeter.ChannelId.ACTIVE_POWER_L2)
-					.setNextValue((newVal.isDefined() ? EvcsUtils.currentInMilliampereToPower(newVal.get(), 1) : null));
+					.setNextValue(newVal.isDefined() ? EvcsUtils.currentInMilliampereToPower(newVal.get(), 1) : null);
 		});
-		this.currentL3Consumer = this.currentL3Channel.onSetNextValue((newVal) -> {
+		this.currentL3Consumer = this.currentL3Channel.onSetNextValue(newVal -> {
 			this.parent.channel(ElectricityMeter.ChannelId.CURRENT_L3).setNextValue(newVal);
 			this.parent.channel(ElectricityMeter.ChannelId.ACTIVE_POWER_L3)
-					.setNextValue((newVal.isDefined() ? EvcsUtils.currentInMilliampereToPower(newVal.get(), 1) : null));
+					.setNextValue(newVal.isDefined() ? EvcsUtils.currentInMilliampereToPower(newVal.get(), 1) : null);
 		});
-		this.consEnergyConsumer = this.consEnergyChannel.onSetNextValue((newVal) -> {
+		this.consEnergyConsumer = this.consEnergyChannel.onSetNextValue(newVal -> {
 			this.parent.channel(ElectricityMeter.ChannelId.ACTIVE_CONSUMPTION_ENERGY).setNextValue(newVal);
 
 		});

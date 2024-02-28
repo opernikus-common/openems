@@ -13,7 +13,7 @@ public class ModifyConfigTool {
 
 	/**
 	 * Updates the configuration property "Allow charging".
-	 * 
+	 *
 	 * @param configAdmin      the configuration admin
 	 * @param componentManager the component manager
 	 * @param controllerId     the component id of the controller

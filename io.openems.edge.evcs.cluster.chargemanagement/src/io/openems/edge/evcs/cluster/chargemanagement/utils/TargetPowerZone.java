@@ -4,7 +4,7 @@ import io.openems.edge.evcs.cluster.chargemanagement.statemachine.Context;
 
 /**
  * Dynamically adoptable definition of a power zone around the target power.
- * 
+ *
  * <p>
  * Reason: In a constant situation the GreenHandler "jitters" around the target
  * power. This is a bad experience for users looking at the UI. Green handler
@@ -22,7 +22,7 @@ public class TargetPowerZone {
 
 	/**
 	 * Sets the lower border of the targetpower zone.
-	 * 
+	 *
 	 * @param freePower power still available
 	 */
 	public void setLowerBorder(int freePower) {
@@ -33,7 +33,7 @@ public class TargetPowerZone {
 
 	/**
 	 * Sets the higher border of the targetpower zone.
-	 * 
+	 *
 	 * @param context   cluster attribute storage
 	 * @param freePower power still available
 	 */
@@ -56,9 +56,9 @@ public class TargetPowerZone {
 	/**
 	 * Checks if the cluster operates close to the targetPower (softborder
 	 * above/below target power).
-	 * 
+	 *
 	 * @param context cluster attribute storage
-	 * 
+	 *
 	 * @return true if currentPower is close to targetPower.
 	 */
 	public boolean fitsTargetPowerZone(Context context) {
@@ -97,7 +97,7 @@ public class TargetPowerZone {
 
 	/**
 	 * Disables the TargetPower zone for a few seconds.
-	 * 
+	 *
 	 * @param context cluster attribute storage
 	 */
 	public void disableTemporarily(Context context) {
