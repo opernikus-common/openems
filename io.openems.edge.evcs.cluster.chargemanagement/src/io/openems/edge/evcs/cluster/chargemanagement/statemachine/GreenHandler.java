@@ -82,8 +82,8 @@ public class GreenHandler extends BaseHandler {
 		this.targetPowerZone = new TargetPowerZone();
 
 		if (this.numberChangeCallback == null) {
-			this.numberChangeCallback = (t,u) -> {
-					GreenHandler.this.targetPowerZone.disableTemporarily(GreenHandler.this.context);
+			this.numberChangeCallback = (t, u) -> {
+				GreenHandler.this.targetPowerZone.disableTemporarily(GreenHandler.this.context);
 			};
 		}
 		this.context.getParent().getNumberOfChargingEvcsChannel().removeOnChangeCallback(this.numberChangeCallback);
@@ -259,7 +259,7 @@ public class GreenHandler extends BaseHandler {
 		}
 		return true;
 	}
-	
+
 	private void holdLimit() throws OpenemsNamedException {
 		EvcsTools.holdDistributedPowerAll(this.context.getParent());
 	}

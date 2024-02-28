@@ -181,21 +181,21 @@ public class EvcsTools {
 		var unprioLimit = parent.getEvcsPowerLimit().orElse(Evcs.DEFAULT_MINIMUM_HARDWARE_POWER);
 		parent.getContext().getCluster().limitPower(unprioLimit + parent.getContext().powerStep(), true);
 	}
-	
+
 	/**
 	 * Holds the charge power limit for all Evcss.
 	 * 
 	 * @param parent the {@link EvcsClusterChargeMgmt}
-	 * @throws OpenemsNamedException  on write error
+	 * @throws OpenemsNamedException on write error
 	 */
 	public static void holdDistributedPowerAll(EvcsClusterChargeMgmtImpl parent) throws OpenemsNamedException {
 		var unprioLimit = parent.getEvcsPowerLimitChannel().getNextValue().orElse(Evcs.DEFAULT_MINIMUM_HARDWARE_POWER);
 		parent.getContext().getCluster().limitPower(unprioLimit, true);
-		
-		var prioLimit = parent.getEvcsPowerLimitPrioChannel().getNextValue().orElse(Evcs.DEFAULT_MINIMUM_HARDWARE_POWER);
+
+		var prioLimit = parent.getEvcsPowerLimitPrioChannel().getNextValue()
+				.orElse(Evcs.DEFAULT_MINIMUM_HARDWARE_POWER);
 		parent.getContext().getCluster().limitPowerPrio(prioLimit, true);
 	}
-
 
 	/**
 	 * Asks if the unprioritized limit has reached the maximum power.
