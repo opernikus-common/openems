@@ -118,6 +118,7 @@ public class EvcsClusterChargeMgmtImpl extends AbstractManagedEvcs
 		this.context.getCableConstraints().remove(evcsClusterLimiter);
 	}
 
+	@Override
 	@Activate
 	protected void activate(ComponentContext compContext, Config config) {
 		super.activate(compContext, config);
