@@ -87,7 +87,6 @@ public class MeterEvcsClusterCmVirtualImpl extends AbstractOpenemsComponent impl
 			this.evcsClusterChargeMgmt = this.componentManager.getComponent(this.config.evcsClusterChargeMgmtId());
 			this.channel(MeterEvcsClusterCmVirtual.ChannelId.MISSING_CLUSTER).setNextValue(false);
 			this.channelManager.activate(this.evcsClusterChargeMgmt);
-			return;
 		} catch (OpenemsNamedException e) {
 			return;
 		}

@@ -12,6 +12,7 @@ public class YellowHandler extends BaseHandler {
 		super();
 	}
 
+	@Override
 	protected void onEntry(Context context) throws OpenemsNamedException {
 		context.getCluster().limitPowerAll(context.getCluster().getEvcsMinPowerLimit());
 		context.getRoundRobinTimer().reset();
@@ -29,6 +30,7 @@ public class YellowHandler extends BaseHandler {
 		}
 	}
 
+	@Override
 	protected void onExit(Context context) throws OpenemsNamedException {
 		context.getParent()._setRoundRobinAllowedChargeSessions(0);
 	}

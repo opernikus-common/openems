@@ -16,10 +16,10 @@ import io.openems.edge.evcs.cluster.chargemanagement.utils.EvcsTools;
 /**
  * This is a wrapper for EVCSs which should be clusterable by opernikus cluster
  * controller.
- * 
+ *
  * <p>
  * channels Accessed:
- * 
+ *
  * <p>
  * ManagedEvcs.ChannelId.PRIORITY, ManagedEvcs.ChannelId.IS_CLUSTERED,
  * ManagedEvcs.ChannelId.SET_CHARGE_POWER_LIMIT,
@@ -30,12 +30,12 @@ import io.openems.edge.evcs.cluster.chargemanagement.utils.EvcsTools;
  * Evcs.ChannelId.STATUS, Evcs.ChannelId.CHARGE_POWER,
  * Evcs.ChannelId.CURRENT_L1, Evcs.ChannelId.CURRENT_L2,
  * Evcs.ChannelId.CURRENT_L3, Evcs.ChannelId.ACTIVE_CONSUMPTION_ENERGY
- * 
+ *
  */
 public class ClusterEvcs {
 
-	private Diagnostics diagnostics;
-	private ManagedEvcs evcs;
+	private final Diagnostics diagnostics;
+	private final ManagedEvcs evcs;
 
 	public ClusterEvcs(Diagnostics diagnostics, ManagedEvcs evcs) {
 		super();
@@ -53,7 +53,7 @@ public class ClusterEvcs {
 
 	/**
 	 * Checks if this ClusterEvcs Container holds the given evcs.
-	 * 
+	 *
 	 * @param evcs the evcs to check.
 	 * @return (this.evcs == evcs)
 	 */
@@ -67,7 +67,7 @@ public class ClusterEvcs {
 
 	/**
 	 * Get the max power.
-	 * 
+	 *
 	 * @return the max power.
 	 */
 	public Integer maxPower() {
@@ -83,7 +83,7 @@ public class ClusterEvcs {
 
 	/**
 	 * Get the min power.
-	 * 
+	 *
 	 * @return the min power.
 	 */
 	public Integer minPower() {
@@ -116,7 +116,7 @@ public class ClusterEvcs {
 
 	/**
 	 * Return the id of the evcs.
-	 * 
+	 *
 	 * @return the id
 	 */
 	public String id() {
@@ -167,7 +167,7 @@ public class ClusterEvcs {
 
 	/**
 	 * Method mainly for junit tests.
-	 * 
+	 *
 	 * @param energyLimit to set
 	 */
 	public void setEnergyLimit(Integer energyLimit) throws OpenemsNamedException {
@@ -176,7 +176,7 @@ public class ClusterEvcs {
 
 	/**
 	 * Method mainly for junit tests.
-	 * 
+	 *
 	 * @param energySession to set
 	 */
 	public void _setEnergySession(Integer energySession) {

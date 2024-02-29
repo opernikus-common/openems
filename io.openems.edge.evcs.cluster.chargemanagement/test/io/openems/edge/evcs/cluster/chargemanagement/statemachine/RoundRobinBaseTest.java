@@ -29,15 +29,15 @@ public class RoundRobinBaseTest {
 
 	/*
 	 * checks if
-	 * 
+	 *
 	 * <ul> <<br/>
-	 * 
+	 *
 	 * <li>max charge sessions is applied correctly
-	 * 
+	 *
 	 * <li>priorisation and chargeRequests are applied correctly
-	 * 
+	 *
 	 * <li>the unlimited flag is handled approprietaly
-	 * 
+	 *
 	 * </ul>
 	 */
 	// @Test
@@ -46,7 +46,7 @@ public class RoundRobinBaseTest {
 		// TestCase tc1 = new TestCase();
 
 		// init
-		Context c = ((EvcsClusterChargeMgmtImpl) test.getSut()).getContext();
+		var c = ((EvcsClusterChargeMgmtImpl) test.getSut()).getContext();
 		c.getParent().logInfo("roundRobinMaxChargeSessionsTest --------------------");
 		TestUtils.prepareTestCondition(c, //
 				true, false, //
@@ -89,7 +89,7 @@ public class RoundRobinBaseTest {
 
 	/*
 	 * check if
-	 * 
+	 *
 	 * -prio charge requests are handled appropriately -normal charge requests are
 	 * handled when there are no prio charge requests
 	 */
@@ -99,7 +99,7 @@ public class RoundRobinBaseTest {
 		// TestCase tc1 = new TestCase();
 
 		// init
-		Context c = ((EvcsClusterChargeMgmtImpl) test.getSut()).getContext();
+		var c = ((EvcsClusterChargeMgmtImpl) test.getSut()).getContext();
 		c.getParent().logInfo("roundRobinPrioChargeSessionRotateTest --------------------");
 		TestUtils.prepareTestCondition(c, //
 				true, false, //
@@ -158,12 +158,12 @@ public class RoundRobinBaseTest {
 
 		/*
 		 * init:
-		 * 
+		 *
 		 * 4 charge points want to charge
-		 * 
+		 *
 		 * 2 are allowed to charge
 		 */
-		Context c = ((EvcsClusterChargeMgmtImpl) test.getSut()).getContext();
+		var c = ((EvcsClusterChargeMgmtImpl) test.getSut()).getContext();
 		c.getParent().logInfo("roundRobinChargeSessionRotate2of4Test --------------------");
 		TestUtils.prepareTestCondition(c, //
 				true, false, //
@@ -202,12 +202,12 @@ public class RoundRobinBaseTest {
 
 		/*
 		 * init:
-		 * 
+		 *
 		 * 4 charge points want to charge
-		 * 
+		 *
 		 * 2 are allowed to charge
 		 */
-		Context c = ((EvcsClusterChargeMgmtImpl) test.getSut()).getContext();
+		var c = ((EvcsClusterChargeMgmtImpl) test.getSut()).getContext();
 		c.getParent().logInfo("roundRobinChargeSessionRotate1of4Test --------------------");
 		TestUtils.prepareTestCondition(c, //
 				true, false, //
@@ -252,12 +252,12 @@ public class RoundRobinBaseTest {
 		var test = this.baseTestController();
 		/*
 		 * init:
-		 * 
+		 *
 		 * 4 charge points want to charge
-		 * 
+		 *
 		 * 2 are allowed to charge
 		 */
-		Context c = ((EvcsClusterChargeMgmtImpl) test.getSut()).getContext();
+		var c = ((EvcsClusterChargeMgmtImpl) test.getSut()).getContext();
 		c.getParent().logInfo("roundRobinChargeSessionRotate3of4Test --------------------");
 		TestUtils.prepareTestCondition(c, //
 				true, false, //
@@ -324,9 +324,9 @@ public class RoundRobinBaseTest {
 	private void assertChargePower(Context c, Integer[][] values) {
 		c.getParent().logInfo(this.roundRobin.toString());
 		var evcss = c.getCluster().getAllEvcss();
-		for (var i = 0; i < values.length; i++) {
-			var evcs = evcss.get(values[i][0]);
-			var power = values[i][1];
+		for (Integer[] value : values) {
+			var evcs = evcss.get(value[0]);
+			var power = value[1];
 			assertEquals(evcs.getChargePower(), power);
 		}
 	}
@@ -336,7 +336,7 @@ public class RoundRobinBaseTest {
 			channel.nextProcessImage();
 		}
 		c.getCluster().getAllEvcss().stream().forEach(clusterEvcs -> {
-			DummyManagedEvcs e = (DummyManagedEvcs) clusterEvcs.getEvcs();
+			var e = (DummyManagedEvcs) clusterEvcs.getEvcs();
 			e.handleEvent(new Event(EdgeEventConstants.TOPIC_CYCLE_EXECUTE_WRITE, (Dictionary<String, ?>) null));
 			e.writeHandlerRun();
 		});

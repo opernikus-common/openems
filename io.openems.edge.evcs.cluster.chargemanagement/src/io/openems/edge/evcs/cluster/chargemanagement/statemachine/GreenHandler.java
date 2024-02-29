@@ -94,7 +94,7 @@ public class GreenHandler extends BaseHandler {
 
 	private void adoptLimits() throws OpenemsNamedException {
 
-		if ((!this.context.getCableConstraints().isUnbalanced())
+		if (!this.context.getCableConstraints().isUnbalanced()
 				&& this.context.getCableConstraints().getMinFreeAvailablePower() > 0) {
 			this.increaseChargePower();
 
@@ -147,7 +147,7 @@ public class GreenHandler extends BaseHandler {
 	private boolean hasStepIntervalTimePassed(boolean decreasing) {
 		var si = this.stepInterval;
 		if (decreasing) {
-			si = Math.max(0, (int) (si / 2));
+			si = Math.max(0, si / 2);
 		}
 		if (Duration.between(this.lastLimitChangeTime, Instant.now()).getSeconds() > si) {
 			this.lastLimitChangeTime = Instant.now();
@@ -169,7 +169,7 @@ public class GreenHandler extends BaseHandler {
 			parent.getContext().getCluster().limitPower(minEvcsLimit, true);
 			return false;
 		}
-		if (parent.getContext().getCluster().hasChargingEvcs() == false) {
+		if (!parent.getContext().getCluster().hasChargingEvcs()) {
 			EvcsTools.decreaseDistributedPower(parent);
 			return true;
 		}
@@ -181,7 +181,7 @@ public class GreenHandler extends BaseHandler {
 
 	/**
 	 * Decreases the limits of prioritized Evcss.
-	 * 
+	 *
 	 * @param parent the {@link EvcsClusterChargeMgmt}
 	 * @return true if still needs to decrease
 	 * @throws OpenemsNamedException on write error
@@ -192,7 +192,7 @@ public class GreenHandler extends BaseHandler {
 			parent.getContext().getCluster().limitPowerPrio(minEvcsLimit, true);
 			return false;
 		}
-		if (parent.getContext().getCluster().hasChargingPrioEvcs() == false) {
+		if (!parent.getContext().getCluster().hasChargingPrioEvcs()) {
 			var minEvcsLimit = parent.getContext().getCluster().getEvcsMinPowerLimit();
 			parent.getContext().getCluster().limitPowerPrio(minEvcsLimit, false);
 			return false;
@@ -205,7 +205,7 @@ public class GreenHandler extends BaseHandler {
 
 	/**
 	 * Increases the limits of unprioritized Evcss.
-	 * 
+	 *
 	 * @param parent the {@link EvcsClusterChargeMgmt}
 	 * @return true if still needs to increase
 	 * @throws OpenemsNamedException on write error
@@ -225,7 +225,7 @@ public class GreenHandler extends BaseHandler {
 			parent.getContext().getCluster().limitPower(maxEvcsLimit, true);
 			return false;
 		}
-		if (parent.getContext().getCluster().hasChargingEvcs() == false) {
+		if (!parent.getContext().getCluster().hasChargingEvcs()) {
 			var maxEvcsLimit = parent.getContext().getCluster().getEvcsMaxPowerLimit();
 			parent.getContext().getCluster().limitPower(maxEvcsLimit, true);
 			return false;
@@ -238,7 +238,7 @@ public class GreenHandler extends BaseHandler {
 
 	/**
 	 * Increases the limits of prioritized Evcss.
-	 * 
+	 *
 	 * @param parent the {@link EvcsClusterChargeMgmt}
 	 * @return true if still needs to increase
 	 * @throws OpenemsNamedException on write error
@@ -249,7 +249,7 @@ public class GreenHandler extends BaseHandler {
 			parent.getContext().getCluster().limitPowerPrio(maxEvcsLimit, true);
 			return false;
 		}
-		if (parent.getContext().getCluster().hasChargingPrioEvcs() == false) {
+		if (!parent.getContext().getCluster().hasChargingPrioEvcs()) {
 			var maxEvcsLimit = parent.getContext().getCluster().getEvcsMaxPowerLimit();
 			parent.getContext().getCluster().limitPowerPrio(maxEvcsLimit, true);
 			return true;

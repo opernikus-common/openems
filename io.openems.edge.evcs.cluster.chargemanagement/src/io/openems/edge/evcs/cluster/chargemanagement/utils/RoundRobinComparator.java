@@ -8,22 +8,22 @@ import io.openems.edge.evcs.cluster.chargemanagement.statemachine.RoundRobinEvcs
 /**
  * RoundRobinComparator. Added evcs will be sorted into the list with the
  * following sequence.
- * 
+ *
  * <p>
  * 1. HighPrio, wants to charge
- * 
+ *
  * <p>
  * 2. Normal Prio, wants to charge
- * 
+ *
  * <p>
  * 3. High Prio, no charge
- * 
+ *
  * <p>
  * 4. Normal prio, dont want to charge
  */
 public class RoundRobinComparator implements Comparator<RoundRobinEvcs> {
 
-	private Cluster cluster;
+	private final Cluster cluster;
 
 	public RoundRobinComparator(Cluster cluster) {
 		this.cluster = cluster;

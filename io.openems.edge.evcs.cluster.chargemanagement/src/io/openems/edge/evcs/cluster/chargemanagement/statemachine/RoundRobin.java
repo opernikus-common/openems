@@ -9,16 +9,16 @@ import io.openems.edge.evcs.cluster.chargemanagement.utils.RoundRobinComparator;
 
 public class RoundRobin {
 
-	private Context context;
+	private final Context context;
+	private final RoundRobinComparator rrComparator;
 	private PriorityQueue<RoundRobinEvcs> queue;
 	private boolean unlimited;
-	private RoundRobinComparator rrComparator;
 
 	public RoundRobin(Context context, int cntChargingEvcs) {
 		this.context = context;
 		this.unlimited = false;
 		this.rrComparator = new RoundRobinComparator(this.context.getCluster());
-		this.queue = new PriorityQueue<RoundRobinEvcs>(this.rrComparator);
+		this.queue = new PriorityQueue<>(this.rrComparator);
 		this.setMaxAllowedChargeSessions(0);
 		this.syncQueue();
 
@@ -39,13 +39,13 @@ public class RoundRobin {
 
 	/**
 	 * Update charge point behavior.
-	 * 
+	 *
 	 * <p/>
 	 * a) cyclically update all power limits on all EVCSs
-	 * 
+	 *
 	 * <p/>
 	 * b) switch off chargepoints to stop and start a timer.
-	 * 
+	 *
 	 * <p/>
 	 * c) switch on chargepoints to start when timer hits.
 	 */
@@ -55,8 +55,8 @@ public class RoundRobin {
 		}
 		var cluster = this.context.getCluster();
 
-		boolean step1 = this.queue.stream().anyMatch(rre -> rre.isLockRequestedTrue());
-		boolean step2 = this.queue.stream().anyMatch(rre -> rre.isLockRequestedFalse());
+		var step1 = this.queue.stream().anyMatch(RoundRobinEvcs::isLockRequestedTrue);
+		var step2 = this.queue.stream().anyMatch(RoundRobinEvcs::isLockRequestedFalse);
 		if (step1) {
 			step2 = false;
 			this.context.getRoundRobinSwitchTimer().reset();
@@ -110,7 +110,7 @@ public class RoundRobin {
 		this.initNextRound();
 
 		// enable a different set of chargepoints (and implicitly resort again)
-		var q = new PriorityQueue<RoundRobinEvcs>(this.rrComparator);
+		var q = new PriorityQueue<>(this.rrComparator);
 		var chargeCnt = 0;
 		while (!this.queue.isEmpty()) {
 			var rrEvcs = this.queue.poll();
@@ -135,7 +135,7 @@ public class RoundRobin {
 
 	/**
 	 * Checks if all charge points are allowed to charge and run with MinPower.
-	 * 
+	 *
 	 * @return true if all charge points work "normal"
 	 */
 	protected boolean isUnlimited() {
@@ -154,7 +154,7 @@ public class RoundRobin {
 
 	/**
 	 * Adopt max allowed charge sessions.
-	 * 
+	 *
 	 * @param decrementOnly true if only decrement should be applied.
 	 * @return true, if max allowed charge sessions is 0, false else.
 	 */
@@ -181,12 +181,10 @@ public class RoundRobin {
 				return true;
 			}
 
-		} else {
-			if (!decrementOnly) {
-				if (!this.context.getCableConstraints().isUnbalanced()) {
-					this.setMaxAllowedChargeSessions(cur + chargeSessionDiff);
-					this.nextRound();
-				}
+		} else if (!decrementOnly) {
+			if (!this.context.getCableConstraints().isUnbalanced()) {
+				this.setMaxAllowedChargeSessions(cur + chargeSessionDiff);
+				this.nextRound();
 			}
 		}
 		return false;
@@ -196,7 +194,7 @@ public class RoundRobin {
 		if (this.context.getConfig().verboseDebug()) {
 			this.context.getParent().logInfo("Resort");
 		}
-		var q = new PriorityQueue<RoundRobinEvcs>(this.rrComparator);
+		var q = new PriorityQueue<>(this.rrComparator);
 		while (!this.queue.isEmpty()) {
 			var rrEvcs = this.queue.poll();
 			if (this.context.getConfig().verboseDebug()) {
@@ -247,17 +245,18 @@ public class RoundRobin {
 	}
 
 	private int countUnlockRequested() {
-		return (int) this.queue.stream().filter(rre -> rre.isLockRequestedFalse()).count();
+		return (int) this.queue.stream().filter(RoundRobinEvcs::isLockRequestedFalse).count();
 	}
 
 	/**
 	 * A brief summary of this component.
-	 * 
+	 *
 	 * @return String the summary as a string
 	 */
+	@Override
 	public String toString() {
-		StringBuffer buf = new StringBuffer("\n[roundRobinList [" + this.getMaxAllowedChargeSessions() + " maxSessions"
-				+ (this.isUnlimited() ? ", unlimited" : "") + "]");
+		var buf = new StringBuilder("\n[roundRobinList [" + this.getMaxAllowedChargeSessions()
+				+ " maxSessions" + (this.isUnlimited() ? ", unlimited" : "") + "]");
 
 		this.queue.stream().forEach(rre -> {
 			buf.append("\n                 [" + rre.evcs().id() //
@@ -274,7 +273,7 @@ public class RoundRobin {
 
 	/**
 	 * Checks the behaviour of this EVCS on imbalance state.
-	 * 
+	 *
 	 * @param rrEvcs the evcs to check
 	 * @return true if we have no phase unbalance or if this rrEvcs has no or a good
 	 *         impact on phase imbalance, false else

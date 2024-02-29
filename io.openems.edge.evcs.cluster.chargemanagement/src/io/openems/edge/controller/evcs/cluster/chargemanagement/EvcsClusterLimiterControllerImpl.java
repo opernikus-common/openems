@@ -19,7 +19,7 @@ import io.openems.edge.meter.api.ElectricityMeter;
 /**
  * The EvcsClusterLimiterControllerImpl is responsible to continuously update
  * the following channels:
- * 
+ *
  * <p>
  * <ul>
  * <li>MaxPowerLimit - max theoretically power limit on this limiter.
@@ -30,13 +30,13 @@ import io.openems.edge.meter.api.ElectricityMeter;
  * <li>PhaseImbalanceCurrent - phase imbalance current (only set if this is the
  * phase imbalance responsible limiter).
  * </ul>
- * 
+ *
  * <p>
  * Hints:
- * 
+ *
  * <p>
  * -at no time we should reach config.fuseLimit()
- * 
+ *
  */
 @Designate(ocd = Config.class, factory = true)
 @Component(//
@@ -47,7 +47,7 @@ import io.openems.edge.meter.api.ElectricityMeter;
 public class EvcsClusterLimiterControllerImpl extends AbstractOpenemsComponent
 		implements EvcsClusterLimiter, Controller, OpenemsComponent {
 
-	private MeterHandler meterHandler;
+	private final MeterHandler meterHandler;
 	private Config config;
 	private Integer limiterId;
 

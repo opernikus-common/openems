@@ -176,7 +176,7 @@ public interface EvcsClusterLimiter extends Controller, OpenemsComponent {
 
 	/**
 	 * Gets the Channel {@link ChannelId#PHASE_IMBALANCE}.
-	 * 
+	 *
 	 * @return the channel
 	 */
 	public default EnumReadChannel getPhaseImbalanceChannel() {
@@ -185,7 +185,7 @@ public interface EvcsClusterLimiter extends Controller, OpenemsComponent {
 
 	/**
 	 * Gets the value for {@link ChannelId#PHASE_IMBALANCE}.
-	 * 
+	 *
 	 * @return the channel {@link Value}
 	 */
 	public default PhaseImbalance getPhaseImbalance() {
@@ -195,7 +195,7 @@ public interface EvcsClusterLimiter extends Controller, OpenemsComponent {
 	/**
 	 * Internal method to set the next value on Channel
 	 * {@link ChannelId#PHASE_IMBALANCE}.
-	 * 
+	 *
 	 * @param value the next value
 	 */
 	public default void _setPhaseImbalance(PhaseImbalance value) {
@@ -456,14 +456,14 @@ public interface EvcsClusterLimiter extends Controller, OpenemsComponent {
 
 	/**
 	 * Asks whether phase imbalance is considered for this limiter.
-	 * 
+	 *
 	 * @return true, if the limiter limits the phase imbalance
 	 */
 	public boolean isPhaseImbalanceLimiter();
 
 	/**
 	 * Gives back the Limiter ID.
-	 * 
+	 *
 	 * @return id of the current limiter.
 	 */
 	public Integer getLimiterId();

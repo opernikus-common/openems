@@ -20,7 +20,7 @@ public class ConfigBrokenMeter {
 
 	/**
 	 * Creates a default cluster fairshare configuration.
-	 * 
+	 *
 	 * @return the configuration.
 	 */
 	public static MyConfig.Builder createDefaultConfig() {
@@ -54,7 +54,7 @@ public class ConfigBrokenMeter {
 
 	/**
 	 * Creates an invalid cluster fairshare configuration.
-	 * 
+	 *
 	 * @return the configuration.
 	 */
 	public static MyConfig.Builder createForbidConfig() {
@@ -88,12 +88,12 @@ public class ConfigBrokenMeter {
 
 	/**
 	 * Sets the test base references.
-	 * 
+	 *
 	 * @param test the test
 	 * @return the component manager.
 	 */
 	public static DummyComponentManager setBaseReferences(ChargeManagementClusterTestComponent test) throws Exception {
-		DummyComponentManager cpm = new DummyComponentManager(
+		var cpm = new DummyComponentManager(
 				new TimeLeapClock(Instant.ofEpochSecond(1577836800), ZoneOffset.UTC));
 		var cm = new DummyConfigurationAdmin();
 

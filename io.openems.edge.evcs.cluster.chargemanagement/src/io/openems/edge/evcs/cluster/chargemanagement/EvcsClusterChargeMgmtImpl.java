@@ -2,7 +2,6 @@ package io.openems.edge.evcs.cluster.chargemanagement;
 
 import java.time.Clock;
 import java.util.List;
-import java.util.Optional;
 
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.ComponentContext;
@@ -56,12 +55,11 @@ public class EvcsClusterChargeMgmtImpl extends AbstractManagedEvcs
 
 	private final StateMachine stateMachine = new StateMachine();
 	private final BooleanWriteChannel[] digitalOutChannels;
-	private SupplyCableConstraints constraints;
+	private final SupplyCableConstraints constraints;
+	private final Diagnostics diagnostics;
 	private final Context context;
 	private boolean runOnce = true;
 	private boolean active = false;
-	private Diagnostics diagnostics;
-
 	@Reference
 	private EvcsPower power;
 
@@ -120,6 +118,7 @@ public class EvcsClusterChargeMgmtImpl extends AbstractManagedEvcs
 		this.context.getCableConstraints().remove(evcsClusterLimiter);
 	}
 
+	@Override
 	@Activate
 	protected void activate(ComponentContext compContext, Config config) {
 		super.activate(compContext, config);
@@ -146,9 +145,10 @@ public class EvcsClusterChargeMgmtImpl extends AbstractManagedEvcs
 
 	/**
 	 * Checks if component is activated or deactivated.
-	 * 
+	 *
 	 * @return true if component is activated.
 	 */
+	@Override
 	public boolean isActivated() {
 		return this.active;
 	}
@@ -228,7 +228,7 @@ public class EvcsClusterChargeMgmtImpl extends AbstractManagedEvcs
 	private void updateChannelValues() {
 
 		// check allow charging
-		Optional<Boolean> value = this.getAllowChargingValueAndReset();
+		var value = this.getAllowChargingValueAndReset();
 		if (value.isPresent()) {
 			var allowCharging = value.get().booleanValue();
 			if (this.config.allowCharging() != allowCharging) {
@@ -248,10 +248,12 @@ public class EvcsClusterChargeMgmtImpl extends AbstractManagedEvcs
 		return this.digitalOutChannels;
 	}
 
+	@Override
 	protected List<ClusterEvcs> getClusteredEvcss() {
 		return this.context.getCluster().getAllEvcss();
 	}
 
+	@Override
 	protected SupplyCableConstraints getCableConstraints() {
 		return this.constraints;
 	}
@@ -274,7 +276,7 @@ public class EvcsClusterChargeMgmtImpl extends AbstractManagedEvcs
 
 	/**
 	 * Log in context of cluster.
-	 * 
+	 *
 	 * @param text to log
 	 */
 	public void logInfo(String text) {
@@ -285,7 +287,7 @@ public class EvcsClusterChargeMgmtImpl extends AbstractManagedEvcs
 
 	/**
 	 * Log in context of cluster.
-	 * 
+	 *
 	 * @param text to log
 	 */
 	public void logWarn(String text) {
@@ -294,7 +296,7 @@ public class EvcsClusterChargeMgmtImpl extends AbstractManagedEvcs
 
 	/**
 	 * Log in context of cluster.
-	 * 
+	 *
 	 * @param text to log
 	 */
 	public void logError(String text) {

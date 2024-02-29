@@ -32,7 +32,7 @@ public class RoundRobinEvcs {
 
 	/**
 	 * Gets the evcs.
-	 * 
+	 *
 	 * @return the evcs.
 	 */
 	public ClusterEvcs evcs() {
@@ -44,7 +44,7 @@ public class RoundRobinEvcs {
 	}
 
 	public void setLockRequested(Boolean lockRequested) {
-		if (lockRequested != null && lockRequested == false && this.lockRequested != lockRequested) {
+		if (lockRequested != null && !lockRequested && this.lockRequested != lockRequested) {
 			this.unlockCount++;
 		}
 		this.lockRequested = lockRequested;
@@ -56,7 +56,7 @@ public class RoundRobinEvcs {
 
 	/**
 	 * Checks if the lockRequested attribute is set to true.
-	 * 
+	 *
 	 * @return true if lockRequested is set.
 	 */
 	public boolean isLockRequestedTrue() {
@@ -68,7 +68,7 @@ public class RoundRobinEvcs {
 
 	/**
 	 * Checks if the lockRequested attribute is set to false.
-	 * 
+	 *
 	 * @return true if lockRequested is unset.
 	 */
 	public boolean isLockRequestedFalse() {
@@ -88,7 +88,7 @@ public class RoundRobinEvcs {
 
 	/**
 	 * Set the unlock count to zero.
-	 * 
+	 *
 	 * <p>
 	 * This also (hopefully) indicates Chargepoint switched state to not charging
 	 * anymore.
@@ -109,7 +109,7 @@ public class RoundRobinEvcs {
 
 	/**
 	 * Update Used Phases on chargepoint.
-	 * 
+	 *
 	 * <p>
 	 * Should be called whenever a car is charging on this chargepoint.
 	 */
@@ -123,17 +123,17 @@ public class RoundRobinEvcs {
 	/**
 	 * Checks if this evcs helps fixing phase imbalance or at least does not make it
 	 * worse.
-	 * 
+	 *
 	 * @param phaseImbalance the phase imbalance detected.
 	 * @return true if it does not make worse phase imbalance or if it makes it less
 	 *         critical, false else.
-	 * 
+	 *
 	 */
 	public boolean mayFixPhaseImbalance(PhaseImbalance phaseImbalance) {
 		if (this.threePhase) {
 			return true;
 		}
-		var result = switch (phaseImbalance) {
+		return switch (phaseImbalance) {
 		case NO_IMBALANCE -> {
 			yield true;
 		}
@@ -177,14 +177,14 @@ public class RoundRobinEvcs {
 			yield false;
 		}
 		};
-		return result;
 	}
 
 	/**
 	 * To String method.
-	 * 
+	 *
 	 * @return the objects represantation as a string.
 	 */
+	@Override
 	public String toString() {
 		return "[" + this.evcs.id() //
 				+ ", lockReq=" + this.lockRequested + (this.locked ? ", -locked-" : "") //

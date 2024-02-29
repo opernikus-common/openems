@@ -33,7 +33,7 @@ public class EvcsTools {
 
 	/**
 	 * Calculates the number of prio evcss.
-	 * 
+	 *
 	 * @param evcss       list of evcss
 	 * @param prioritized true for prioritized evcss, false for unprioritized evcss.
 	 * @return the number of prio evcss
@@ -50,7 +50,7 @@ public class EvcsTools {
 
 	/**
 	 * Gets the maximum power limit for the list of {@link ManagedEvcs}s.
-	 * 
+	 *
 	 * @param clusterEvcss the clusterEvcss
 	 * @return the maximum power limit
 	 */
@@ -64,7 +64,7 @@ public class EvcsTools {
 
 	/**
 	 * Gets the minimum power limit for the list of {@link ManagedEvcs}s.
-	 * 
+	 *
 	 * @param clusterEvcss the clusterEvcss
 	 * @return the minimum power limit
 	 */
@@ -78,7 +78,7 @@ public class EvcsTools {
 
 	/**
 	 * Asks if at least one of the given Evcss is charging.
-	 * 
+	 *
 	 * @param clusteredEvcss the list of Evcss
 	 * @return true, if at least one of them is charging
 	 */
@@ -96,7 +96,7 @@ public class EvcsTools {
 
 	/**
 	 * Asks if a given Evcs has a given status.
-	 * 
+	 *
 	 * @param evcs   the {@link Evcs}
 	 * @param status the {@link Status}
 	 * @return true, if the evcs has the status
@@ -110,10 +110,10 @@ public class EvcsTools {
 
 	/**
 	 * Decreases the distribution power for the prioritized Evcss.
-	 * 
+	 *
 	 * <p>
 	 * Note that we decrease one powerstep faster than increasing (and configured).
-	 * 
+	 *
 	 * @param parent the {@link EvcsClusterChargeMgmt}
 	 * @throws OpenemsNamedException on write error
 	 */
@@ -133,7 +133,7 @@ public class EvcsTools {
 
 	/**
 	 * Increases the distribution power for the prioritized Evcss.
-	 * 
+	 *
 	 * @param parent the {@link EvcsClusterChargeMgmt}
 	 * @throws OpenemsNamedException on write error
 	 */
@@ -147,10 +147,10 @@ public class EvcsTools {
 
 	/**
 	 * Decreases the distribution power for the unprioritized Evcss.
-	 * 
+	 *
 	 * <p>
 	 * Note that we decrease one powerstep faster than increasing (and configured).
-	 * 
+	 *
 	 * @param parent the {@link EvcsClusterChargeMgmt}
 	 * @throws OpenemsNamedException on write error
 	 */
@@ -170,7 +170,7 @@ public class EvcsTools {
 
 	/**
 	 * Increases the distribution power for the unprioritized Evcss.
-	 * 
+	 *
 	 * @param parent the {@link EvcsClusterChargeMgmt}
 	 * @throws OpenemsNamedException on write error
 	 */
@@ -184,7 +184,7 @@ public class EvcsTools {
 
 	/**
 	 * Holds the charge power limit for all Evcss.
-	 * 
+	 *
 	 * @param parent the {@link EvcsClusterChargeMgmt}
 	 * @throws OpenemsNamedException on write error
 	 */
@@ -199,7 +199,7 @@ public class EvcsTools {
 
 	/**
 	 * Asks if the unprioritized limit has reached the maximum power.
-	 * 
+	 *
 	 * @param parent the {@link EvcsClusterChargeMgmt}
 	 * @return true, if the unprioritized limit has reached the maximum power
 	 */
@@ -215,7 +215,7 @@ public class EvcsTools {
 
 	/**
 	 * Check if unprioritized limit and next limit has reached minimum power.
-	 * 
+	 *
 	 * @param parent the {@link EvcsClusterChargeMgmt}
 	 * @return true, if the unprioritized limit has reached the minimum power
 	 */
@@ -232,7 +232,7 @@ public class EvcsTools {
 
 	/**
 	 * Asks if the prioritized limit has reached the maximum power.
-	 * 
+	 *
 	 * @param parent the {@link EvcsClusterChargeMgmt}
 	 * @return true, if the prioritized limit has reached the maximum power
 	 */
@@ -248,7 +248,7 @@ public class EvcsTools {
 
 	/**
 	 * Asks if the prioritized limit has reached the minimum power.
-	 * 
+	 *
 	 * @param parent the {@link EvcsClusterChargeMgmt}
 	 * @return true, if the unprioritized limit has reached the minimum power
 	 */
@@ -265,7 +265,7 @@ public class EvcsTools {
 
 	/**
 	 * Gets the maximum charge power for the prioritized Evcss.
-	 * 
+	 *
 	 * @param clusteredEvcss the list of all Evcss
 	 * @return the maximum charge power for the prioritized Evcss
 	 */
@@ -275,7 +275,7 @@ public class EvcsTools {
 
 	/**
 	 * Gets the maximum charge power for the unprioritized Evcss.
-	 * 
+	 *
 	 * @param clusteredEvcss the list of all Evcss
 	 * @return the maximum charge power for the unprioritized Evcss
 	 */
@@ -285,7 +285,7 @@ public class EvcsTools {
 
 	/**
 	 * Gets the maximum charge power for the whole cluster or the prioritized Evcss.
-	 * 
+	 *
 	 * @param prioritized    whether the return value is for the whole cluster or
 	 *                       the prioritized Evcss
 	 * @param clusteredEvcss the list of {@link ManagedEvcs}s
@@ -308,7 +308,7 @@ public class EvcsTools {
 
 	/**
 	 * Checks if needle is part of any string within haystack.
-	 * 
+	 *
 	 * @param hayStack the list of strings to search in.
 	 * @param needle   the part of a string we need to find.
 	 * @return true if found

@@ -19,10 +19,10 @@ public class DummyClusterChargemanagementMeter extends DummyElectricityMeter {
 	}
 
 	void run(DummyComponentManager cpm) {
-		int powerSum = this.otherLoad;
-		for (int n = 0; n < Consts.evcsIds.length; n++) {
+		var powerSum = this.otherLoad;
+		for (String evcsId : Consts.evcsIds) {
 			try {
-				DummyManagedEvcs evcs = cpm.getComponent(Consts.evcsIds[n]);
+				DummyManagedEvcs evcs = cpm.getComponent(evcsId);
 				powerSum += evcs.getChargePower().orElse(0);
 			} catch (Exception e) {
 				continue;

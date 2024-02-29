@@ -12,7 +12,7 @@ public class Diagnostics {
 
 	/**
 	 * Check if a max warning should be raised.
-	 * 
+	 *
 	 * @param id             of the evcs to raise the warning for.
 	 * @param shouldBeRaised true if warning should be raised.
 	 */
@@ -26,7 +26,7 @@ public class Diagnostics {
 
 	/**
 	 * Check if a min warning should be raised.
-	 * 
+	 *
 	 * @param id             of the evcs to raise the warning for.
 	 * @param shouldBeRaised true if warning should be raised.
 	 */
@@ -39,7 +39,7 @@ public class Diagnostics {
 
 	/**
 	 * Check if a warning should be raised.
-	 * 
+	 *
 	 * @param id             of the evcs to raise the warning for.
 	 * @param shouldBeRaised true if warning should be raised.
 	 */

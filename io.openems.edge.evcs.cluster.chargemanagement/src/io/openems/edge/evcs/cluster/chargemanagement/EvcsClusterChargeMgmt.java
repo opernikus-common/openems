@@ -55,11 +55,11 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 				.persistencePriority(PersistencePriority.HIGH)), //
 		/**
 		 * Minimum free available power over all limiters.
-		 * 
+		 *
 		 * <p>
 		 * When positive, there is freely available power for chargepoints. When
 		 * negative the target power limit is exceeded.
-		 * 
+		 *
 		 */
 		MIN_FREE_AVAILABLE_POWER(Doc.of(OpenemsType.INTEGER) //
 				.unit(Unit.WATT) //
@@ -67,7 +67,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 		/**
 		 * Minimum free available current on L1 over all limiters. The free available
 		 * current between current situation and targetPower (in A).
-		 * 
+		 *
 		 * <p>
 		 * positive values indicates a safe distance to the fuseLimit. Negative values
 		 * indicate that we are above the target power (available per phase) and it may
@@ -79,7 +79,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 		/**
 		 * Minimum free current on L2 over all limiters. The free available current
 		 * between current situation and targetPower (in A).
-		 * 
+		 *
 		 * <p>
 		 * positive values indicates a safe distance to the fuseLimit. Negative values
 		 * indicate that we are above the target power (available per phase) and it may
@@ -91,7 +91,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 		/**
 		 * Minimum free current on L3 over all limiters. The free available current
 		 * between current situation and targetPower (in A).
-		 * 
+		 *
 		 * <p>
 		 * positive values indicates a safe distance to the fuseLimit. Negative values
 		 * indicate that we are above the target power (available per phase) and it may
@@ -163,7 +163,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 
 		/**
 		 * control switch to allow or deny charging.
-		 * 
+		 *
 		 * <ul>
 		 * <li>Type: Boolean
 		 * <li>Range: On/Off
@@ -191,7 +191,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 
 	/**
 	 * Gets the Channel {@link ChannelId#ALLOW_CHARGING}.
-	 * 
+	 *
 	 * @return the channel
 	 */
 	public default BooleanWriteChannel getAllowChargingChannel() {
@@ -209,7 +209,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 	/**
 	 * Internal method to set the next value on Channel
 	 * {@link ChannelId#ALLOW_CHARGING}.
-	 * 
+	 *
 	 * @param value the next value
 	 */
 	public default void _setAllowCharging(Boolean value) {
@@ -222,7 +222,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 
 	/**
 	 * Gets the channel for {@link ChannelId#CLUSTER_STATE}.
-	 * 
+	 *
 	 * @return the Channel
 	 */
 	public default Channel<State> getClusterStateChannel() {
@@ -231,7 +231,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 
 	/**
 	 * Gets the cluster state. See {@link ChannelId#CLUSTER_STATE}.
-	 * 
+	 *
 	 * @return the Channel {@link Value}
 	 */
 	public default Value<State> getClusterState() {
@@ -241,7 +241,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 	/**
 	 * Internal method to set the next value on Channel
 	 * {@link ChannelId#CLUSTER_STATE}.
-	 * 
+	 *
 	 * @param state the next state
 	 */
 	public default void _setClusterState(State state) {
@@ -250,7 +250,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 
 	/**
 	 * Gets the Channel {@link ChannelId#NUMBER_OF_EVCS}.
-	 * 
+	 *
 	 * @return the channel
 	 */
 	public default Channel<Integer> getNumberOfEvcsChannel() {
@@ -259,7 +259,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 
 	/**
 	 * Gets the value for the channel {@link ChannelId#NUMBER_OF_EVCS}.
-	 * 
+	 *
 	 * @return the channel {@link Value}
 	 */
 	public default Value<Integer> getNumberOfEvcs() {
@@ -269,7 +269,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 	/**
 	 * Internal method to set the next value on Channel
 	 * {@link ChannelId#NUMBER_OF_EVCS}.
-	 * 
+	 *
 	 * @param numberEvcs the number of evcss
 	 */
 	public default void _setNumberOfEvcs(Integer numberEvcs) {
@@ -278,7 +278,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 
 	/**
 	 * Gets the Channel {@link ChannelId#NUMBER_OF_EVCS_PRIO}.
-	 * 
+	 *
 	 * @return the channel
 	 */
 	public default Channel<Integer> getNumberOfEvcsPrioChannel() {
@@ -287,7 +287,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 
 	/**
 	 * Gets the value for the channel {@link ChannelId#NUMBER_OF_EVCS_PRIO}.
-	 * 
+	 *
 	 * @return the channel {@link Value}
 	 */
 	public default Value<Integer> getNumberOfEvcsPrio() {
@@ -297,7 +297,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 	/**
 	 * Internal method to set the next value on Channel
 	 * {@link ChannelId#NUMBER_OF_EVCS_PRIO}.
-	 * 
+	 *
 	 * @param numberEvcsPrio the number of prioritized evcss
 	 */
 	public default void _setNumberOfEvcsPrio(Integer numberEvcsPrio) {
@@ -306,7 +306,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 
 	/**
 	 * Gets the Channel {@link ChannelId#NUMBER_OF_CHARGING_EVCS}.
-	 * 
+	 *
 	 * @return the channel
 	 */
 	public default Channel<Integer> getNumberOfChargingEvcsChannel() {
@@ -315,7 +315,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 
 	/**
 	 * Gets the value for the channel {@link ChannelId#NUMBER_OF_CHARGING_EVCS}.
-	 * 
+	 *
 	 * @return the channel {@link Value}
 	 */
 	public default Value<Integer> getNumberOfChargingEvcs() {
@@ -325,7 +325,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 	/**
 	 * Internal method to set the next value on Channel
 	 * {@link ChannelId#NUMBER_OF_CHARGING_EVCS}.
-	 * 
+	 *
 	 * @param value the number of charging evcs
 	 */
 	public default void _setNumberOfChargingEvcs(int value) {
@@ -334,7 +334,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 
 	/**
 	 * Gets the Channel {@link ChannelId#NUMBER_OF_CHARGING_EVCS_PRIO}.
-	 * 
+	 *
 	 * @return the channel
 	 */
 	public default Channel<Integer> getNumberOfChargingEvcsPrioChannel() {
@@ -344,7 +344,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 	/**
 	 * Gets the value for the channel
 	 * {@link ChannelId#NUMBER_OF_CHARGING_EVCS_PRIO}.
-	 * 
+	 *
 	 * @return the channel {@link Value}
 	 */
 	public default Value<Integer> getNumberOfChargingEvcsPrio() {
@@ -354,7 +354,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 	/**
 	 * Internal method to set the next value on Channel
 	 * {@link ChannelId#NUMBER_OF_CHARGING_EVCS_PRIO}.
-	 * 
+	 *
 	 * @param value the number of charging evcs
 	 */
 	public default void _setNumberOfChargingEvcsPrio(int value) {
@@ -363,7 +363,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 
 	/**
 	 * Gets the Channel {@link ChannelId#ROUND_ROBIN_ALLOWED_CHARGE_SESSIONS}.
-	 * 
+	 *
 	 * @return the channel
 	 */
 	public default Channel<Integer> getRoundRobinAllowedChargeSessionsChannel() {
@@ -373,7 +373,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 	/**
 	 * Gets the value for the channel
 	 * {@link ChannelId#ROUND_ROBIN_ALLOWED_CHARGE_SESSIONS}.
-	 * 
+	 *
 	 * @return the channel {@link Value}
 	 */
 	public default Value<Integer> getRoundRobinAllowedChargeSessions() {
@@ -383,7 +383,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 	/**
 	 * Internal method to set the next value on Channel
 	 * {@link ChannelId#ROUND_ROBIN_ALLOWED_CHARGE_SESSIONS}.
-	 * 
+	 *
 	 * @param value the number of charging evcs
 	 */
 	public default void _setRoundRobinAllowedChargeSessions(int value) {
@@ -392,7 +392,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 
 	/**
 	 * Gets the Channel {@link ChannelId#ROUND_ROBIN_ACTIVITY}.
-	 * 
+	 *
 	 * @return the channel
 	 */
 	public default Channel<Boolean> getRoundRobinActivityChannel() {
@@ -401,7 +401,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 
 	/**
 	 * Gets the value for the channel {@link ChannelId#ROUND_ROBIN_ACTIVITY}.
-	 * 
+	 *
 	 * @return the channel {@link Value}
 	 */
 	public default Value<Boolean> getRoundRobinActivity() {
@@ -411,7 +411,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 	/**
 	 * Internal method to set the next value on Channel
 	 * {@link ChannelId#ROUND_ROBIN_ACTIVITY}.
-	 * 
+	 *
 	 * @param value round robin activity indicator
 	 */
 	public default void _setRoundRobinActivity(Boolean value) {
@@ -420,7 +420,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 
 	/**
 	 * Gets the Channel {@link ChannelId#EVCS_POWER_LIMIT_PRIO}.
-	 * 
+	 *
 	 * @return the channel
 	 */
 	public default Channel<Integer> getEvcsPowerLimitPrioChannel() {
@@ -429,7 +429,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 
 	/**
 	 * Gets the value for the channel {@link ChannelId#EVCS_POWER_LIMIT_PRIO}.
-	 * 
+	 *
 	 * @return the channel {@link Value}
 	 */
 	public default Value<Integer> getEvcsPowerLimitPrio() {
@@ -439,7 +439,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 	/**
 	 * Internal method to set the next value on Channel
 	 * {@link ChannelId#EVCS_POWER_LIMIT_PRIO}.
-	 * 
+	 *
 	 * @param powerLimit the power limit for prioritized evcss
 	 */
 	public default void _setEvcsPowerLimitPrio(Integer powerLimit) {
@@ -448,7 +448,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 
 	/**
 	 * Gets the Channel {@link ChannelId#EVCS_POWER_LIMIT}.
-	 * 
+	 *
 	 * @return the channel
 	 */
 	public default Channel<Integer> getEvcsPowerLimitChannel() {
@@ -457,7 +457,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 
 	/**
 	 * Gets the value for the channel {@link ChannelId#EVCS_POWER_LIMIT}.
-	 * 
+	 *
 	 * @return the channel {@link Value}
 	 */
 	public default Value<Integer> getEvcsPowerLimit() {
@@ -467,7 +467,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 	/**
 	 * Internal method to set the next value on Channel
 	 * {@link ChannelId#EVCS_POWER_LIMIT}.
-	 * 
+	 *
 	 * @param powerLimit the power limit for unprioritized evcss
 	 */
 	public default void _setEvcsPowerLimit(Integer powerLimit) {
@@ -591,7 +591,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 
 	/**
 	 * Gets the Channel {@link ChannelId#PHASE_IMBALANCE}.
-	 * 
+	 *
 	 * @return the channel
 	 */
 	public default EnumReadChannel getPhaseImbalanceChannel() {
@@ -600,7 +600,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 
 	/**
 	 * Gets the value for {@link ChannelId#PHASE_IMBALANCE}.
-	 * 
+	 *
 	 * @return the channel {@link Value}
 	 */
 	public default Value<PhaseImbalance> getPhaseImbalance() {
@@ -610,7 +610,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 	/**
 	 * Internal method to set the next value on Channel
 	 * {@link ChannelId#PHASE_IMBALANCE}.
-	 * 
+	 *
 	 * @param value the next value
 	 */
 	public default void _setPhaseImbalance(PhaseImbalance value) {
@@ -656,7 +656,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 
 	/**
 	 * Gets the value for the channel {@link ChannelId#MIN_FREE_AVAILABLE_POWER}.
-	 * 
+	 *
 	 * @return the channel {@link Value}
 	 */
 	public default Value<Integer> getMinFreePower() {
@@ -818,7 +818,7 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 
 	/**
 	 * Checks if component is activated or deactivated.
-	 * 
+	 *
 	 * @return true if component is activated.
 	 */
 	public boolean isActivated();

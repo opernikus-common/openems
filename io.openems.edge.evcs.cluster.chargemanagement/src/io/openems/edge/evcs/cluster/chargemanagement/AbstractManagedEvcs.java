@@ -40,6 +40,7 @@ public abstract class AbstractManagedEvcs extends AbstractOpenemsComponent
 		this.config = config;
 	}
 
+	@Override
 	protected void deactivate() {
 		super.deactivate();
 	}
