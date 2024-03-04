@@ -85,7 +85,7 @@ public class VictronCanBusBatteryImpl extends AbstractOpenemsModbusComponent
 
     private void installListener() {
 	this.getCapacityInAmphoursChannel().onUpdate(value -> //
-			value.ifPresent(ampH-> this._setCapacity(ampH * BATTERY_VOLTAGE)));
+			value.ifPresent(ampH -> this._setCapacity(ampH * BATTERY_VOLTAGE)));
     }
 
     @Override
