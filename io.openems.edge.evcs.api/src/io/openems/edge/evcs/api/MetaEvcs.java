@@ -5,6 +5,6 @@ package io.openems.edge.evcs.api;
  * physical EVCS itself. This is used to distinguish e.g. an EvcsCluster from an
  * actual EVCS.
  */
-public interface MetaEvcs extends ManagedEvcs {
+public interface MetaEvcs extends Evcs {
 
 }
