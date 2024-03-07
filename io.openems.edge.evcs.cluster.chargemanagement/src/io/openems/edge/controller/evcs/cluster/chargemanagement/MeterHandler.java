@@ -19,7 +19,8 @@ import io.openems.edge.meter.api.ElectricityMeter;
  * <p>
  * Responsible for Channels
  * <ul>
- * <li>MaxPowerLimit - max theoretically power limit on this limiter.
+ * <li>TRANSPORT_CAPACITY - max theoretically transport capacity of this cable
+ * segment.
  * <li>MeterCurrentL1
  * <li>MeterCurrentL2
  * <li>MeterCurrentL3
@@ -148,18 +149,50 @@ public class MeterHandler {
 	 *         - config.fuseSafetyOffset), false else
 	 */
 	public boolean getSafeOperationMode() {
-		var safeOperationCurrent = this.safeOperationLimit() * 1_000;
-
-		if (this.meter.getCurrentL1().orElse(safeOperationCurrent) >= safeOperationCurrent) {
+		if (!this.safeOperationModeL1()) {
 			return false;
 		}
-		if (this.meter.getCurrentL2().orElse(safeOperationCurrent) >= safeOperationCurrent) {
+		if (!this.safeOperationModeL2()) {
 			return false;
 		}
-		if (this.meter.getCurrentL3().orElse(safeOperationCurrent) >= safeOperationCurrent) {
+		if (!this.safeOperationModeL3()) {
 			return false;
 		}
 		return true;
+	}
+
+	// TODO too many duplicated code, please merge to one method.
+	/**
+	 * Get SafeOperationMode for phase L1.
+	 *
+	 * @return true, if meter current for L1 is below (config.fuseLimit -
+	 *         config.fuseSafetyOffset), false else
+	 */
+	public boolean safeOperationModeL1() {
+		var safeOperationCurrent = this.safeOperationLimit() * 1_000;
+		return this.meter.getCurrentL1().orElse(safeOperationCurrent) < safeOperationCurrent;
+	}
+
+	/**
+	 * Get SafeOperationMode for phase L2.
+	 *
+	 * @return true, if meter current for L2 is below (config.fuseLimit -
+	 *         config.fuseSafetyOffset), false else
+	 */
+	public boolean safeOperationModeL2() {
+		var safeOperationCurrent = this.safeOperationLimit() * 1_000;
+		return this.meter.getCurrentL2().orElse(safeOperationCurrent) < safeOperationCurrent;
+	}
+
+	/**
+	 * Get SafeOperationMode for phase L3.
+	 *
+	 * @return true, if meter current for L3 is below (config.fuseLimit -
+	 *         config.fuseSafetyOffset), false else
+	 */
+	public boolean safeOperationModeL3() {
+		var safeOperationCurrent = this.safeOperationLimit() * 1_000;
+		return this.meter.getCurrentL3().orElse(safeOperationCurrent) < safeOperationCurrent;
 	}
 
 	private int safeOperationLimit() {
@@ -288,8 +321,7 @@ public class MeterHandler {
 		return true;
 	}
 
-	// TODO PhaseImbalance sollte als static methode in ElectricityMeter verschoben
-	// werden
+	// TODO PhaseImbalance could be moved to ElectricityMeter
 
 	/**
 	 * The Phase imbalance State.
@@ -371,7 +403,6 @@ public class MeterHandler {
 				return PhaseImbalance.L1_TOO_LOW;
 			}
 		}
-		// will never be reached
 		return PhaseImbalance.NO_IMBALANCE;
 	}
 

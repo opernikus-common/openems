@@ -56,15 +56,7 @@ public class RoundRobinComparator implements Comparator<RoundRobinEvcs> {
 		if (!cr1 && cr2) {
 			retCode -= 0x08;
 		}
-		// // locked
-		// var ena1 = o1.isLocked();
-		// var ena2 = o2.isLocked();
-		// if (!ena1 && ena2) {
-		// retCode += 0x04;
-		// }
-		// if (ena1 && !ena2) {
-		// retCode -= 0x04;
-		// }
+
 		var uc1 = o1.getUnlockCount();
 		var uc2 = o2.getUnlockCount();
 		if (uc1 < uc2) {

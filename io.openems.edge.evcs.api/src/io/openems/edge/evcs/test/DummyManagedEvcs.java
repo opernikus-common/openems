@@ -180,8 +180,14 @@ public class DummyManagedEvcs extends AbstractManagedEvcsComponent
 	}
 
 	@Override
+	public void applyChargePowerPerPhase(boolean value) {
+		this.writeHandler.applyChargePowerPerPhase(value);
+	}
+	
+	@Override
 	public void logDebug(String message) {
 		// System.out.println("sysout: " + this.id() + " " + message);
 	}
+
 
 }

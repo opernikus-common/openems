@@ -20,10 +20,9 @@ import io.openems.edge.common.channel.value.Value;
 import io.openems.edge.common.component.OpenemsComponent;
 import io.openems.edge.controller.evcs.cluster.chargemanagement.PhaseImbalance;
 import io.openems.edge.evcs.api.Evcs;
-import io.openems.edge.evcs.api.ManagedEvcs;
 import io.openems.edge.evcs.api.MetaEvcs;
 
-public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs, ManagedEvcs {
+public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs {
 
 	public enum ChannelId implements io.openems.edge.common.channel.ChannelId {
 
@@ -190,6 +189,25 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 	}
 
 	/**
+	 * Gets the Channel for {@link ChannelId#INFO_PHASE_IMBALANCE}.
+	 *
+	 * @return the StateChannel
+	 */
+	public default StateChannel getInfoPhaseImbalanceChannel() {
+		return this.channel(ChannelId.INFO_PHASE_IMBALANCE);
+	}
+
+	/**
+	 * Internal method to set the 'nextValue' on
+	 * {@link ChannelId#INFO_PHASE_IMBALANCE} Channel.
+	 *
+	 * @param value the next value
+	 */
+	public default void _setInfoPhaseImbalance(boolean value) {
+		this.getInfoPhaseImbalanceChannel().setNextValue(value);
+	}
+
+	/**
 	 * Gets the Channel {@link ChannelId#ALLOW_CHARGING}.
 	 *
 	 * @return the channel
@@ -198,10 +216,21 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs,
 		return this.<BooleanWriteChannel>channel(ChannelId.SET_ALLOW_CHARGING);
 	}
 
+	/**
+	 * Gets the value for the channel {@link ChannelId#SET_ALLOW_CHARGING}.
+	 *
+	 * @return the channel {@link Value}
+	 */
 	public default Value<Boolean> getAllowCharging() {
 		return this.getAllowChargingChannel().value();
 	}
 
+	/**
+	 * Gets the write value for the channel {@link ChannelId#SET_ALLOW_CHARGING} and
+	 * resets it.
+	 *
+	 * @return the write value
+	 */
 	public default Optional<Boolean> getAllowChargingValueAndReset() {
 		return this.getAllowChargingChannel().getNextWriteValueAndReset();
 	}

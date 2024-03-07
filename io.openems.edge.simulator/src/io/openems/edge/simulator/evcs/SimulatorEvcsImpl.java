@@ -59,9 +59,9 @@ public class SimulatorEvcsImpl extends AbstractManagedEvcsComponent
 
 	@Reference
 	private ComponentManager componentManager;
-
 	// do not use OSGI mapping here. Reason: Want to change datasource without
 	// deactivating/activating component.
+	
 	private SimulatorDatasource datasource;
 
 	@Reference(policy = ReferencePolicy.DYNAMIC, policyOption = ReferencePolicyOption.GREEDY, cardinality = ReferenceCardinality.OPTIONAL)
@@ -106,10 +106,10 @@ public class SimulatorEvcsImpl extends AbstractManagedEvcsComponent
 		this.applyConfig(config);
 	}
 
+
 	private void applyConfig(Config config) throws OpenemsNamedException {
 		this.config = config;
-		// TODO das geht so nicht. Ist klar warum nicht?
-		this.datasource = (SimulatorDatasource) this.componentManager.getComponent(config.datasource_id());
+		this.datasource = this.componentManager.getComponent(config.datasource_id());
 		this._setPhaseRotation(config.phaseRotation());
 		this._setPhases(3);
 		this._setPriority(config.priority());
@@ -129,15 +129,9 @@ public class SimulatorEvcsImpl extends AbstractManagedEvcsComponent
 			return;
 		}
 		switch (event.getTopic()) {
-		case EdgeEventConstants.TOPIC_CYCLE_BEFORE_PROCESS_IMAGE -> {
-			this.updateChannels();
-		}
-		case EdgeEventConstants.TOPIC_CYCLE_AFTER_PROCESS_IMAGE -> {
-			this.calculateEnergy();
-		}
-		case EdgeEventConstants.TOPIC_CYCLE_EXECUTE_WRITE -> {
-			super.handleEvent(event);
-		}
+		case EdgeEventConstants.TOPIC_CYCLE_BEFORE_PROCESS_IMAGE -> this.updateChannels();
+		case EdgeEventConstants.TOPIC_CYCLE_AFTER_PROCESS_IMAGE -> this.calculateEnergy();
+		case EdgeEventConstants.TOPIC_CYCLE_EXECUTE_WRITE -> super.handleEvent(event);
 		}
 	}
 
@@ -250,7 +244,7 @@ public class SimulatorEvcsImpl extends AbstractManagedEvcsComponent
 		var powerPerPhase = power / 3;
 		var chargePowerPerPhase = this.getChargePower().orElse(0) / this.getPhases().getValue();
 
-		// increas chargePowerLimit slowly
+		// increase chargePowerLimit slowly
 		var request = Float.valueOf(powerPerPhase);
 		chargePowerPerPhase = this.rampFilter.getFilteredValueAsInteger(Float.valueOf(chargePowerPerPhase), request,
 				MAX_CHANGE_PER_CYCLE);
@@ -344,8 +338,4 @@ public class SimulatorEvcsImpl extends AbstractManagedEvcsComponent
 		;
 	}
 
-	@Override
-	public boolean useFixMinMaxPowers() {
-		return true;
-	}
 }

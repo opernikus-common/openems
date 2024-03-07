@@ -71,7 +71,7 @@ public class SupplyCableConstraints {
 
 	private boolean hasMeterError() {
 		return this.evcsClusterLimiters.get().stream() //
-				.allMatch(clusterLimiter -> clusterLimiter.getMeterError().orElse(false));
+				.anyMatch(clusterLimiter -> clusterLimiter.getMeterError().orElse(false));
 	}
 
 	private int diff(int p1, int p2) {
@@ -164,8 +164,7 @@ public class SupplyCableConstraints {
 			return 0;
 		});
 
-		// TODO pruefen, dass der richtige limiter zurückgegeben wird.
-
+		// TODO check that we return the correct limiter
 		return relLimiter.get().getTransportCapacity().orElse(0);
 	}
 
@@ -175,10 +174,7 @@ public class SupplyCableConstraints {
 	 * @return true if power is exceeded.
 	 */
 	public boolean exceedsTargetLimit() {
-		if (this.getMinFreeAvailablePower() < 0) {
-			return true;
-		}
-		return false;
+		return this.getMinFreeAvailablePower() < 0;
 	}
 
 	/**
@@ -187,10 +183,7 @@ public class SupplyCableConstraints {
 	 * @return true if the imbalance limit is reached.
 	 */
 	public boolean isUnbalanced() {
-		if (this.getPhaseImbalance().getValue() != PhaseImbalance.NO_IMBALANCE.getValue()) {
-			return true;
-		}
-		return false;
+		return this.getPhaseImbalance() != PhaseImbalance.NO_IMBALANCE;
 	}
 
 	/**
@@ -223,17 +216,17 @@ public class SupplyCableConstraints {
 	public void updateChannelValues() {
 		var imbalance = this.getPhaseImbalance();
 		this.parent._setPhaseImbalance(imbalance);
-		this.parent.channel(EvcsClusterChargeMgmt.ChannelId.INFO_PHASE_IMBALANCE)
-				.setNextValue(imbalance.getValue() != PhaseImbalance.NO_IMBALANCE.getValue());
+		this.parent._setInfoPhaseImbalance(imbalance.getValue() != PhaseImbalance.NO_IMBALANCE.getValue());
 
 		this.parent._setMinFreeAvailablePower(this.getMinFreeAvailablePower());
-		this.parent._setSafeOperationMode(this.safeOperationMode());
-
 		this.parent._setMinFreeAvailableCurrentL1(this.getMinFreeAvailableCurrentL1());
 		this.parent._setMinFreeAvailableCurrentL2(this.getMinFreeAvailableCurrentL2());
 		this.parent._setMinFreeAvailableCurrentL3(this.getMinFreeAvailableCurrentL3());
-		this.parent._setTransportCapacity(this.getTransportCapacity());
 
+		var som = this.safeOperationMode();
+		this.parent._setSafeOperationMode(som);
+
+		this.parent._setTransportCapacity(this.getTransportCapacity());
 		this.parent._setResponsibleLimiter(this.responsibleLimiterId);
 	}
 

@@ -49,7 +49,7 @@ import io.openems.edge.io.api.DigitalOutput;
 		EdgeEventConstants.TOPIC_CYCLE_AFTER_PROCESS_IMAGE//
 })
 public class EvcsClusterChargeMgmtImpl extends AbstractManagedEvcs
-		implements EvcsClusterChargeMgmt, MetaEvcs, Evcs, ManagedEvcs, DigitalOutput, EventHandler, OpenemsComponent {
+		implements EvcsClusterChargeMgmt, MetaEvcs, Evcs, DigitalOutput, EventHandler, OpenemsComponent {
 
 	private final Logger log = LoggerFactory.getLogger(EvcsClusterChargeMgmtImpl.class);
 
@@ -97,10 +97,12 @@ public class EvcsClusterChargeMgmtImpl extends AbstractManagedEvcs
 		if (evcs == this || !evcs.isEnabled()) {
 			return;
 		}
+		evcs.applyChargePowerPerPhase(true);
 		this.context.getCluster().add(evcs);
 	}
 
 	protected void removeEvcs(ManagedEvcs evcs) {
+		evcs.applyChargePowerPerPhase(false);
 		this.context.getCluster().remove(evcs);
 	}
 

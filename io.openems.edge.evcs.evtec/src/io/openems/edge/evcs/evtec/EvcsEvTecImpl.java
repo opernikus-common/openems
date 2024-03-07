@@ -351,6 +351,11 @@ public class EvcsEvTecImpl extends AbstractOpenemsModbusComponent implements Evc
 	}
 
 	@Override
+	public void applyChargePowerPerPhase(boolean value) {
+		// NYI - evtec does not support this feature right now
+	}
+
+	@Override
 	public ChargeStateHandler getChargeStateHandler() {
 		return this.chargeStateHandler;
 	}

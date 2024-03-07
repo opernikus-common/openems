@@ -16,10 +16,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.openems.common.exceptions.OpenemsException;
-import io.openems.edge.common.component.AbstractOpenemsComponent;
 import io.openems.edge.common.component.OpenemsComponent;
 import io.openems.edge.common.event.EdgeEventConstants;
-import io.openems.edge.evcs.api.ChargeStateHandler;
+import io.openems.edge.evcs.api.AbstractManagedEvcsComponent;
 import io.openems.edge.evcs.api.ChargingType;
 import io.openems.edge.evcs.api.Evcs;
 import io.openems.edge.evcs.api.EvcsPower;
@@ -33,9 +32,10 @@ import io.openems.edge.evcs.api.Phases;
 		configurationPolicy = ConfigurationPolicy.REQUIRE //
 )
 @EventTopics({ //
-		EdgeEventConstants.TOPIC_CYCLE_BEFORE_PROCESS_IMAGE //
+		EdgeEventConstants.TOPIC_CYCLE_BEFORE_PROCESS_IMAGE, //
+		EdgeEventConstants.TOPIC_CYCLE_EXECUTE_WRITE //
 })
-public class EvcsGoeChargerHomeImpl extends AbstractOpenemsComponent
+public class EvcsGoeChargerHomeImpl extends AbstractManagedEvcsComponent
 		implements ManagedEvcs, Evcs, OpenemsComponent, EventHandler {
 
 	private final Logger log = LoggerFactory.getLogger(EvcsGoeChargerHomeImpl.class);
@@ -47,8 +47,6 @@ public class EvcsGoeChargerHomeImpl extends AbstractOpenemsComponent
 	private EvcsPower evcsPower;
 
 	private GoeChargerWorker worker;
-
-	private final ChargeStateHandler chargeStateHandler = new ChargeStateHandler(this);
 
 	public EvcsGoeChargerHomeImpl() {
 		super(//
@@ -92,11 +90,12 @@ public class EvcsGoeChargerHomeImpl extends AbstractOpenemsComponent
 			return;
 		}
 		switch (event.getTopic()) {
-		case EdgeEventConstants.TOPIC_CYCLE_BEFORE_PROCESS_IMAGE:
+		case EdgeEventConstants.TOPIC_CYCLE_BEFORE_PROCESS_IMAGE -> {
 			this.worker.triggerNextRun();
-			break;
-		default:
-			break;
+		}
+		case EdgeEventConstants.TOPIC_CYCLE_EXECUTE_WRITE -> {
+			super.handleEvent(event);
+		}
 		}
 
 	}
@@ -166,15 +165,4 @@ public class EvcsGoeChargerHomeImpl extends AbstractOpenemsComponent
 		return this.evcsPower;
 	}
 
-	@Override
-	public void logDebug(String message) {
-		if (this.getConfiguredDebugMode()) {
-			this.logInfo(this.log, message);
-		}
-	}
-
-	@Override
-	public ChargeStateHandler getChargeStateHandler() {
-		return this.chargeStateHandler;
-	}
 }

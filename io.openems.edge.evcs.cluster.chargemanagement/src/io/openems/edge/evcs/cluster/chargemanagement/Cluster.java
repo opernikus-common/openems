@@ -92,10 +92,13 @@ public class Cluster {
 		e.getStatus().equals(Status.STARTING) //
 				|| e.getStatus().equals(Status.READY_FOR_CHARGING) //
 				|| e.getStatus().equals(Status.CHARGING_REJECTED) //
+				|| e.getStatus().equals(Status.CHARGING_FINISHED) //
 				|| e.getStatus().equals(Status.CHARGING) //
 		).toList();
 	}
 
+	// TODOH connectecEvcss() und wannaChargeEvcss() bis auf Status.CHARGING
+	// dasselbe. Könnte man auf eine Methode reduzieren.
 	/**
 	 * Gets the list of Evcss which are ready for charging or already charging.
 	 *
@@ -105,6 +108,7 @@ public class Cluster {
 		return this.clusterEvcss.stream().filter(e -> //
 		e.getStatus().equals(Status.READY_FOR_CHARGING) //
 				|| e.getStatus().equals(Status.CHARGING_REJECTED) //
+				|| e.getStatus().equals(Status.CHARGING_FINISHED) //
 				|| e.getStatus().equals(Status.CHARGING) //
 		).toList();
 	}

@@ -73,6 +73,11 @@ public abstract class AbstractManagedEvcsComponent extends AbstractOpenemsCompon
 	public ChargeStateHandler getChargeStateHandler() {
 		return this.chargeStateHandler;
 	}
+	
+	@Override
+	public void applyChargePowerPerPhase(boolean value) {
+		this.writeHandler.applyChargePowerPerPhase(value);
+	}
 
 	@Override
 	protected void logInfo(Logger log, String message) {

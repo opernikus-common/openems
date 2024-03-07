@@ -75,10 +75,8 @@ public class ClusterEvcs {
 		// var val = this.evcs.getMaximumPower();
 		var val = this.evcs.getFixedMaximumHardwarePower();
 		this.diagnostics.raiseMaxWarning(this.evcs.id(), !val.isDefined());
-		if (val.isDefined()) {
-			return val.get();
-		}
-		return DEFAULT_MAXIMUM_HARDWARE_POWER;
+
+		return val.orElse(DEFAULT_MAXIMUM_HARDWARE_POWER);
 	}
 
 	/**
@@ -88,17 +86,13 @@ public class ClusterEvcs {
 	 */
 	public Integer minPower() {
 		// TODO wir muessen hier gelegentlich aufraeumen
-		// var val = this.evcs.getMinimumPower();
 		var val = this.evcs.getFixedMinimumHardwarePower();
 		this.diagnostics.raiseMinWarning(this.evcs.id(), !val.isDefined());
-		if (val.isDefined()) {
-			return val.get();
-		}
-		return DEFAULT_MINIMUM_HARDWARE_POWER;
+
+		return val.orElse(DEFAULT_MINIMUM_HARDWARE_POWER);
 	}
 
 	public Integer getChargePower() {
-		// TODO import static for consistency
 		return this.evcs.getChargePower().orElse(DEFAULT_MINIMUM_HARDWARE_POWER);
 	}
 

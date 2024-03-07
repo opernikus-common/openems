@@ -208,7 +208,7 @@ public class EvcsAblImpl extends AbstractOpenemsModbusComponent
 	public int getWriteInterval() {
 		return 1;
 	}
-
+	
 	@Override
 	public ChargeStateHandler getChargeStateHandler() {
 		return this.chargeStateHandler;
@@ -219,6 +219,11 @@ public class EvcsAblImpl extends AbstractOpenemsModbusComponent
 		if (this.config.debugMode()) {
 			this.logInfo(this.log, message);
 		}
+	}
+	
+	@Override
+	public void applyChargePowerPerPhase(boolean value) {
+		this.writeHandler.applyChargePowerPerPhase(value);
 	}
 
 	@Override

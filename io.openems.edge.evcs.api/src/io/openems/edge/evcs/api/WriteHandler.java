@@ -17,6 +17,8 @@ public class WriteHandler implements Runnable {
 	private final Logger log = LoggerFactory.getLogger(WriteHandler.class);
 
 	private final ManagedEvcs parent;
+	
+	private boolean applyChargePowerPerPhase = false;
 
 	// Default power buffer for indicating a power increase or decrease in watt
 	private static final int DEFAULT_INCREASE_BUFFER = 50;
@@ -89,7 +91,7 @@ public class WriteHandler implements Runnable {
 				int minPower;
 				int maxPower;
 
-				if (this.parent.useFixMinMaxPowers()) {
+				if (this.applyChargePowerPerPhase) {
 					// Minimum and maximum hardware power
 					maxPower = this.parent.getFixedMaximumHardwarePower()
 							.orElse(this.parent.getConfiguredMaximumHardwarePower());
@@ -262,4 +264,14 @@ public class WriteHandler implements Runnable {
 			OpenemsComponent.logInfo(this.parent, this.log, message);
 		}
 	}
+
+	/**
+	 * Set if you want to use the fixed min/max hardware powers or the min/max hardware powers to calculate the power setpoint.
+	 * 
+	 * @param applyPerPhase true, if you want to use fixed min/max hardware powers
+	 */
+	public void applyChargePowerPerPhase(boolean applyPerPhase) {
+		this.applyChargePowerPerPhase = applyPerPhase;
+	}
+	
 }

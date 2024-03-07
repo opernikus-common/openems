@@ -97,8 +97,7 @@ public class ConfigDefault {
 	 * @return the component manager.
 	 */
 	public static DummyComponentManager setBaseReferences(ChargeManagementClusterTestComponent test) throws Exception {
-		var cpm = new DummyComponentManager(
-				new TimeLeapClock(Instant.ofEpochSecond(1577836800), ZoneOffset.UTC));
+		var cpm = new DummyComponentManager(new TimeLeapClock(Instant.ofEpochSecond(1577836800), ZoneOffset.UTC));
 		var cm = new DummyConfigurationAdmin();
 		// var meter = new DummyClusterChargemanagementMeter(Consts.meterId);
 		var limiter = new DummyChargeManagementLimiter(Consts.evcsClusterLimiterOne, Consts.FUSE_LIMIT,

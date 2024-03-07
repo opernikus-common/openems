@@ -4,16 +4,11 @@ import java.util.List;
 
 import org.osgi.service.component.ComponentContext;
 
-import io.openems.common.exceptions.OpenemsError.OpenemsNamedException;
-import io.openems.common.exceptions.OpenemsException;
 import io.openems.edge.common.channel.calculate.CalculateIntegerSum;
 import io.openems.edge.common.channel.calculate.CalculateLongSum;
 import io.openems.edge.common.component.AbstractOpenemsComponent;
 import io.openems.edge.common.component.OpenemsComponent;
-import io.openems.edge.evcs.api.ChargeStateHandler;
 import io.openems.edge.evcs.api.Evcs;
-import io.openems.edge.evcs.api.EvcsPower;
-import io.openems.edge.evcs.api.ManagedEvcs;
 import io.openems.edge.evcs.api.PhaseRotation;
 import io.openems.edge.evcs.api.Phases;
 import io.openems.edge.evcs.api.Status;
@@ -22,7 +17,7 @@ import io.openems.edge.evcs.api.Status;
  * Functionality to behave like an EVCS.
  */
 public abstract class AbstractManagedEvcs extends AbstractOpenemsComponent
-		implements EvcsClusterChargeMgmt, Evcs, ManagedEvcs, OpenemsComponent {
+		implements EvcsClusterChargeMgmt, Evcs, OpenemsComponent {
 
 	protected Config config;
 
@@ -71,14 +66,6 @@ public abstract class AbstractManagedEvcs extends AbstractOpenemsComponent
 	protected void selfEvcsInit(boolean runOnce) {
 
 		this.selfEvcsResetChannels();
-
-		try {
-			this._setSetChargePowerLimit(null);
-			this.setChargePowerLimit(null);
-		} catch (OpenemsNamedException e) {
-			// TODO cluster configuration error state setzen
-			e.printStackTrace();
-		}
 
 		if (runOnce) {
 			Evcs.addCalculatePowerLimitListeners(this);
@@ -152,56 +139,6 @@ public abstract class AbstractManagedEvcs extends AbstractOpenemsComponent
 		if (this.hasFaults()) {
 			this._setStatus(Status.ERROR);
 		}
-	}
-
-	@Override
-	public int getConfiguredMinimumHardwarePower() {
-		return Evcs.DEFAULT_MINIMUM_HARDWARE_POWER;
-	}
-
-	@Override
-	public int getConfiguredMaximumHardwarePower() {
-		return Evcs.DEFAULT_MINIMUM_HARDWARE_POWER;
-	}
-
-	@Override
-	public void logDebug(String message) {
-		;
-	}
-
-	@Override
-	public EvcsPower getEvcsPower() {
-		return null;
-	}
-
-	@Override
-	public boolean getConfiguredDebugMode() {
-		return false;
-	}
-
-	@Override
-	public boolean applyChargePowerLimit(int power) throws Exception {
-		return false;
-	}
-
-	@Override
-	public boolean pauseChargeProcess() throws Exception {
-		return false;
-	}
-
-	@Override
-	public boolean applyDisplayText(String text) throws OpenemsException {
-		return false;
-	}
-
-	@Override
-	public int getMinimumTimeTillChargingLimitTaken() {
-		return 0;
-	}
-
-	@Override
-	public ChargeStateHandler getChargeStateHandler() {
-		return null;
 	}
 
 }

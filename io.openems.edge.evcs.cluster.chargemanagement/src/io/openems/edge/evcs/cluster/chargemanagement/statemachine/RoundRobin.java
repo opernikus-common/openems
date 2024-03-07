@@ -17,7 +17,7 @@ public class RoundRobin {
 	public RoundRobin(Context context, int cntChargingEvcs) {
 		this.context = context;
 		this.unlimited = false;
-		this.rrComparator = new RoundRobinComparator(this.context.getCluster());
+		this.rrComparator = new RoundRobinComparator(context.getCluster());
 		this.queue = new PriorityQueue<>(this.rrComparator);
 		this.setMaxAllowedChargeSessions(0);
 		this.syncQueue();
@@ -33,7 +33,7 @@ public class RoundRobin {
 		this(context, 0);
 	}
 
-	private boolean makeEffectivelyFinal(boolean var) {
+	private boolean makeFinal(boolean var) {
 		return var;
 	}
 
@@ -66,7 +66,8 @@ public class RoundRobin {
 				step2 = false;
 			}
 		}
-		var step2Final = this.makeEffectivelyFinal(step2);
+		// step2 cannot be used in anonymous class
+		final var step2Final = this.makeFinal(step2);
 
 		this.queue.forEach(rre -> {
 
@@ -84,7 +85,7 @@ public class RoundRobin {
 			}
 			var power = 0;
 			if (rre.isUnlocked()) {
-				power = cluster.getEvcsMinPowerLimit();
+				power = rre.evcs().minPower();
 				rre.updateUsedPhases();
 			}
 			cluster.limitPowerSingleEvcs(rre.evcs(), power, true);
@@ -149,6 +150,7 @@ public class RoundRobin {
 	protected int getMaxAllowedChargeSessions() {
 		// at least 1 charge point should run in round robin
 		var channel = this.context.getParent().getRoundRobinAllowedChargeSessionsChannel();
+		// getNextValue() instead of value() because channel still holds old value
 		return channel.getNextValue().orElse(1);
 	}
 
@@ -159,7 +161,7 @@ public class RoundRobin {
 	 * @return true, if max allowed charge sessions is 0, false else.
 	 */
 	protected boolean adoptMaxAllowedChargeSessions(boolean decrementOnly) {
-		var chargeSessionDiff = this.context.getNumberOfSimultaneousChargeSessionsToAddRemove();
+		var chargeSessionDiff = this.context.getNumberOfSimultaneousChargeSessionsToAdd();
 		var cur = this.getMaxAllowedChargeSessions();
 		if (chargeSessionDiff == 0) {
 			if (this.context.getCableConstraints().exceedsTargetLimit()) {
@@ -174,7 +176,7 @@ public class RoundRobin {
 
 		} else if (chargeSessionDiff < 0) {
 			if (cur > -chargeSessionDiff) {
-				this.setMaxAllowedChargeSessions(cur - (-chargeSessionDiff));
+				this.setMaxAllowedChargeSessions(cur + chargeSessionDiff);
 				this.nextRound();
 			} else {
 				this.setMaxAllowedChargeSessions(0);
@@ -217,6 +219,7 @@ public class RoundRobin {
 	 * the queue by removing elements or adding new ones at the end of the queue.
 	 */
 	private void syncQueue() {
+		// TODOH Warum muss man hier aufteílen nach Prio und nicht-Prio?
 		var cluster = this.context.getCluster();
 		for (ClusterEvcs e : cluster.prioEvcss()) {
 			this.queueAdd(e);
@@ -255,8 +258,8 @@ public class RoundRobin {
 	 */
 	@Override
 	public String toString() {
-		var buf = new StringBuilder("\n[roundRobinList [" + this.getMaxAllowedChargeSessions()
-				+ " maxSessions" + (this.isUnlimited() ? ", unlimited" : "") + "]");
+		var buf = new StringBuilder("\n[roundRobinList [" + this.getMaxAllowedChargeSessions() + " maxSessions"
+				+ (this.isUnlimited() ? ", unlimited" : "") + "]");
 
 		this.queue.stream().forEach(rre -> {
 			buf.append("\n                 [" + rre.evcs().id() //
@@ -272,13 +275,15 @@ public class RoundRobin {
 	}
 
 	/**
-	 * Checks the behaviour of this EVCS on imbalance state.
+	 * Checks the behavior of this EVCS on imbalance state.
 	 *
 	 * @param rrEvcs the evcs to check
 	 * @return true if we have no phase unbalance or if this rrEvcs has no or a good
 	 *         impact on phase imbalance, false else
 	 */
 	private boolean fitsBalance(RoundRobinEvcs rrEvcs) {
+		// TODO Diese Abfrage ist unnötig, da im Fall NO_PHASE_IMBALANCE durch die
+		// nächste if-Abfrage true zurückgegeben wird, oder?
 		if (!this.context.getCableConstraints().isUnbalanced()) {
 			return true;
 		}

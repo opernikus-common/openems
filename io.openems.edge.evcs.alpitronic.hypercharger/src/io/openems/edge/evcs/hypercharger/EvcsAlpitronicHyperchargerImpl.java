@@ -351,7 +351,7 @@ public class EvcsAlpitronicHyperchargerImpl extends AbstractOpenemsModbusCompone
 	public int getMinimumTimeTillChargingLimitTaken() {
 		return 10;
 	}
-
+	
 	@Override
 	public ChargeStateHandler getChargeStateHandler() {
 		return this.chargeStateHandler;
@@ -362,6 +362,11 @@ public class EvcsAlpitronicHyperchargerImpl extends AbstractOpenemsModbusCompone
 		if (this.config.debugMode()) {
 			this.logInfo(this.log, message);
 		}
+	}
+	
+	@Override
+	public void applyChargePowerPerPhase(boolean value) {
+		this.writeHandler.applyChargePowerPerPhase(value);
 	}
 
 	@Override
