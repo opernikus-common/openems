@@ -75,7 +75,17 @@ public interface EvcsClusterLimiter extends Controller, OpenemsComponent {
 		 */
 		FREE_AVAILABLE_CURRENT_L3(Doc.of(OpenemsType.INTEGER) //
 				.unit(Unit.MILLIAMPERE) //
-				.persistencePriority(PersistencePriority.HIGH)),;
+				.persistencePriority(PersistencePriority.HIGH)),
+		PHASE_LIMIT_EXCEEDED_L1(Doc.of(Level.INFO) //
+				.persistencePriority(PersistencePriority.HIGH) //
+				.text("Cluster shutdown due to phase 1 above fuse safety limit.")), //
+		PHASE_LIMIT_EXCEEDED_L2(Doc.of(Level.INFO) //
+				.persistencePriority(PersistencePriority.HIGH) //
+				.text("Cluster shutdown due to phase 2 above fuse safety limit.")), //
+		PHASE_LIMIT_EXCEEDED_L3(Doc.of(Level.INFO) //
+				.persistencePriority(PersistencePriority.HIGH) //
+				.text("Cluster shutdown due to phase 3 above fuse safety limit.")), //
+		;
 
 		private final Doc doc;
 
@@ -452,6 +462,63 @@ public interface EvcsClusterLimiter extends Controller, OpenemsComponent {
 	 */
 	public default void _setFreeAvailableCurrentL3(Integer minFreeCurrent) {
 		this.getFreeAvailableCurrentL3Channel().setNextValue(minFreeCurrent);
+	}
+	
+	/**
+	 * Gets the Channel for {@link ChannelId#PHASE_LIMIT_EXCEEDED_L1}.
+	 *
+	 * @return the StateChannel
+	 */
+	public default StateChannel getPhaseLimitExceededL1Channel() {
+		return this.channel(ChannelId.PHASE_LIMIT_EXCEEDED_L1);
+	}
+
+	/**
+	 * Internal method to set the 'nextValue' on
+	 * {@link ChannelId#PHASE_LIMIT_EXCEEDED_L1} Channel.
+	 *
+	 * @param value the next value
+	 */
+	public default void _setPhaseLimitExceededL1(Boolean value) {
+		this.getPhaseLimitExceededL1Channel().setNextValue(value);
+	}
+
+	/**
+	 * Gets the Channel for {@link ChannelId#PHASE_LIMIT_EXCEEDED_L2}.
+	 *
+	 * @return the StateChannel
+	 */
+	public default StateChannel getPhaseLimitExceededL2Channel() {
+		return this.channel(ChannelId.PHASE_LIMIT_EXCEEDED_L2);
+	}
+
+	/**
+	 * Internal method to set the 'nextValue' on
+	 * {@link ChannelId#PHASE_LIMIT_EXCEEDED_L2} Channel.
+	 *
+	 * @param value the next value
+	 */
+	public default void _setPhaseLimitExceededL2(Boolean value) {
+		this.getPhaseLimitExceededL2Channel().setNextValue(value);
+	}
+
+	/**
+	 * Gets the Channel for {@link ChannelId#PHASE_LIMIT_EXCEEDED_L3}.
+	 *
+	 * @return the StateChannel
+	 */
+	public default StateChannel getPhaseLimitExceededL3Channel() {
+		return this.channel(ChannelId.PHASE_LIMIT_EXCEEDED_L3);
+	}
+
+	/**
+	 * Internal method to set the 'nextValue' on
+	 * {@link ChannelId#PHASE_LIMIT_EXCEEDED_L3} Channel.
+	 *
+	 * @param value the next value
+	 */
+	public default void _setPhaseLimitExceededL3(Boolean value) {
+		this.getPhaseLimitExceededL3Channel().setNextValue(value);
 	}
 
 	/**

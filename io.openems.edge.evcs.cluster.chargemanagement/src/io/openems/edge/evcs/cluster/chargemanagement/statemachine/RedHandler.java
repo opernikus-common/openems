@@ -49,6 +49,7 @@ public class RedHandler extends BaseHandler {
 			// delay state switch until redHoldTime has passed
 			return State.RED;
 		}
+
 		return State.YELLOW;
 	}
 

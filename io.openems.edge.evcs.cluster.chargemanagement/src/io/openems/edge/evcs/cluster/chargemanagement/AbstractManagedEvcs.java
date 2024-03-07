@@ -198,7 +198,7 @@ public abstract class AbstractManagedEvcs extends AbstractOpenemsComponent
 	public int getMinimumTimeTillChargingLimitTaken() {
 		return 0;
 	}
-
+	
 	@Override
 	public ChargeStateHandler getChargeStateHandler() {
 		return null;

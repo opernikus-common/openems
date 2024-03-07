@@ -149,11 +149,7 @@ public interface EvcsAlfen extends OpenemsComponent {
 		return this.channel(ChannelId.CHARGE_USING_1_OR_3_PHASES);
 	}
 
-	public default void setUsedPhases(Integer value) {
-		this.getUsedPhasesChannel().setNextValue(value);
-	}
-
-	public default void setUsedPhasesWriteValue(Integer value) throws OpenemsNamedException {
+	public default void setUsedPhases(Integer value) throws OpenemsNamedException {
 		this.getUsedPhasesChannel().setNextWriteValue(value);
 	}
 

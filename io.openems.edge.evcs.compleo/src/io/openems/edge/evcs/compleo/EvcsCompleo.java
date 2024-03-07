@@ -93,7 +93,8 @@ public interface EvcsCompleo extends OpenemsComponent {
 				.accessMode(AccessMode.READ_WRITE) //
 				.onChannelSetNextWriteMirrorToDebugChannel(ChannelId.DEBUG_MODIFY_CHARGING_STATION_AVAILABILTY)), //
 		DEBUG_ENABLE_CHARGING(new BooleanDoc() //
-				.unit(Unit.ON_OFF).persistencePriority(PersistencePriority.MEDIUM)), //
+				.unit(Unit.ON_OFF) //
+				.persistencePriority(PersistencePriority.MEDIUM)), //
 		ENABLE_CHARGING(new BooleanDoc() //
 				.unit(Unit.ON_OFF) //
 				.accessMode(AccessMode.READ_WRITE) //

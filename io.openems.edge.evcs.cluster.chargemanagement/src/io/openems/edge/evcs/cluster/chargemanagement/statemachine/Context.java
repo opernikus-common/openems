@@ -117,7 +117,7 @@ public class Context extends AbstractContext<EvcsClusterChargeMgmtImpl> {
 	 *
 	 * @return the number of chargesessions to add/remove.
 	 */
-	public int getNumberOfSimultaneousChargeSessionsToAddRemove() {
+	public int getNumberOfSimultaneousChargeSessionsToAdd() {
 		return this.cableConstraints.getMinFreeAvailablePower() / this.getCluster().getEvcsMinPowerLimit();
 	}
 

@@ -97,10 +97,12 @@ public class EvcsClusterChargeMgmtImpl extends AbstractManagedEvcs
 		if (evcs == this || !evcs.isEnabled()) {
 			return;
 		}
+		evcs.applyChargePowerPerPhase(true);
 		this.context.getCluster().add(evcs);
 	}
 
 	protected void removeEvcs(ManagedEvcs evcs) {
+		evcs.applyChargePowerPerPhase(false);
 		this.context.getCluster().remove(evcs);
 	}
 
@@ -304,6 +306,10 @@ public class EvcsClusterChargeMgmtImpl extends AbstractManagedEvcs
 	}
 
 	@Override
+	public void applyChargePowerPerPhase(boolean value) {
+	}
+	
+	@Override
 	public String debugLog() {
 		return this.stateMachine.getCurrentState().asCamelCase() + ", " //
 				+ this.getNumberOfEvcs() + ", " //
@@ -312,5 +318,6 @@ public class EvcsClusterChargeMgmtImpl extends AbstractManagedEvcs
 				+ this.getEvcsPowerLimitPrio() + ", cluster: " //
 				+ this.getChargePower();
 	}
+
 
 }

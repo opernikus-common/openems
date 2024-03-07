@@ -3,6 +3,9 @@ package io.openems.edge.evcs.cluster.chargemanagement.statemachine;
 import io.openems.edge.controller.evcs.cluster.chargemanagement.PhaseImbalance;
 import io.openems.edge.evcs.cluster.chargemanagement.ClusterEvcs;
 
+/**
+ * This Object contains information about an EVCS handled by Round Robin.
+ */
 public class RoundRobinEvcs {
 
 	public static final int MIN_DETECTION_CURRENT = 1_000; // mA
@@ -48,10 +51,6 @@ public class RoundRobinEvcs {
 			this.unlockCount++;
 		}
 		this.lockRequested = lockRequested;
-	}
-
-	public boolean isLockRequestedDefined() {
-		return this.lockRequested;
 	}
 
 	/**
@@ -182,7 +181,7 @@ public class RoundRobinEvcs {
 	/**
 	 * To String method.
 	 *
-	 * @return the objects represantation as a string.
+	 * @return the objects representation as a string.
 	 */
 	@Override
 	public String toString() {

@@ -157,6 +157,15 @@ public interface ManagedEvcs extends Evcs {
 	public ChargeStateHandler getChargeStateHandler();
 
 	/**
+	 * If called with argument true, the set charge power limit will be applied per
+	 * phase, i.e. a set charge power of 4140W will convert to 1380W for a single
+	 * phase charge process.
+	 * 
+	 * @param value whether or not the charge power shall be applied per phase
+	 */
+	public void applyChargePowerPerPhase(boolean value);
+
+	/**
 	 * Log debug using {@link ManagedEvcs} Logger.
 	 * 
 	 * @param message message
@@ -273,15 +282,8 @@ public interface ManagedEvcs extends Evcs {
 							return;
 						}
 
-						int min;
-						int max;
-						if (evcs.useFixMinMaxPowers()) {
-							min = evcs.getFixedMinimumHardwarePower().orElse(Evcs.DEFAULT_MINIMUM_HARDWARE_POWER);
-							max = evcs.getFixedMaximumHardwarePower().orElse(Evcs.DEFAULT_MAXIMUM_HARDWARE_POWER);
-						} else {
-							min = evcs.getMinimumHardwarePower().orElse(Evcs.DEFAULT_MINIMUM_HARDWARE_POWER);
-							max = evcs.getMaximumHardwarePower().orElse(Evcs.DEFAULT_MAXIMUM_HARDWARE_POWER);
-						}
+						var min = evcs.getFixedMinimumHardwarePower().orElse(Evcs.DEFAULT_MINIMUM_HARDWARE_POWER);
+						var max = evcs.getFixedMaximumHardwarePower().orElse(Evcs.DEFAULT_MAXIMUM_HARDWARE_POWER);
 						var increaseRate = evcs.getEvcsPower().getIncreaseRate();
 
 						// Fit values into max value
@@ -803,13 +805,4 @@ public interface ManagedEvcs extends Evcs {
 				.build();
 	}
 
-	/**
-	 * Getter to use either FixedMin/MaxHardwarePower or Min/MaxHardwarePower.
-	 * Defaults to false
-	 * 
-	 * @return a boolean
-	 */
-	public default boolean useFixMinMaxPowers() {
-		return false;
-	}
 }

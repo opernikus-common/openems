@@ -35,6 +35,7 @@ import io.openems.edge.bridge.modbus.api.element.UnsignedQuadruplewordElement;
 import io.openems.edge.bridge.modbus.api.element.UnsignedWordElement;
 import io.openems.edge.bridge.modbus.api.task.FC16WriteRegistersTask;
 import io.openems.edge.bridge.modbus.api.task.FC3ReadRegistersTask;
+import io.openems.edge.bridge.modbus.api.task.FC6WriteRegisterTask;
 import io.openems.edge.common.channel.value.Value;
 import io.openems.edge.common.component.OpenemsComponent;
 import io.openems.edge.common.event.EdgeEventConstants;
@@ -240,10 +241,20 @@ public class EvcsAlfenImpl extends AbstractOpenemsModbusComponent
 
 		if (mode3State.startsWith("A") || mode3State.startsWith("E")) {
 			this._setStatus(Status.NOT_READY_FOR_CHARGING);
+			try {
+				this.setUsedPhases(3);
+			} catch (OpenemsNamedException e) {
+				this.log.error("Cannot Write Phase value!");
+			}
 			return;
 		}
 		if (mode3State.startsWith("B") || (mode3State.equals("C1")) || (mode3State.equals("D1"))) {
 			this._setStatus(Status.READY_FOR_CHARGING);
+			try {
+				this.setUsedPhases(3);
+			} catch (OpenemsNamedException e) {
+				this.log.error("Cannot Write Phase value!");
+			}
 			return;
 		}
 		if (mode3State.endsWith("2")) {
@@ -324,7 +335,10 @@ public class EvcsAlfenImpl extends AbstractOpenemsModbusComponent
 						this.m(EvcsAlfen.ChannelId.CHARGE_USING_1_OR_3_PHASES, new UnsignedWordElement(1215))), //
 
 				new FC16WriteRegistersTask(1210, //
-						this.m(EvcsAlfen.ChannelId.MODBUS_SLAVE_MAX_CURRENT, new FloatDoublewordElement(1210))) //
+						this.m(EvcsAlfen.ChannelId.MODBUS_SLAVE_MAX_CURRENT, new FloatDoublewordElement(1210))), //
+
+				new FC6WriteRegisterTask(1215, //
+						this.m(EvcsAlfen.ChannelId.CHARGE_USING_1_OR_3_PHASES, new UnsignedWordElement(1215))) //
 		);
 
 	}
@@ -387,6 +401,11 @@ public class EvcsAlfenImpl extends AbstractOpenemsModbusComponent
 	@Override
 	public ChargeStateHandler getChargeStateHandler() {
 		return this.chargeStateHandler;
+	}
+	
+	@Override
+	public void applyChargePowerPerPhase(boolean value) {
+		this.writeHandler.applyChargePowerPerPhase(value);
 	}
 
 	@Override

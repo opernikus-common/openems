@@ -93,8 +93,7 @@ public class ConfigBrokenMeter {
 	 * @return the component manager.
 	 */
 	public static DummyComponentManager setBaseReferences(ChargeManagementClusterTestComponent test) throws Exception {
-		var cpm = new DummyComponentManager(
-				new TimeLeapClock(Instant.ofEpochSecond(1577836800), ZoneOffset.UTC));
+		var cpm = new DummyComponentManager(new TimeLeapClock(Instant.ofEpochSecond(1577836800), ZoneOffset.UTC));
 		var cm = new DummyConfigurationAdmin();
 
 		test.addReference("power", new DummyEvcsPower());
