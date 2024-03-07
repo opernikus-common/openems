@@ -463,7 +463,7 @@ public interface EvcsClusterLimiter extends Controller, OpenemsComponent {
 	public default void _setFreeAvailableCurrentL3(Integer minFreeCurrent) {
 		this.getFreeAvailableCurrentL3Channel().setNextValue(minFreeCurrent);
 	}
-	
+
 	/**
 	 * Gets the Channel for {@link ChannelId#PHASE_LIMIT_EXCEEDED_L1}.
 	 *

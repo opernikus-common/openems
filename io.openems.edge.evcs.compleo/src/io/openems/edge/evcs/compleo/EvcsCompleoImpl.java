@@ -511,12 +511,12 @@ public class EvcsCompleoImpl extends AbstractOpenemsModbusComponent
 	public int getMinimumTimeTillChargingLimitTaken() {
 		return 10;
 	}
-	
+
 	@Override
 	public ChargeStateHandler getChargeStateHandler() {
 		return this.chargeStateHandler;
 	}
-	
+
 	@Override
 	public void applyChargePowerPerPhase(boolean value) {
 		this.writeHandler.applyChargePowerPerPhase(value);

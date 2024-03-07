@@ -205,7 +205,7 @@ public class EvcsCompleoDuoImpl extends AbstractOpenemsModbusComponent
 	public void applyChargePowerPerPhase(boolean value) {
 		this.writeHandler.applyChargePowerPerPhase(value);
 	}
-	
+
 	@Override
 	public void logDebug(String message) {
 		if (this.config.debugMode()) {

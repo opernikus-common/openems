@@ -282,6 +282,7 @@ public interface ManagedEvcs extends Evcs {
 							return;
 						}
 
+						// TODO maybe we need this.getChargePowerPerPhase()? getFixedMinimumHardwarePower:getMinimumHardwarePower
 						var min = evcs.getFixedMinimumHardwarePower().orElse(Evcs.DEFAULT_MINIMUM_HARDWARE_POWER);
 						var max = evcs.getFixedMaximumHardwarePower().orElse(Evcs.DEFAULT_MAXIMUM_HARDWARE_POWER);
 						var increaseRate = evcs.getEvcsPower().getIncreaseRate();

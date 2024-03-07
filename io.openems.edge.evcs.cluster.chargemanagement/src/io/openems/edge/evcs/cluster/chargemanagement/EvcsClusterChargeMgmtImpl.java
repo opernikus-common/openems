@@ -304,7 +304,7 @@ public class EvcsClusterChargeMgmtImpl extends AbstractManagedEvcs
 	public void logError(String text) {
 		this.logError(this.log, text);
 	}
-	
+
 	@Override
 	public String debugLog() {
 		return this.stateMachine.getCurrentState().asCamelCase() + ", " //
@@ -314,6 +314,5 @@ public class EvcsClusterChargeMgmtImpl extends AbstractManagedEvcs
 				+ this.getEvcsPowerLimitPrio() + ", cluster: " //
 				+ this.getChargePower();
 	}
-
 
 }

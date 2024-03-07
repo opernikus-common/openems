@@ -125,7 +125,6 @@ public class EvcsClusterLimiterControllerImpl extends AbstractOpenemsComponent
 	 */
 	private void checkSafeOperationMode() {
 		var safeOperationMode = this.meterHandler.getSafeOperationMode();
-		// TODO Kann das den oben gesetzten Wert (if (!meterOk)...) überschreiben?
 		this._setSafeOperationMode(safeOperationMode);
 		this._setPhaseLimitExceededL1(!this.meterHandler.safeOperationModeL1());
 		this._setPhaseLimitExceededL2(!this.meterHandler.safeOperationModeL2());

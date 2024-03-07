@@ -161,6 +161,7 @@ public class MeterHandler {
 		return true;
 	}
 
+	// TODO too many duplicated code, please merge to one method.
 	/**
 	 * Get SafeOperationMode for phase L1.
 	 *

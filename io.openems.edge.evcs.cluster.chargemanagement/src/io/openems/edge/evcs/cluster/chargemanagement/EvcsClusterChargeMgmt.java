@@ -226,7 +226,8 @@ public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs 
 	}
 
 	/**
-	 * Gets the write value for the channel {@link ChannelId#SET_ALLOW_CHARGING} and resets it.
+	 * Gets the write value for the channel {@link ChannelId#SET_ALLOW_CHARGING} and
+	 * resets it.
 	 *
 	 * @return the write value
 	 */
