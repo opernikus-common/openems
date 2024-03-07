@@ -20,10 +20,9 @@ import io.openems.edge.common.channel.value.Value;
 import io.openems.edge.common.component.OpenemsComponent;
 import io.openems.edge.controller.evcs.cluster.chargemanagement.PhaseImbalance;
 import io.openems.edge.evcs.api.Evcs;
-import io.openems.edge.evcs.api.ManagedEvcs;
 import io.openems.edge.evcs.api.MetaEvcs;
 
-public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs, ManagedEvcs {
+public interface EvcsClusterChargeMgmt extends OpenemsComponent, MetaEvcs, Evcs {
 
 	public enum ChannelId implements io.openems.edge.common.channel.ChannelId {
 
