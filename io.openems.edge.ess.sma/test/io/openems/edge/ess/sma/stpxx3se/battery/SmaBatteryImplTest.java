@@ -6,7 +6,7 @@ import io.openems.edge.bridge.modbus.test.DummyModbusBridge;
 import io.openems.edge.common.test.ComponentTest;
 import io.openems.edge.common.test.DummyConfigurationAdmin;
 
-public class SmaBatteryTest {
+public class SmaBatteryImplTest {
 
 	private static final String BATTERY_INVERTER_ID = "batteryInverter0";
 	private static final String MODBUS_ID = "modbus0";

@@ -70,8 +70,8 @@ public class SmaBatteryImpl extends AbstractOpenemsModbusComponent
 				"Modbus", config.modbus_id())) {
 			return;
 		}
-		this._setChargeMaxVoltage(505);
-		this._setDischargeMinVoltage(390);
+		this._setChargeMaxVoltage(config.chargeMaxVoltage());
+		this._setDischargeMinVoltage(config.dischargeMinVoltage());
 	}
 
 	@Override
@@ -94,12 +94,6 @@ public class SmaBatteryImpl extends AbstractOpenemsModbusComponent
 						m(SmaBattery.ChannelId.BAT_STATUS, new UnsignedDoublewordElement(30955)) //
 				), //
 				new FC3ReadRegistersTask(32251, Priority.LOW, //
-						// TODO We read only 0xFFFF here...
-						// m(Battery.ChannelId.CHARGE_MAX_VOLTAGE, new UnsignedDoublewordElement(32239)), //
-						// new DummyRegisterElement(32241, 32244), //
-						// TODO We read only 0xFFFF here...
-						// m(Battery.ChannelId.DISCHARGE_MIN_VOLTAGE, new UnsignedDoublewordElement(32245)), //
-						// new DummyRegisterElement(32247, 32250), //
 						m(Battery.ChannelId.CHARGE_MAX_CURRENT, new UnsignedDoublewordElement(32251), //
 								SCALE_FACTOR_MINUS_3), //
 						new DummyRegisterElement(32253, 32256), //
@@ -115,9 +109,6 @@ public class SmaBatteryImpl extends AbstractOpenemsModbusComponent
 						m(SmaBattery.ChannelId.SET_REACTIVE_POWER, new SignedDoublewordElement(40153))) //
 		);
 
-		// TODO evaulate status
-		// Bat Health      31391
-		// Steuerung über ext. Modbus verfügbar    31061   INFO State daraus machen, wenn nicht aktiv
 	}
 	
 	@Override

@@ -191,7 +191,8 @@ public class BatteryInverterSmaStpSeImpl extends AbstractSunSpecBatteryInverter
 
 	@Override
 	public Integer getSurplusPower() {
-		return 0;
+		// TODO Implement properly
+		return null;
 	}
 
 	@Override
@@ -213,9 +214,8 @@ public class BatteryInverterSmaStpSeImpl extends AbstractSunSpecBatteryInverter
 	public Integer getDcPvPower() {
 		try {
 			return TypeUtils.sum(//
-					// TODO Catch null more elegantly maybe
-					this.getModule1DcwChannel().getNextValue().orElse(0F).intValue(), //
-					this.getModule2DcwChannel().getNextValue().orElse(0F).intValue());
+					this.getModule1DcwChannel().getNextValue().get().intValue(), //
+					this.getModule2DcwChannel().getNextValue().get().intValue());
 		} catch (OpenemsException e) {
 			return null;
 		}

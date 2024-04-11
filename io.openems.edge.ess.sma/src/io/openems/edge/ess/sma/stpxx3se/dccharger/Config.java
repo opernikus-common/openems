@@ -19,9 +19,6 @@ import io.openems.edge.ess.sma.enums.PvString;
 	@AttributeDefinition(name = "Is enabled?", description = "Is this Component enabled?")
 	boolean enabled() default true;
 
-	@AttributeDefinition(name = "Core ID", description = "ID of the SMA STP XX SE Ess Component.")
-	String core_id() default "batteryInverter0";
-	
 	@AttributeDefinition(name = "String Number", description = "SMA STP String to use.")
 	PvString pvString() default PvString.ONE;
 
