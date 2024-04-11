@@ -1,4 +1,6 @@
-= SMA SunnyIsland 6.0H and Sunny Island 4.4M
+= SMA ESS
+
+== SMA SunnyIsland 6.0H and Sunny Island 4.4M
 
 Implemented Natures::
 - SymmetricEss
@@ -8,7 +10,7 @@ Implemented Natures::
 - SinglePhaseEss
 - ManagedSinglePhaseEss
 
-= SMA STP 10.0 SE
+== SMA STP 10.0 SE
 
 Implemented Natures::
 - SymmetricBatteryInverter
