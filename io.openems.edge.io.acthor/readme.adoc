@@ -1,0 +1,17 @@
+= AC-Thor Heating Element
+
+AC Thor is a 3 phase heating element, with a maximum power of 1-3kW per phase. 
+
+This implementation reads from 3 digital inputs and sets the `Power` channel appropriately. 
+The power channel is set to
+
+* 3000: One of the phases will be switched on with full power
+* 6000: Two of the phases will be switched on with full power
+* 9000: All three phases will be switched on with full power 
+
+depending on the state of the thre digial inputs.
+
+
+Implemented Natures:
+https://github.com/OpenEMS/openems/tree/develop/io.openems.edge.io.acthor[Source Code icon:github[]]
+
