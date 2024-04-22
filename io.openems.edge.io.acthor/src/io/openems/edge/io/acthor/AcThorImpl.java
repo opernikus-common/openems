@@ -1,7 +1,5 @@
 package io.openems.edge.io.acthor;
 
-import java.util.Optional;
-
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
@@ -112,7 +110,7 @@ public class AcThorImpl extends AbstractOpenemsModbusComponent implements AcThor
 		switch (event.getTopic()) {
 		case EdgeEventConstants.TOPIC_CYCLE_BEFORE_PROCESS_IMAGE:
 			try {
-				Integer calculatedPower = this.calculatePower();
+				var calculatedPower = this.calculatePower();
 				this.setWritePower(calculatedPower);
 			} catch (OpenemsNamedException e) {
 				this.logError(this.log, "Unable to set power ex:" + e.getMessage());
@@ -125,22 +123,16 @@ public class AcThorImpl extends AbstractOpenemsModbusComponent implements AcThor
 	}
 
 	private Integer calculatePower() {
-		Optional<Boolean> out1 = this.getOut1WriteChannel().getNextWriteValue(); // TODO Use getNextWriteValueAndReset
-		Integer power = 0;
-		if (out1.orElse(false)) {
-			this.channel(AcThor.ChannelId.OUT_1).setNextValue(out1.orElse(false));
-			power += this.config.powerStep();
-		}
-		Optional<Boolean> out2 = this.getOut2WriteChannel().getNextWriteValue();
-		this.channel(AcThor.ChannelId.OUT_2).setNextValue(out2.orElse(false));
-		if (out2.orElse(false)) {
-			power += this.config.powerStep();
-		}
-		Optional<Boolean> out3 = this.getOut3WriteChannel().getNextWriteValue();
-		this.channel(AcThor.ChannelId.OUT_3).setNextValue(out3.orElse(false));
-		if (out3.orElse(false)) {
-			power += this.config.powerStep();
-		}
+		var power = 0;
+		var out1 = this.getOut1WriteChannel().getNextWriteValueAndReset().orElse(false);
+		this.getOut1WriteChannel().setNextValue(out1);
+		power += out1 ? this.config.powerStep() : 0;
+		var out2 = this.getOut2WriteChannel().getNextWriteValueAndReset().orElse(false);
+		this.getOut2WriteChannel().setNextValue(out2);
+		power += out2 ? this.config.powerStep() : 0;
+		var out3 = this.getOut3WriteChannel().getNextWriteValueAndReset().orElse(false);
+		this.getOut3WriteChannel().setNextValue(out3);
+		power += out3 ? this.config.powerStep() : 0;
 		return power;
 	}
 
