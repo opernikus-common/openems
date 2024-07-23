@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ModalController } from '@ionic/angular';
@@ -13,7 +14,7 @@ export class DelayedSellToGridComponent implements OnInit, OnDestroy {
 
     private static readonly SELECTOR = "delayedselltogrid";
 
-    @Input() public componentId: string;
+    @Input({ required: true }) public componentId!: string;
 
     public edge: Edge = null;
 

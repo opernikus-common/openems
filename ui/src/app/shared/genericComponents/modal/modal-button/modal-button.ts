@@ -8,7 +8,7 @@ import { AbstractModalLine } from "../abstract-modal-line";
 })
 export class ModalButtonsComponent extends AbstractModalLine {
 
-    @Input() protected buttons: ButtonLabel[];
+    @Input({ required: true }) protected buttons!: ButtonLabel[];
 }
 
 export type ButtonLabel = {
@@ -17,5 +17,5 @@ export type ButtonLabel = {
     value: string;
     /** Icons for Button, displayed above the corresponding name */
     icons?: Icon;
-    callback?: Function;
-}
+    callback?: () => void;
+};

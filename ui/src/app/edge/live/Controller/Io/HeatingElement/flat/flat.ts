@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import { Component } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { AbstractFlatWidget } from 'src/app/shared/genericComponents/flat/abstract-flat-widget';
@@ -104,5 +105,5 @@ export enum Status {
     "Undefined" = -1,
     "Inactive" = 0,
     "Active" = 1,
-    "ActiveForced" = 2
+    "ActiveForced" = 2,
 }

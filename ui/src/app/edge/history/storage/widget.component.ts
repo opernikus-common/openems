@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Cumulated } from 'src/app/shared/jsonrpc/response/queryHistoricTimeseriesEnergyResponse';
@@ -11,7 +12,7 @@ import { AbstractHistoryWidget } from '../abstracthistorywidget';
 })
 export class StorageComponent extends AbstractHistoryWidget implements OnInit, OnChanges, OnDestroy {
 
-    @Input() public period: DefaultTypes.HistoryPeriod;
+    @Input({ required: true }) public period!: DefaultTypes.HistoryPeriod;
 
     private static readonly SELECTOR = "storageWidget";
 

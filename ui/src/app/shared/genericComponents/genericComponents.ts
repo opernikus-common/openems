@@ -13,6 +13,7 @@ import { FlatWidgetHorizontalLineComponent } from './flat/flat-widget-horizontal
 import { FlatWidgetLineComponent } from './flat/flat-widget-line/flat-widget-line';
 import { FlatWidgetLineItemComponent } from './flat/flat-widget-line/flat-widget-line-item/flat-widget-line-item';
 import { FlatWidgetPercentagebarComponent } from './flat/flat-widget-percentagebar/flat-widget-percentagebar';
+import { FooterNavigationComponent } from './footer-navigation/footerNavigation';
 import { HelpButtonComponent } from './modal/help-button/help-button';
 import { ModalComponent } from './modal/modal';
 import { ModalButtonsComponent } from './modal/modal-button/modal-button';
@@ -32,22 +33,6 @@ import { NotificationComponent } from './shared/notification/notification';
         ReactiveFormsModule,
         RouterModule,
         TranslateModule,
-    ],
-    entryComponents: [
-        PickDateComponent,
-        FlatWidgetComponent,
-        FlatWidgetLineComponent,
-        FlatWidgetHorizontalLineComponent,
-        FlatWidgetPercentagebarComponent,
-        FlatWidgetLineItemComponent,
-        ModalButtonsComponent,
-        ModalInfoLineComponent,
-        ModalLineComponent,
-        ModalHorizontalLineComponent,
-        ModalComponent,
-        ModalLineItemComponent,
-        ModalPhasesComponent,
-        ModalValueLineComponent,
     ],
     declarations: [
 
@@ -75,6 +60,7 @@ import { NotificationComponent } from './shared/notification/notification';
         PickDateComponent,
         HelpButtonComponent,
         NotificationComponent,
+        FooterNavigationComponent,
     ],
     exports: [
         // Flat
@@ -101,6 +87,7 @@ import { NotificationComponent } from './shared/notification/notification';
         PickDateComponent,
         HelpButtonComponent,
         NotificationComponent,
+        FooterNavigationComponent,
     ],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
 

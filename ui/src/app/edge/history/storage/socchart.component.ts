@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
@@ -13,7 +14,7 @@ import { AbstractHistoryChart } from '../abstracthistorychart';
 })
 export class SocStorageChartComponent extends AbstractHistoryChart implements OnInit, OnChanges, OnDestroy {
 
-    @Input() public period: DefaultTypes.HistoryPeriod;
+    @Input({ required: true }) public period!: DefaultTypes.HistoryPeriod;
     private emergencyCapacityReserveComponents: EdgeConfig.Component[] = [];
 
     public ngOnChanges() {

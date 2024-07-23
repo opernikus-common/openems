@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { ModalController, PopoverController } from "@ionic/angular";
@@ -22,7 +23,7 @@ export class ChartComponent implements OnInit, OnChanges {
   @Input() public isPopoverNeeded: boolean = false;
 
   // Manually trigger ChangeDetection through Inputchange
-  @Input() private period: DefaultTypes.PeriodString;
+  @Input() private period?: DefaultTypes.PeriodString;
   protected showPopover: boolean = false;
 
   constructor(

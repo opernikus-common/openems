@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import { DefaultTypes } from '../../../../../shared/service/defaulttypes';
 import { Service } from 'src/app/shared/shared';
 import { TranslateService } from '@ngx-translate/core';
@@ -118,7 +119,7 @@ export class EnergyFlow {
 export enum GridMode {
     "undefined",
     "ongrid",
-    "offgrid"
+    "offgrid",
 }
 
 export abstract class AbstractSection {

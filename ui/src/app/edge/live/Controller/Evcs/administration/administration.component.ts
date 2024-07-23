@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ModalController } from '@ionic/angular';
@@ -10,8 +11,8 @@ import { Edge, EdgeConfig, Service, Websocket } from '../../../../../shared/shar
 })
 export class AdministrationComponent implements OnInit {
 
-  @Input() public evcsComponent: EdgeConfig.Component;
-  @Input() public edge: Edge;
+  @Input({ required: true }) public evcsComponent!: EdgeConfig.Component;
+  @Input({ required: true }) public edge!: Edge;
 
   private static readonly SELECTOR = "administration";
 

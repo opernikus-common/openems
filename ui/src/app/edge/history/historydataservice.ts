@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import { Inject, Injectable } from "@angular/core";
 
 import { DataService } from "../../shared/genericComponents/shared/dataservice";
@@ -7,6 +8,7 @@ import { DateUtils } from "src/app/shared/utils/date/dateutils";
 import { QueryHistoricTimeseriesEnergyRequest } from "src/app/shared/jsonrpc/request/queryHistoricTimeseriesEnergyRequest";
 import { Websocket } from "src/app/shared/service/websocket";
 import { Service } from "src/app/shared/service/service";
+import { RefresherCustomEvent } from "@ionic/angular";
 
 @Injectable()
 export class HistoryDataService extends DataService {
@@ -54,5 +56,10 @@ export class HistoryDataService extends DataService {
 
   public override unsubscribeFromChannels(channels: ChannelAddress[]) {
     return;
+  }
+
+  public override refresh(ev: RefresherCustomEvent) {
+    this.getValues(Object.values(this.channelAddresses), this.edge, "");
+    ev.target.complete();
   }
 }

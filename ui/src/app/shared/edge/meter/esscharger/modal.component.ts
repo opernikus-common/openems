@@ -9,7 +9,7 @@ import { EdgeConfig } from '../../edgeconfig';
     templateUrl: './modal.component.html',
 })
 export class EssChargerComponent {
-    @Input() public component: EdgeConfig.Component;
+    @Input({ required: true }) public component!: EdgeConfig.Component;
     protected readonly Role = Role;
     protected readonly Utils = Utils;
     protected readonly Converter = Converter;

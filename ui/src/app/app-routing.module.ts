@@ -36,6 +36,7 @@ import { IndexComponent as EdgeSettingsComponentInstallIndexComponentComponent }
 import { ComponentInstallComponent as EdgeSettingsComponentInstallComponentComponent } from './edge/settings/component/install/install.component';
 import { IndexComponent as EdgeSettingsComponentUpdateIndexComponentComponent } from './edge/settings/component/update/index.component';
 import { ComponentUpdateComponent as EdgeSettingsComponentUpdateComponentComponent } from './edge/settings/component/update/update.component';
+import { JsonrpcTestComponent } from './edge/settings/jsonrpctest/jsonrpctest';
 import { NetworkComponent as EdgeSettingsNetworkComponent } from './edge/settings/network/network.component';
 import { AliasUpdateComponent } from './edge/settings/profile/aliasupdate.component';
 import { ProfileComponent as EdgeSettingsProfileComponent } from './edge/settings/profile/profile.component';
@@ -47,12 +48,14 @@ import { LoginComponent } from './index/login.component';
 import { OverViewComponent } from './index/overview/overview.component';
 import { DataService } from './shared/genericComponents/shared/dataservice';
 import { UserComponent } from './user/user.component';
+import { DetailsOverviewComponent } from './edge/history/common/production/details/details.overview';
+import { LoadingScreenComponent } from './index/shared/loading-screen';
 
 const routes: Routes = [
 
   // TODO should be removed in the future
-  { path: 'index', redirectTo: 'login', pathMatch: 'full' },
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: '', redirectTo: 'index', pathMatch: 'full' },
+  { path: 'index', component: LoadingScreenComponent },
   { path: 'login', component: LoginComponent, data: { navbarTitle: environment.uiTitle } },
 
   { path: 'overview', component: OverViewComponent },
@@ -91,6 +94,7 @@ const routes: Routes = [
           { path: 'consumptionchart', component: ConsumptionChartOverviewComponent },
           { path: 'gridchart', component: GridChartOverviewComponent },
           { path: 'productionchart', component: ProductionChartOverviewComponent },
+          { path: 'productionchart/:componentId', component: DetailsOverviewComponent },
           { path: 'selfconsumptionchart', component: SelfconsumptionChartOverviewComponent },
           { path: 'storagechart', component: StorageChartOverviewComponent },
 
@@ -101,27 +105,28 @@ const routes: Routes = [
 
       { path: 'settings', data: { navbarTitleToBeTranslated: 'Menu.edgeSettings' }, component: EdgeSettingsComponent },
       { path: 'settings/channels', component: EdgeSettingsChannelsComponent },
-      { path: 'settings/component.install', component: EdgeSettingsComponentInstallIndexComponentComponent },
-      { path: 'settings/component.install/:factoryId', component: EdgeSettingsComponentInstallComponentComponent },
-      { path: 'settings/component.update', component: EdgeSettingsComponentUpdateIndexComponentComponent },
-      { path: 'settings/component.update/:componentId', component: EdgeSettingsComponentUpdateComponentComponent },
-      { path: 'settings/network', component: EdgeSettingsNetworkComponent },
+      { path: 'settings/component.install', component: EdgeSettingsComponentInstallIndexComponentComponent, data: { navbarTitleToBeTranslated: 'Edge.Config.Index.addComponents' } },
+      { path: 'settings/component.install/:factoryId', component: EdgeSettingsComponentInstallComponentComponent, data: { navbarTitleToBeTranslated: 'Edge.Config.Index.addComponents' } },
+      { path: 'settings/component.update', component: EdgeSettingsComponentUpdateIndexComponentComponent, data: { navbarTitleToBeTranslated: 'Edge.Config.Index.adjustComponents' } },
+      { path: 'settings/component.update/:componentId', component: EdgeSettingsComponentUpdateComponentComponent, data: { navbarTitleToBeTranslated: 'Edge.Config.Index.adjustComponents' } },
+      { path: 'settings/network', component: EdgeSettingsNetworkComponent, data: { navbarTitleToBeTranslated: 'Edge.Config.Index.networkConfiguration' } },
       { path: 'settings/profile', component: EdgeSettingsProfileComponent },
       { path: 'settings/profile/:componentId', component: AliasUpdateComponent },
       { path: 'settings/systemexecute', component: EdgeSettingsSystemExecuteComponent },
-      { path: 'settings/systemlog', component: EdgeSettingsSystemLogComponent },
+      { path: 'settings/systemlog', component: EdgeSettingsSystemLogComponent, data: { navbarTitleToBeTranslated: 'Edge.Config.Index.liveLog' } },
       { path: 'settings/system', component: EdgeSettingsSystemComponent, data: { navbarTitleToBeTranslated: 'Edge.Config.Index.SYSTEM' } },
       { path: 'settings/app', data: { navbarTitle: environment.edgeShortName + ' Apps' }, component: EdgeSettingsAppIndex },
       { path: 'settings/app/install/:appId', component: EdgeSettingsAppInstall },
       { path: 'settings/app/update/:appId', component: EdgeSettingsAppUpdate },
       { path: 'settings/app/single/:appId', component: EdgeSettingsAppSingle },
       { path: 'settings/alerting', component: EdgeSettingsAlerting },
+      { path: 'settings/jsonrpctest', component: JsonrpcTestComponent },
     ],
   },
 
   { path: 'demo', component: LoginComponent },
   // Fallback
-  { path: '**', pathMatch: 'full', redirectTo: 'login' },
+  { path: '**', pathMatch: 'full', redirectTo: 'index' },
 ];
 
 export const appRoutingProviders: any[] = [];

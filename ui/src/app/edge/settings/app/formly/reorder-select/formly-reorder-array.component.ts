@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import { Component, OnInit } from "@angular/core";
 import { ItemReorderEventDetail } from "@ionic/angular";
 import { FieldType, FieldTypeConfig, FormlyFieldConfig, FormlyFieldProps } from "@ngx-formly/core";
@@ -115,7 +116,7 @@ export type SelectOptionConfig = {
     expressions?: {
         locked?: (field: FormlyFieldConfig) => boolean,
     }
-}
+};
 
 type SelectOption = {
     label: string,
@@ -123,4 +124,4 @@ type SelectOption = {
     expressions: {
         locked: boolean,
     }
-}
+};

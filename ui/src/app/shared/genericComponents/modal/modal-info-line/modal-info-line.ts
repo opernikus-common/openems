@@ -8,15 +8,15 @@ import { Icon } from "src/app/shared/type/widget";
 export class ModalInfoLineComponent {
 
     /** Icon, displayed on the left side */
-    @Input() protected icon: Icon;
+    @Input({ required: true }) protected icon!: Icon;
 
     /**
      *  Info-Text, displayed on the right side, optional style for all lines
      *  Multiple lines with own style is possible
      *  */
-    @Input() public info: { text: string, lineStyle?: string }[] | string;
+    @Input({ required: true }) public info!: { text: string, lineStyle?: string }[] | string;
 
-    @Input() protected lineStyle: string;
+    @Input({ required: true }) protected lineStyle!: string;
 
-    @Input() protected rowStyle: string;
+    @Input({ required: true }) protected rowStyle!: string;
 }

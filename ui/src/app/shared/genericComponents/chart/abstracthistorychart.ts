@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import { DecimalPipe, formatNumber } from '@angular/common';
 import { ChangeDetectorRef, Directive, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
@@ -36,9 +37,9 @@ export abstract class AbstractHistoryChart implements OnInit {
   @Input() public chartTitle: string = "";
 
   /** TODO: workaround with Observables, to not have to pass the period on Initialisation */
-  @Input() public component: EdgeConfig.Component;
-  @Input() public showPhases: boolean;
-  @Input() public showTotal: boolean;
+  @Input() public component?: EdgeConfig.Component;
+  @Input() public showPhases: boolean = false;
+  @Input() public showTotal: boolean = false;
   @Input() public isOnlyChart: boolean = false;
 
   public edge: Edge | null = null;
@@ -544,7 +545,7 @@ export abstract class AbstractHistoryChart implements OnInit {
    * @returns options
    */
   public static getOptions(chartObject: HistoryUtils.ChartData, chartType: 'line' | 'bar', service: Service,
-    translate: TranslateService, legendOptions: { label: string, strokeThroughHidingStyle: boolean }[], channelData: { data: { [name: string]: number[] } }, locale: string, config: EdgeConfig, datasets: Chart.ChartDataset[]): Chart.ChartOptions {
+    translate: TranslateService, legendOptions: { label: string, strokeThroughHidingStyle: boolean }[], channelData: { data: { [name: string]: number[] } }, locale: string, config: EdgeConfig): Chart.ChartOptions {
 
     let tooltipsLabel: string | null = null;
     let options: Chart.ChartOptions = Utils.deepCopy(<Chart.ChartOptions>Utils.deepCopy(DEFAULT_TIME_CHART_OPTIONS));
@@ -552,8 +553,7 @@ export abstract class AbstractHistoryChart implements OnInit {
 
     const showYAxisTitle: boolean = chartObject.yAxes.length > 1;
     chartObject.yAxes.forEach((element) => {
-      const scaleOptions: { min: number, max: number, stepSize: number } | null = ChartConstants.getScaleOptions(datasets, element);
-      options = AbstractHistoryChart.getYAxisOptions(options, element, translate, chartType, locale, showYAxisTitle, scaleOptions);
+      options = AbstractHistoryChart.getYAxisOptions(options, element, translate, chartType, locale, showYAxisTitle);
     });
 
     options.plugins.tooltip.callbacks.title = (tooltipItems: Chart.TooltipItem<any>[]): string => {
@@ -610,17 +610,15 @@ export abstract class AbstractHistoryChart implements OnInit {
 
         const isHidden = legendItem?.strokeThroughHidingStyle ?? null;
 
-        displayValues.filter(element => element.name == dataset.label?.split(":")[0]).forEach(() => {
-          chartLegendLabelItems.push({
-            text: dataset.label,
-            datasetIndex: index,
-            fontColor: getComputedStyle(document.documentElement).getPropertyValue('--ion-color-text'),
-            fillStyle: dataset.backgroundColor?.toString(),
-            hidden: isHidden != null ? isHidden : !chart.isDatasetVisible(index),
-            lineWidth: 2,
-            strokeStyle: dataset.borderColor.toString(),
-            ...(dataset['borderDash'] != null && { lineDash: dataset['borderDash'] }),
-          });
+        chartLegendLabelItems.push({
+          text: dataset.label,
+          datasetIndex: index,
+          fontColor: getComputedStyle(document.documentElement).getPropertyValue('--ion-color-text'),
+          fillStyle: dataset.backgroundColor?.toString(),
+          hidden: isHidden != null ? isHidden : !chart.isDatasetVisible(index),
+          lineWidth: 2,
+          strokeStyle: dataset.borderColor.toString(),
+          ...(dataset['borderDash'] != null && { lineDash: dataset['borderDash'] }),
         });
       });
 
@@ -697,7 +695,7 @@ export abstract class AbstractHistoryChart implements OnInit {
    * @param locale the current locale
    * @returns the chart options {@link Chart.ChartOptions}
    */
-  public static getYAxisOptions(options: Chart.ChartOptions, element: HistoryUtils.yAxes, translate: TranslateService, chartType: 'line' | 'bar', locale: string, showYAxisTitle?: boolean, data?: { min: number, max: number, stepSize: number }): Chart.ChartOptions {
+  public static getYAxisOptions(options: Chart.ChartOptions, element: HistoryUtils.yAxes, translate: TranslateService, chartType: 'line' | 'bar', locale: string, showYAxisTitle?: boolean): Chart.ChartOptions {
 
     const baseConfig = {
       title: {
@@ -712,14 +710,10 @@ export abstract class AbstractHistoryChart implements OnInit {
       grid: {
         display: element.displayGrid ?? true,
       },
-      ...(data?.min != null && { min: data.min }),
-      ...(data?.max != null && { max: data.max }),
-
       ticks: {
         color: getComputedStyle(document.documentElement).getPropertyValue('--ion-color-text'),
         padding: 5,
         maxTicksLimit: ChartConstants.NUMBER_OF_Y_AXIS_TICKS,
-        ...(data?.stepSize && { stepSize: data.stepSize }),
       },
     };
 
@@ -773,7 +767,7 @@ export abstract class AbstractHistoryChart implements OnInit {
           ticks: {
             ...baseConfig.ticks,
             padding: 5,
-            stepSize: 25,
+            stepSize: 20,
           },
         };
         break;
@@ -818,7 +812,7 @@ export abstract class AbstractHistoryChart implements OnInit {
    */
   protected setChartLabel() {
     const locale = this.service.translate.currentLang;
-    this.options = AbstractHistoryChart.getOptions(this.chartObject, this.chartType, this.service, this.translate, this.legendOptions, this.channelData, locale, this.config, this.datasets);
+    this.options = AbstractHistoryChart.getOptions(this.chartObject, this.chartType, this.service, this.translate, this.legendOptions, this.channelData, locale, this.config);
     this.loading = false;
     this.stopSpinner();
   }

@@ -6,7 +6,7 @@ import { Component, Input } from '@angular/core';
 })
 export class PercentageBarComponent {
 
-    @Input() public value: number;
+    @Input({ required: true }) public value!: number;
     @Input() public showPercentageValue: boolean = true;
 
     constructor(

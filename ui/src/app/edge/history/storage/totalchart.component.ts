@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
@@ -14,8 +15,8 @@ import { formatNumber } from '@angular/common';
     templateUrl: '../abstracthistorychart.html',
 })
 export class StorageTotalChartComponent extends AbstractHistoryChart implements OnInit, OnChanges, OnDestroy {
-    @Input() public period: DefaultTypes.HistoryPeriod;
-    @Input() public showPhases: boolean;
+    @Input({ required: true }) public period!: DefaultTypes.HistoryPeriod;
+    @Input({ required: true }) public showPhases!: boolean;
 
     ngOnChanges() {
         this.updateChart();

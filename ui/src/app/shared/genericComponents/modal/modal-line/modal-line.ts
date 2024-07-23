@@ -9,14 +9,14 @@ import { ButtonLabel } from "../modal-button/modal-button";
 export class ModalLineComponent extends AbstractModalLine {
 
     // Width of Left Column, Right Column is (100% - leftColumn)
-    @Input()
-    protected leftColumnWidth: number;
+    @Input({ required: true })
+    protected leftColumnWidth!: number;
 
     /** ControlName for Form Field */
-    @Input() public override controlName: string;
+    @Input({ required: true }) public override controlName!: string;
     @Input() protected button: ButtonLabel | null = null;
     /** ControlName for Toggle Button */
-    @Input() protected control:
+    @Input({ required: true }) protected control!:
         { type: 'TOGGLE' } |
         { type: 'INPUT', properties?: {unit:'W'} } |
         /* the available select options*/
@@ -31,5 +31,5 @@ export class ModalLineComponent extends AbstractModalLine {
 export enum TextIndentation {
     NONE = '0%',
     SINGLE = '5%',
-    DOUBLE = '10%'
+    DOUBLE = '10%',
 }

@@ -7,8 +7,8 @@ import { ModalController } from "@ionic/angular";
 })
 export class FormlySelectFieldModalComponent implements OnInit {
 
-    @Input() public title: string;
-    @Input() public options: { label: string, value: string, description?: string }[];
+    @Input({ required: true }) public title!: string;
+    @Input({ required: true }) public options!: { label: string, value: string, description?: string }[];
 
     @Input() public initialSelectedValue: string | null = null;
 

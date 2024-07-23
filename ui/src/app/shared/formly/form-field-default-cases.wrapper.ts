@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
 import { FieldWrapper } from '@ngx-formly/core';
@@ -93,4 +94,4 @@ export class FormlyWrapperDefaultValueWithCasesComponent extends FieldWrapper im
 
 }
 
-type FieldDefaultCases = { field: string, cases: [{ case: any, defaultValue: any }] }
+type FieldDefaultCases = { field: string, cases: [{ case: any, defaultValue: any }] };

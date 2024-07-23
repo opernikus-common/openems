@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import { AfterViewChecked, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { MenuController, ModalController } from '@ionic/angular';
@@ -62,7 +63,7 @@ export class HeaderComponent implements OnInit, OnDestroy, AfterViewChecked {
         const urlArray = url.split('/');
         const file = urlArray.pop();
 
-        if (file == 'user' || file == 'settings' || file == 'changelog' || urlArray.length > 3) {
+        if (file == 'user' || file == 'settings' || file == 'changelog' || file == 'login' || urlArray.length > 3) {
             // disable side-menu; show back-button instead
             this.enableSideMenu = false;
         } else {
