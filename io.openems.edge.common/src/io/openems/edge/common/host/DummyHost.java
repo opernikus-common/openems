@@ -1,5 +1,6 @@
 package io.openems.edge.common.host;
 
+import io.openems.common.exceptions.NotImplementedException;
 import io.openems.edge.common.component.OpenemsComponent;
 import io.openems.edge.common.test.AbstractDummyOpenemsComponent;
 import io.openems.edge.common.test.TestUtils;
@@ -31,4 +32,8 @@ public class DummyHost extends AbstractDummyOpenemsComponent<DummyHost> implemen
 		return this;
 	}
 
+	// oEMS
+	@Override
+	public void restartSystem() throws NotImplementedException {
+	}
 }

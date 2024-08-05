@@ -17,6 +17,7 @@ import org.osgi.service.component.annotations.Reference;
 import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 
+import io.openems.common.exceptions.NotImplementedException;
 import io.openems.common.exceptions.OpenemsError.OpenemsNamedException;
 import io.openems.common.exceptions.OpenemsException;
 import io.openems.common.jsonrpc.base.GenericJsonrpcResponseSuccess;
@@ -265,6 +266,14 @@ public class HostImpl extends AbstractOpenemsComponent implements Host, OpenemsC
 		return this.operatingSystem.handleExecuteSystemRestartRequest(request);
 	}
 
+	// oEMS start
+	@Override
+	public void restartSystem() throws NotImplementedException {
+		ExecuteSystemRestartRequest req = new ExecuteSystemRestartRequest(ExecuteSystemRestartRequest.Type.HARD);
+		this.operatingSystem.handleExecuteSystemRestartRequest(req);
+	}
+	// oEMS end
+
 	@Override
 	protected void logInfo(Logger log, String message) {
 		super.logInfo(log, message);
@@ -292,4 +301,48 @@ public class HostImpl extends AbstractOpenemsComponent implements Host, OpenemsC
 			return s.hasNext() ? s.next().trim() : "";
 		}
 	}
+
+	// oEMS start
+	/**
+	 * Tries to read the edge id from the system configuration system.json.
+	 *
+	 * @return the edge-id as a number (without "edge-" prefix)
+	 * @throws IOException on error
+	 */
+	public static String execReadEdgeId() throws IOException {
+		String[] cmd = { "/bin/sh", //
+				"-c", //
+				"head -n 5 /home/oems/maintenance/config/system.json|grep edgeid|cut -d'\"' -f4" //
+		};
+		try (var s = new Scanner(Runtime.getRuntime().exec(cmd).getInputStream()).useDelimiter("\\A")) {
+			return s.hasNext() ? s.next().trim() : "";
+		}
+	}
+
+	/**
+	 * Tries to read the hardware devices serial number.
+	 *
+	 * @return the edge-id as a number (without "edge-" prefix)
+	 * @throws IOException on error
+	 */
+	public static String execReadSerialnumber() throws IOException {
+		try {
+			// Kunbus
+			var sn = execReadToString("sudo /usr/bin/piSerial -s");
+			if (sn != null && sn.length() > 0) {
+				return sn;
+			}
+		} catch (Exception e) {
+			;
+		}
+		// Leaflet Mac Address
+		String[] cmd = { "/bin/sh", //
+				"-c", //
+				"ifconfig eth0 |grep ether|sed -e 's/txqueue.*//g'|sed -e 's/.*ether//g'|tr -d ' '" //
+		};
+		try (var s = new Scanner(Runtime.getRuntime().exec(cmd).getInputStream()).useDelimiter("\\A")) {
+			return s.hasNext() ? s.next().trim() : "";
+		}
+	}
+	// oEMS end
 }

@@ -15,7 +15,7 @@ public class Credentials {
 	 */
 	public static Credentials fromConfig(Config config) {
 		return new Credentials(//
-				config.odooProtocol(), config.odooHost(), config.odooPort(), config.odooUid(), config.odooPassword(),
+				config.odooProtocol(), config.odooHost(), config.odooPort(), config.odooUid(), config.odooUsername(), config.odooPassword(), // oEMS username
 				config.database());
 	}
 
@@ -24,14 +24,17 @@ public class Credentials {
 	private final int port;
 	private final String url;
 	private final int uid;
+
+	private final String odooUsername; // oEMS
 	private final String password;
 	private final String database;
 
-	public Credentials(Protocol protocol, String host, int port, int uid, String password, String database) {
+	public Credentials(Protocol protocol, String host, int port, int uid, String odooUsername, String password, String database) { // oEMS username
 		this.protocol = protocol;
 		this.host = host;
 		this.port = port;
 		this.uid = uid;
+		this.odooUsername = odooUsername; // oEMS
 		this.password = password;
 		this.url = protocol.expression + "://" + host + ":" + port;
 		this.database = database;
@@ -55,6 +58,10 @@ public class Credentials {
 
 	public String getUrl() {
 		return this.url;
+	}
+
+	public String getOdooUsername() { // oEMS
+		return this.odooUsername;
 	}
 
 	public String getPassword() {

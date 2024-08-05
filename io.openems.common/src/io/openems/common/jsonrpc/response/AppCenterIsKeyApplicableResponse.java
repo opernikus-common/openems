@@ -102,6 +102,7 @@ public class AppCenterIsKeyApplicableResponse extends JsonrpcResponseSuccess {
 							.collect(Collectors.toList()), //
 					JsonUtils.stream(JsonUtils.getAsJsonArray(jsonObject, "usages")) //
 							.map(JsonElement::getAsJsonObject) //
+							.filter(object -> !object.get("appId").isJsonNull()) // oEMS
 							.map(Usage::from) //
 							.collect(Collectors.toList()) //
 			);

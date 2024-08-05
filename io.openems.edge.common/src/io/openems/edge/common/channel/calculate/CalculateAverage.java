@@ -1,11 +1,13 @@
 package io.openems.edge.common.channel.calculate;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.ArrayDeque;
 import java.util.NoSuchElementException;
+import java.util.Queue;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.collect.EvictingQueue;
 
 import io.openems.edge.common.channel.Channel;
 
@@ -15,7 +17,19 @@ import io.openems.edge.common.channel.Channel;
 public class CalculateAverage {
 
 	private final Logger log = LoggerFactory.getLogger(CalculateAverage.class);
-	private final List<Double> values = new ArrayList<>();
+	private final Queue<Double> values;
+
+	public CalculateAverage(int maxSize) {
+		if (maxSize > 0) {
+			this.values = EvictingQueue.create(maxSize);
+		} else {
+			this.values = new ArrayDeque<>();
+		}
+	}
+
+	public CalculateAverage() {
+		this(-1);
+	}
 
 	/**
 	 * Adds a Channel-Value.
@@ -41,9 +55,10 @@ public class CalculateAverage {
 	 * @param value the value
 	 */
 	public void addValue(Number value) {
-		if (value != null) {
-			this.values.add(value.doubleValue());
+		if (value == null) {
+			return;
 		}
+		this.values.add(value.doubleValue());
 	}
 
 	/**

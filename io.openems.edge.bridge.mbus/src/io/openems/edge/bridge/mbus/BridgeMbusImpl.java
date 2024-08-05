@@ -19,7 +19,6 @@ import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.openems.common.exceptions.OpenemsException;
 import io.openems.common.worker.AbstractCycleWorker;
 import io.openems.edge.bridge.mbus.api.BridgeMbus;
 import io.openems.edge.bridge.mbus.api.MbusTask;
@@ -92,20 +91,25 @@ public class BridgeMbusImpl extends AbstractOpenemsComponent implements BridgeMb
 	private class MbusWorker extends AbstractCycleWorker {
 
 		@Override
-		protected void forever() throws OpenemsException, DecodingException {
+		protected void forever() throws DecodingException {
 			// Check if time passed by, if not, do nothing
 			try {
 				BridgeMbusImpl.this.mBusConnection = BridgeMbusImpl.this.builder.build();
+				BridgeMbusImpl.this._setMbusCommunicationFailed(false);
 
 				for (MbusTask task : BridgeMbusImpl.this.tasks.values()) {
-					try {
-						var data = task.getRequest();
-						data.decode();
-						// "Before accessing elements of a variable data structure it has to be decoded
-						// using the decode method." ??
-						task.setResponse(data);
-					} catch (IOException e) {
-						e.printStackTrace();
+					if (task.shouldPoll()) {
+						try {
+							var data = task.getRequest();
+							data.decode();
+							task.updateAddress(data);
+							// "Before accessing elements of a variable data structure it has to be decoded
+							// using the decode method." ??
+							task.setResponse(data);
+							task.setCommunicationFailed(false);
+						} catch (IOException e) {
+							task.setCommunicationFailed(true);
+						}
 					}
 				}
 
@@ -113,6 +117,7 @@ public class BridgeMbusImpl extends AbstractOpenemsComponent implements BridgeMb
 			} catch (IOException e) {
 				BridgeMbusImpl.this.logError(BridgeMbusImpl.this.log,
 						"Connection via [" + BridgeMbusImpl.this.portName + "] failed: " + e.getMessage());
+				BridgeMbusImpl.this._setMbusCommunicationFailed(true);
 			}
 		}
 	}

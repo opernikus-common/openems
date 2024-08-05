@@ -193,6 +193,22 @@ export class Utils {
     }
   }
 
+  // oEMS method
+  /**
+   * Safely rounds a - possibly 'null' - value: Math.round(v)
+   *
+   * @param v
+   * @param precision decimal precision
+   */
+  static roundSafelyToDecimalPrecision(v: number, precision: number) : number {
+    if (v == null) {
+      return v;
+    } else {
+      const factor = Math.pow(10, precision);
+      return Math.round(v * factor) / factor;
+    }
+  }
+
   /**
    * Gets the value; or if it is null, gets the 'orElse' value
    *
@@ -304,6 +320,22 @@ export class Utils {
   public static CONVERT_TO_KILO_WATTHOURS = (value: number): string => {
     return formatNumber(Utils.divideSafely(value, 1000), 'de', '1.0-1') + ' kWh';
   };
+
+  // oEMS Start
+  /**
+   * Converts a value in Tenth of a Degree Celsius to Degree Celsius [°C].
+   *
+   * @param value the value from passed value in html
+   * @returns converted value
+   */
+  public static CONVERT_TO_DEGREE = (value: any): string => {
+    if (value == null) {
+      return '-';
+    }
+    const thisValue: number = Utils.divideSafely(value, 10);
+    return formatNumber(thisValue, 'de', '1.0-1') + ' °C';
+  };
+  // oEMS End
 
   /**
    * Converts states 'MANUAL_ON' and 'MANUAL_OFF' to translated strings.

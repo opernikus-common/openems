@@ -49,6 +49,11 @@ import io.openems.common.channel.PersistencePriority;
 	@AttributeDefinition(name = "Resend values Persistence Priority", description = "Resend only Channels with a Persistence Priority greater-or-equals this. Should match with the persistence priority configured in your timedata.")
 	PersistencePriority resendPriority() default PersistencePriority.HIGH;
 
+	// oEMS
+	@AttributeDefinition(name = "AppCenter Backend", description = "Is this OpenEMS Backend responsible for handling the App Center requests.")
+	AppCenterBackend isAppCenterBackend() default AppCenterBackend.YES;
+	// oEMS
+
 	@AttributeDefinition(name = "Debug Mode", description = "Activates the debug mode")
 	boolean debugMode() default false;
 

@@ -93,4 +93,67 @@ public class ConfigUtils {
 		return targetBuilder.toString();
 	}
 
+	//oEMS start
+	/**
+	 * Generates a target filter for a Declarative Service @Reference member.
+	 *
+	 * <p>
+	 * Usage:
+	 *
+	 * <pre>
+	 * generateReferenceTargetFilterIgnoreFactoryId(config.service_pid(), serviceFactoryPid(), "Controllers",
+	 * 		controllersIds);
+	 * </pre>
+	 *
+	 * <p>
+	 * Generates a 'target' filter on the 'Controllers' member so, that the the
+	 * expected service to be injected needs to fulfill:
+	 * <ul>
+	 * <li>the service must be enabled (if 'forceEnabled' is true)
+	 * <li>the service must not have the same PID as the calling component
+	 * <li>the service "id" must be one of the provided "ids"
+	 * <li>the service must not include any component with same factory ID
+	 * </ul>
+	 *
+	 * @param pid       PID of the calling component (use 'config.service_pid()' or
+	 *                  '(String)prop.get(Constants.SERVICE_PID)'; if null, PID
+	 *                  filter is not added to the resulting target filter
+	 * @param factoryId factory ID of the calling component (use
+	 *                  'config.serviceFactoryPid()'
+	 * @param ids       Component IDs to be filtered for; for empty list, no ids are
+	 *                  added to the target filter
+	 * @return the target filter
+	 */
+	public static String generateReferenceTargetFilterIgnoreFactoryId(String pid, String factoryId, String... ids) {
+		var targetBuilder = new StringBuilder("(&");
+
+		// target component must be enabled
+		targetBuilder.append("(enabled=true)");
+
+		if (pid != null && !pid.isEmpty() && factoryId != null) {
+			// target component must not be the same as the calling component
+			targetBuilder.append("(!(service.factoryPid=" + factoryId + "))");
+		}
+
+		if (pid != null && !pid.isEmpty()) {
+			// target component must not be the same as the calling component
+			targetBuilder.append("(!(service.pid=" + pid + "))");
+		}
+		// add filter for given Component-IDs
+		String idsFilter = Stream.of(ids) //
+				.filter(Objects::nonNull) //
+				.filter(Predicate.not(String::isBlank)) //
+				.map(id -> "(id=" + id + ")") //
+				.collect(Collectors.joining());
+		if (!idsFilter.isEmpty()) {
+			targetBuilder //
+					.append("(|") //
+					.append(idsFilter) //
+					.append(")");
+		}
+		targetBuilder.append(")");
+		return targetBuilder.toString();
+	}
+	//oEMS end
+
 }

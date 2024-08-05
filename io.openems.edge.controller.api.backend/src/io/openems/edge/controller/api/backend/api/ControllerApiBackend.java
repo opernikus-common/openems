@@ -31,7 +31,10 @@ public interface ControllerApiBackend extends Controller, OpenemsComponent, Even
 				// Make sure this is always persisted, as it is required for resending
 				.persistencePriority(PersistencePriority.VERY_HIGH) //
 				.text("Latest timestamp of successfully resent data")), //
-		;
+		DUPLICATE_APP_CENTER_BACKENDS(Doc.of(Level.WARNING) // oEMS
+				.persistencePriority(PersistencePriority.VERY_HIGH) //
+				.text("Duplicate App Center Backends found.") //
+		);
 
 		private final Doc doc;
 

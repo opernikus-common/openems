@@ -32,6 +32,7 @@ public class FieldTypeConflictHandler {
 		this.parent = parent;
 	}
 
+
 	/**
 	 * Handles a {@link FieldTypeConflictException}; adds special handling for
 	 * fields that already exist in the database.

@@ -86,13 +86,13 @@ public class Alerting extends AbstractOpenemsBackendComponent implements EventHa
 
 		if (config.notifyOnOffline()) {
 			var handler = new OfflineEdgeHandler(this.scheduler, this.scheduler, this.mailer, this.metadata, //
-					config.initialDelay());
+					config.initialDelay(), config.logVerbosity()); // oEMS
 			this.handler.add(handler);
 		}
 
 		if (config.notifyOnSumStateChange()) {
 			var handler = new SumStateHandler(this.scheduler, this.scheduler, this.mailer, this.metadata, //
-					config.initialDelay());
+					config.initialDelay(), config.logVerbosity()); // oEMS
 			this.handler.add(handler);
 		}
 	}

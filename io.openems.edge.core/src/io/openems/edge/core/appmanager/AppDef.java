@@ -491,6 +491,25 @@ public class AppDef<APP extends OpenemsApp, //
 	}
 
 	/**
+	 * oEMS Sets the value of the translation as the description.
+	 *
+	 * <p>
+	 * Note: If this method is used {@link Type#translationBundleSupplier()} must be
+	 * overridden and return a non null value.
+	 *
+	 * @param key    the key of the translation
+	 * @param params the parameter of the translation
+	 * @return this
+	 */
+	public final AppDef<APP, PROPERTY, PARAMETER> setTranslatedDescription(//
+			final String key, //
+			final Object... params //
+	) {
+		this.description = this.translate(key, params);
+		return this;
+	}
+
+	/**
 	 * Sets the value of the translation with the {@link OpenemsApp#getAppId()} as
 	 * prefixed as the description.
 	 * 

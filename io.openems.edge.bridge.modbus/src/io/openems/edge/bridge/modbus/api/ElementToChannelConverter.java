@@ -99,6 +99,25 @@ public class ElementToChannelConverter {
 	 */
 	public static final ElementToChannelConverter SCALE_FACTOR_2_AND_INVERT = chain(SCALE_FACTOR_2, INVERT);
 
+	//oEMS start
+
+	/**
+	 * Applies {@link ElementToChannelConverter#SCALE_FACTOR_3} and INVERT.
+	 */
+	public static final ElementToChannelConverter SCALE_FACTOR_3_AND_INVERT = chain(
+			SCALE_FACTOR_3, INVERT);
+
+	/**
+	 * Applies {@link ElementToChannelConverter#SCALE_FACTOR_MINUS_1} and INVERT.
+	 */
+	public static final ElementToChannelConverter SCALE_FACTOR_MINUS_1_AND_INVERT = chain(SCALE_FACTOR_MINUS_1, INVERT);
+
+	/**
+	 * Applies {@link ElementToChannelConverter#SCALE_FACTOR_MINUS_2} and INVERT.
+	 */
+	public static final ElementToChannelConverter SCALE_FACTOR_MINUS_2_AND_INVERT = chain(SCALE_FACTOR_MINUS_2, INVERT);
+
+	//oEMS end
 	/**
 	 * Applies {@link ElementToChannelConverter#SCALE_FACTOR_1} and
 	 * CONVERT_NEGATIVE_AND_INVERT.

@@ -20,6 +20,7 @@ import org.osgi.service.event.EventHandler;
 import org.osgi.service.event.propertytypes.EventTopics;
 import org.osgi.service.metatype.annotations.Designate;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
@@ -30,10 +31,12 @@ import io.openems.backend.common.edgewebsocket.EdgeCache;
 import io.openems.backend.common.edgewebsocket.EdgeWebsocket;
 import io.openems.backend.common.jsonrpc.JsonRpcRequestHandler;
 import io.openems.backend.common.jsonrpc.SimulationEngine;
+import io.openems.backend.common.metadata.Edge;
 import io.openems.backend.common.metadata.Metadata;
 import io.openems.backend.common.metadata.User;
 import io.openems.backend.common.timedata.TimedataManager;
 import io.openems.backend.common.uiwebsocket.UiWebsocket;
+import io.openems.common.event.EventReader;
 import io.openems.common.exceptions.OpenemsError;
 import io.openems.common.exceptions.OpenemsError.OpenemsNamedException;
 import io.openems.common.exceptions.OpenemsException;
@@ -41,6 +44,8 @@ import io.openems.common.jsonrpc.base.AbstractJsonrpcRequest;
 import io.openems.common.jsonrpc.base.JsonrpcNotification;
 import io.openems.common.jsonrpc.base.JsonrpcRequest;
 import io.openems.common.jsonrpc.base.JsonrpcResponseSuccess;
+import io.openems.common.jsonrpc.notification.EdgeOnlineNotification;
+import io.openems.common.jsonrpc.notification.EdgeRpcNotification;
 
 @Designate(ocd = Config.class, factory = false)
 @Component(//
@@ -49,7 +54,8 @@ import io.openems.common.jsonrpc.base.JsonrpcResponseSuccess;
 		immediate = true //
 )
 @EventTopics({ //
-		Metadata.Events.AFTER_IS_INITIALIZED //
+		Metadata.Events.AFTER_IS_INITIALIZED, //
+		Edge.Events.ON_SET_ONLINE // oEMS
 })
 public class UiWebsocketImpl extends AbstractOpenemsBackendComponent
 		implements UiWebsocket, EventHandler, DebugLoggable {
@@ -57,6 +63,8 @@ public class UiWebsocketImpl extends AbstractOpenemsBackendComponent
 	private static final String COMPONENT_ID = "uiwebsocket0";
 
 	protected WebsocketServer server = null;
+
+	private static final Logger log = LoggerFactory.getLogger(UiWebsocketImpl.class); // oEMS
 
 	@Reference
 	protected volatile JsonRpcRequestHandler jsonRpcRequestHandler;
@@ -222,9 +230,21 @@ public class UiWebsocketImpl extends AbstractOpenemsBackendComponent
 	@Override
 	public void handleEvent(Event event) {
 		switch (event.getTopic()) {
-		case Metadata.Events.AFTER_IS_INITIALIZED:
+		case Metadata.Events.AFTER_IS_INITIALIZED ->
+			// Option B: Metadata initializes too late. We are already activated().
 			this.startServer();
-			break;
+		// oEMS Notify subscribed UIs if Edge goes offline
+		case Edge.Events.ON_SET_ONLINE -> {
+			var reader = new EventReader(event);
+			var edgeId = reader.getString(Edge.Events.OnSetOnline.EDGE_ID);
+			var isOnline = reader.getBoolean(Edge.Events.OnSetOnline.IS_ONLINE);
+			try {
+				this.sendBroadcast(edgeId, new EdgeRpcNotification(edgeId, new EdgeOnlineNotification(isOnline)));
+			} catch (NullPointerException e) {
+				this.logWarn(log, "Unable to forward EdgeOnlineNotification to UI: NullPointerException");
+				e.printStackTrace();
+			}
+		}
 		}
 	}
 

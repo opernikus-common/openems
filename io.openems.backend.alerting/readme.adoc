@@ -1,0 +1,19 @@
+= Backend Alerting
+
+This Component handles Alerting mechanisms.
+
+Currently Implemented:
+ - Offline Alert (send an alerting message, when the Edge is offline)
+ - SumState Alert (send an alerting message, when the _sum/State is either Warning or Fault)
+
+== Developer Notes
+
+Regarding SumStateAlerting
+The scheduling / Alerting mechanism only works, as long the Edge is online.
+
+When the Event Edge.OnSetSumState gets triggered (either on _sum/State update or every ~5 min),
+the SumStateHandlers "handleEdgeOnSetOnline" gets called.
+If the SumState is severe (Warning or Fault) the "addOrUpdate" Method gets called.
+If the State changes from warning to fault, or from fault to warning the time stamp of the scheduled message gets updated.
+Should the Edge toggle between those two state no notification mail gets send. Keep this in mind.
+

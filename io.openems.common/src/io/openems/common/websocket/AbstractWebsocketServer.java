@@ -5,8 +5,8 @@ import static io.openems.common.utils.ThreadPoolUtils.shutdownAndAwaitTerminatio
 import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -51,7 +51,7 @@ public abstract class AbstractWebsocketServer<T extends WsData> extends Abstract
 		this.port = port;
 		this.ws = new WebSocketServer(new InetSocketAddress(port),
 				/* AVAILABLE_PROCESSORS */ Runtime.getRuntime().availableProcessors(), //
-				/* drafts, no filter */ List.of(new MyDraft6455()), //
+				/* drafts, no filter */ Collections.emptyList(), // oEMS NO DRAFTS! this results in an exception when installing apps
 				this.connections) {
 
 			@Override

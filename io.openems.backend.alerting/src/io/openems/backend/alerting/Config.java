@@ -19,4 +19,7 @@ public @interface Config {
 	@AttributeDefinition(name = "Notify On SumStateChange", description = "Enable E-Mail-Notifications on Edge SumStateChange conditions.")
 	boolean notifyOnSumStateChange() default true;
 
+	@AttributeDefinition(name = "Log Verbosity", description = "The log verbosity.")
+	LogVerbosity logVerbosity() default LogVerbosity.NONE;
+
 }

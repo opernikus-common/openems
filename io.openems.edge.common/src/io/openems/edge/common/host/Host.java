@@ -1,8 +1,12 @@
 package io.openems.edge.common.host;
 
 import io.openems.common.channel.Level;
+import io.openems.common.channel.PersistencePriority;
+import io.openems.common.channel.Unit;
+import io.openems.common.exceptions.NotImplementedException;
 import io.openems.common.types.OpenemsType;
 import io.openems.edge.common.channel.Doc;
+import io.openems.edge.common.channel.IntegerReadChannel;
 import io.openems.edge.common.channel.StateChannel;
 import io.openems.edge.common.channel.StringReadChannel;
 import io.openems.edge.common.channel.value.Value;
@@ -16,6 +20,10 @@ public interface Host extends OpenemsComponent {
 	public enum ChannelId implements io.openems.edge.common.channel.ChannelId {
 		DISK_IS_FULL(Doc.of(Level.INFO) //
 				.text("Disk is full")), //
+		DISK_FREE_MB(Doc.of(OpenemsType.INTEGER)// oEMS
+				.unit(Unit.NONE) //
+				.persistencePriority(PersistencePriority.HIGH) //
+				.text("MB of free disk space")), //
 		HOSTNAME(Doc.of(OpenemsType.STRING)), //
 		;
 
@@ -86,4 +94,30 @@ public interface Host extends OpenemsComponent {
 		this.getHostnameChannel().setNextValue(value);
 	}
 
+	//oEMS Start
+
+	/**
+	 * Gets the Channel for {@link ChannelId#DISK_FREE_MB}.
+	 *
+	 * @return the Channel
+	 */
+	public default IntegerReadChannel getDiskFreeMbChannel() {
+		return this.channel(ChannelId.DISK_FREE_MB);
+	}
+
+	/**
+	 * Internal method to set the 'nextValue' on {@link ChannelId#DISK_FREE_MB} Channel.
+	 *
+	 * @param value the next value
+	 */
+	public default void _setDiskFreeMb(Integer value) {
+		this.getDiskFreeMbChannel().setNextValue(value);
+	}
+
+	/**
+	 * Internal method to restart the system.
+	 */
+	public void restartSystem() throws NotImplementedException;
+
+	// oEMS End
 }

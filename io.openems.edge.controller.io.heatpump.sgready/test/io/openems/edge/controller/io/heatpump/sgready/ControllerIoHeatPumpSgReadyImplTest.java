@@ -29,6 +29,8 @@ public class ControllerIoHeatPumpSgReadyImplTest {
 
 	private static final ChannelAddress SUM_GRID_ACTIVE_POWER = new ChannelAddress("_sum", "GridActivePower");
 	private static final ChannelAddress SUM_ESS_SOC = new ChannelAddress("_sum", "EssSoc");
+
+	private static final ChannelAddress SUM_ESS_CAPACITY = new ChannelAddress("_sum", "EssCapacity"); // oEMS
 	private static final ChannelAddress SUM_ESS_DISCHARGE_POWER = new ChannelAddress("_sum", "EssDischargePower");
 
 	@Test
@@ -47,6 +49,7 @@ public class ControllerIoHeatPumpSgReadyImplTest {
 						.setManualState(Status.UNDEFINED) //
 						.setOutputChannel1(outputChannel1) //
 						.setOutputChannel2(outputChannel2) //
+
 						.build())
 				.next(new TestCase() //
 						.output(STATUS, Status.REGULAR) //
@@ -164,6 +167,7 @@ public class ControllerIoHeatPumpSgReadyImplTest {
 						.setAutomaticLockCtrlEnabled(false) //
 						.setOutputChannel1(outputChannel1) //
 						.setOutputChannel2(outputChannel2) //
+						.setMeanFilterSize(0) // oEMS
 						.build())
 				.next(new TestCase() //
 						.output(STATUS, Status.REGULAR) //
@@ -195,11 +199,13 @@ public class ControllerIoHeatPumpSgReadyImplTest {
 						.setOutputChannel1(outputChannel1) //
 						.setOutputChannel2(outputChannel2) //
 						.setMinimumSwitchingTime(0) //
+						.setMeanFilterSize(0) // oEMS
 						.build())
 				.next(new TestCase() //
 						.input(SUM_GRID_ACTIVE_POWER, -4000) //
 						.input(SUM_ESS_DISCHARGE_POWER, 0) //
 						.input(SUM_ESS_SOC, 95) //
+						.input(SUM_ESS_CAPACITY, 10_000) // oEMS
 						.output(STATUS, Status.RECOMMENDATION)) //
 				.next(new TestCase() //
 						.input(SUM_GRID_ACTIVE_POWER, -3000) //
@@ -257,11 +263,13 @@ public class ControllerIoHeatPumpSgReadyImplTest {
 						.setOutputChannel1(outputChannel1) //
 						.setOutputChannel2(outputChannel2) //
 						.setMinimumSwitchingTime(60) //
+						.setMeanFilterSize(0) // oEMS
 						.build())
 				.next(new TestCase("Test 1") //
 						.input(SUM_GRID_ACTIVE_POWER, -4000) //
 						.input(SUM_ESS_DISCHARGE_POWER, 0) //
 						.input(SUM_ESS_SOC, 95) //
+						.input(SUM_ESS_CAPACITY, 10_000) // oEMS
 						.output(STATUS, Status.RECOMMENDATION)) //
 				.next(new TestCase("Test 1") //
 						.timeleap(clock, 18, ChronoUnit.SECONDS) //
@@ -324,11 +332,13 @@ public class ControllerIoHeatPumpSgReadyImplTest {
 						.setOutputChannel1(outputChannel1) //
 						.setOutputChannel2(outputChannel2) //
 						.setMinimumSwitchingTime(60) //
+						.setMeanFilterSize(0) // oEMS
 						.build())
 				.next(new TestCase("Test 1") //
 						.input(SUM_GRID_ACTIVE_POWER, -4000) //
 						.input(SUM_ESS_DISCHARGE_POWER, 0) //
 						.input(SUM_ESS_SOC, 95) //
+						.input(SUM_ESS_CAPACITY, 10_000) // oEMS
 						.output(STATUS, Status.RECOMMENDATION)) //
 				.next(new TestCase("Test 2") //
 						.timeleap(clock, 50, ChronoUnit.SECONDS)//
@@ -380,4 +390,96 @@ public class ControllerIoHeatPumpSgReadyImplTest {
 						.input(SUM_ESS_SOC, 88) //
 						.output(STATUS, Status.RECOMMENDATION)); //
 	}
+
+	// oEMS test
+	@Test
+	public void automatic_normal_config_test_with_average() throws Exception {
+
+		final var clock = new TimeLeapClock(Instant.ofEpochSecond(1577836800) /* starts at 1. January 2020 00:00:00 */,
+				ZoneOffset.UTC);
+
+		new ControllerTest(new ControllerIoHeatPumpSgReadyImpl()) //
+				.addReference("componentManager", new DummyComponentManager(clock)) //
+				.addReference("sum", new DummySum()) //
+				.addComponent(new DummyInputOutput(IO_ID)) //
+				.activate(MyConfig.create() //
+						.setId(CTRL_ID) //
+						.setMode(Mode.AUTOMATIC) //
+						.setAutomaticRecommendationCtrlEnabled(true) //
+						.setAutomaticRecommendationSurplusPower(3000) //
+						.setAutomaticForceOnCtrlEnabled(true) //
+						.setAutomaticForceOnSurplusPower(5000) //
+						.setAutomaticForceOnSoc(90) //
+						.setAutomaticLockCtrlEnabled(true) //
+						.setAutomaticLockGridBuyPower(5000) //
+						.setAutomaticLockSoc(20) //
+						.setOutputChannel1(outputChannel1) //
+						.setOutputChannel2(outputChannel2) //
+						.setMinimumSwitchingTime(0) //
+						.setMeanFilterSize(5) // oEMS
+						.build())
+				.next(new TestCase() //
+						.input(SUM_GRID_ACTIVE_POWER, -4000) // 1
+						.input(SUM_ESS_DISCHARGE_POWER, 0) //
+						.input(SUM_ESS_SOC, 95) //
+						.input(SUM_ESS_CAPACITY, 10_000) //
+						.output(STATUS, Status.RECOMMENDATION)) //
+				.next(new TestCase() //
+						.input(SUM_GRID_ACTIVE_POWER, -4000) // 2
+						.input(SUM_ESS_DISCHARGE_POWER, 0) //
+						.input(SUM_ESS_SOC, 95) //
+						.input(SUM_ESS_CAPACITY, 10_000) //
+						.output(STATUS, Status.FORCE_ON)) //
+				.next(new TestCase() //
+						.input(SUM_GRID_ACTIVE_POWER, 0) // 3
+						.input(SUM_ESS_DISCHARGE_POWER, 0) //
+						.input(SUM_ESS_SOC, 95) //
+						.input(SUM_ESS_CAPACITY, 10_000) //
+						.output(STATUS, Status.FORCE_ON)) //
+				.next(new TestCase() //
+						.input(SUM_GRID_ACTIVE_POWER, 0) // 4
+						.input(SUM_ESS_DISCHARGE_POWER, 0) //
+						.input(SUM_ESS_SOC, 95) //
+						.input(SUM_ESS_CAPACITY, 10_000) //
+						.output(STATUS, Status.FORCE_ON)) //
+				.next(new TestCase() //
+						.input(SUM_GRID_ACTIVE_POWER, 9000) // 5
+						.input(SUM_ESS_DISCHARGE_POWER, 0) //
+						.input(SUM_ESS_SOC, 95) //
+						.input(SUM_ESS_CAPACITY, 10_000) //
+						.output(STATUS, Status.RECOMMENDATION)) //
+				.next(new TestCase() //
+						.input(SUM_GRID_ACTIVE_POWER, 0) // 1
+						.input(SUM_ESS_DISCHARGE_POWER, 0) //
+						.input(SUM_ESS_SOC, 95) //
+						.input(SUM_ESS_CAPACITY, 10_000) //
+						.output(STATUS, Status.REGULAR)) //
+				.next(new TestCase() //
+						.input(SUM_GRID_ACTIVE_POWER, -5000) // 2
+						.input(SUM_ESS_DISCHARGE_POWER, 0) //
+						.input(SUM_ESS_SOC, 95) //
+						.input(SUM_ESS_CAPACITY, 10_000) //
+						.output(STATUS, Status.REGULAR)) //
+				.next(new TestCase() //
+						.input(SUM_GRID_ACTIVE_POWER, -5000) // 3
+						.input(SUM_ESS_DISCHARGE_POWER, 0) //
+						.input(SUM_ESS_SOC, 95) //
+						.input(SUM_ESS_CAPACITY, 10_000) //
+						.output(STATUS, Status.REGULAR)) //
+				.next(new TestCase() //
+						.input(SUM_GRID_ACTIVE_POWER, -5000) // 4
+						.input(SUM_ESS_DISCHARGE_POWER, 0) //
+						.input(SUM_ESS_SOC, 95) //
+						.input(SUM_ESS_CAPACITY, 10_000) //
+						.output(STATUS, Status.REGULAR)) //
+				.next(new TestCase() //
+						.input(SUM_GRID_ACTIVE_POWER, -1000) // 5
+						.input(SUM_ESS_DISCHARGE_POWER, 0) //
+						.input(SUM_ESS_SOC, 95) //
+						.input(SUM_ESS_CAPACITY, 10_000) //
+						.output(STATUS, Status.RECOMMENDATION)) //
+
+				;
+	}
+
 }

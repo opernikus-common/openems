@@ -22,6 +22,9 @@ public @interface Config {
 	@AttributeDefinition(name = "Odoo UID", description = "The odoo login UID")
 	int odooUid() default 1;
 
+	@AttributeDefinition(name = "Odoo Username", description = "The odoo login username")
+	String odooUsername() default "admin";
+
 	@AttributeDefinition(name = "Odoo Password", description = "The odoo login password")
 	String odooPassword();
 

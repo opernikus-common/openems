@@ -9,7 +9,10 @@ import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
+
 import io.openems.backend.alerting.Handler;
+import io.openems.backend.alerting.LogVerbosity;
 import io.openems.backend.alerting.message.OfflineEdgeMessage;
 import io.openems.backend.alerting.message.SumStateMessage;
 import io.openems.backend.alerting.scheduler.MessageScheduler;
@@ -28,6 +31,7 @@ public class SumStateHandler implements Handler<SumStateMessage> {
 	private final Map<String, ZonedDateTime> faultSince = new TreeMap<>();
 
 	private final Logger log = LoggerFactory.getLogger(SumStateHandler.class);
+	private final LogVerbosity logVerbosity; // oEMS
 
 	private final Metadata metadata;
 	private final Mailer mailer;
@@ -36,13 +40,14 @@ public class SumStateHandler implements Handler<SumStateMessage> {
 	private MessageScheduler<SumStateMessage> msgScheduler;
 
 	private TimedTask initMetadata;
-	private final TimedExecutor timeService;
+	private final TimedExecutor timeService; // oEMS final
 
 	public SumStateHandler(MessageSchedulerService mss, TimedExecutor timeService, Mailer mailer, Metadata metadata,
-			int initialDelay) {
+			int initialDelay, LogVerbosity logVerbosity) { // oEMS
 		this.mailer = mailer;
 		this.metadata = metadata;
 		this.timeService = timeService;
+		this.logVerbosity = logVerbosity; // oEMS
 
 		this.mss = mss;
 		this.msgScheduler = mss.register(this);
@@ -69,6 +74,7 @@ public class SumStateHandler implements Handler<SumStateMessage> {
 		final var params = JsonUtils.generateJsonArray(pack.stream().map(SumStateMessage::getParams).toList());
 		if (!params.isEmpty()) {
 			this.mailer.sendMail(sentAt, SumStateMessage.TEMPLATE, params);
+			this.handleLog(params); // oEMS
 		}
 
 		final var logStrBuilder = new StringBuilder(pack.size() * 64);
@@ -79,6 +85,15 @@ public class SumStateHandler implements Handler<SumStateMessage> {
 		final var logStr = logStrBuilder.toString();
 		if (!logStr.isBlank()) {
 			this.log.info("Sent ErrorEdgeMsg: {}", logStr);
+		}
+	}
+
+	// oEMS Method
+	private void handleLog(JsonArray params) {
+		switch (this.logVerbosity) {
+			case NONE -> {
+			}
+			case E_MAIL_ONLY -> this.log.info("Sending SumState email to" + SumStateMessage.TEMPLATE + " with params : " + params);
 		}
 	}
 

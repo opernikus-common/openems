@@ -281,6 +281,12 @@ public class Dummy {
 			public int initialDelay() {
 				return initialDelay;
 			}
+
+			// oEMS
+			@Override
+			public LogVerbosity logVerbosity() {
+				return LogVerbosity.NONE;
+			}
 		};
 	}
 }

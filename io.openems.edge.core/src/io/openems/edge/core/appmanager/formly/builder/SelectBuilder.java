@@ -1,5 +1,6 @@
 package io.openems.edge.core.appmanager.formly.builder;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -46,8 +47,9 @@ import io.openems.edge.core.appmanager.Nameable;
  */
 public final class SelectBuilder extends FormlyBuilder<SelectBuilder> {
 
+	//oEMS -> changed using t.id + : + alias
 	public static final Function<OpenemsComponent, JsonElement> DEFAULT_COMPONENT_2_LABEL = t -> new JsonPrimitive(
-			t.alias() == null || t.alias().isEmpty() ? t.id() : t.id() + ": " + t.alias());
+			t.alias() == null || t.alias().isEmpty() ? t.id() : t.alias() + " (" + t.id() + ")");
 	public static final Function<OpenemsComponent, JsonElement> DEFAULT_COMPONENT_2_VALUE = t -> new JsonPrimitive(
 			t.id());
 
@@ -73,13 +75,21 @@ public final class SelectBuilder extends FormlyBuilder<SelectBuilder> {
 
 	public <T, C> SelectBuilder setOptions(Set<Entry<T, C>> items, Function<T, String> item2Label,
 			Function<C, String> item2Value) {
+		// oEMS change: This sorts the items by the "label" (Translations)
+		List<JsonElement> elements = new ArrayList<>();
 		var options = JsonUtils.buildJsonArray();
-		items.stream().forEach(t -> {
-			options.add(JsonUtils.buildJsonObject() //
+		items.forEach(t -> {
+			elements.add(JsonUtils.buildJsonObject() //
 					.addProperty("label", item2Label.apply(t.getKey())) //
 					.addProperty("value", item2Value.apply(t.getValue())) //
 					.build());
 		});
+		elements.sort((e1, e2) -> {
+			final var str1 = e1.getAsJsonObject().get("label").getAsString();
+			final var str2 = e2.getAsJsonObject().get("label").getAsString();
+			return str1.compareTo(str2);
+		});
+		elements.forEach(options::add);
 		return this.setOptions(options.build());
 	}
 

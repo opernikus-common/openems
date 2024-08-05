@@ -21,6 +21,8 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 		private PersistencePriority resendPriority;
 		private boolean debugMode;
 
+		private AppCenterBackend appCenterBackend; // oEMS
+
 		private Builder() {
 		}
 
@@ -149,5 +151,12 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 	public boolean debugMode() {
 		return this.builder.debugMode;
 	}
+
+	// oEMS Start
+	@Override
+	public AppCenterBackend isAppCenterBackend() {
+		return AppCenterBackend.YES;
+	}
+	// oEMS end
 
 }

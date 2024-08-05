@@ -28,6 +28,7 @@ import { ChannelAddress, SystemLog, Websocket, EdgePermission } from '../../shar
 import { Role } from '../../type/role';
 import { GetEdgeConfigResponse } from '../../jsonrpc/response/getEdgeConfigResponse';
 import { GetEdgeConfigRequest } from '../../jsonrpc/request/getEdgeConfigRequest';
+import { EdgeOnlineNotification } from '../../jsonrpc/notification/edgeOnlineNotification'; // oEMS
 
 export class Edge {
 
@@ -270,6 +271,14 @@ export class Edge {
    */
   public handleSystemLogNotification(message: SystemLogNotification): void {
     this.systemLog.next(message.params.line);
+  }
+
+  /**
+  * oEMS
+  * Handles an edgeOnSetOnlineNotification.
+  */
+  public handleEdgeOnlineNotification(message: EdgeOnlineNotification): void {
+    this.setOnline(message.params.isOnline);
   }
 
   /**

@@ -23,6 +23,7 @@ import { Pagination } from './pagination';
 import { Service } from './service';
 import { WebsocketInterface } from './websocketInterface';
 import { WsData } from './wsdata';
+import { EdgeOnlineNotification } from '../jsonrpc/notification/edgeOnlineNotification'; // oEMS
 
 @Injectable()
 export class Websocket implements WebsocketInterface {
@@ -384,6 +385,10 @@ export class Websocket implements WebsocketInterface {
         case SystemLogNotification.METHOD:
           edge.handleSystemLogNotification(message as SystemLogNotification);
           break;
+
+        // oEMS Backend sends this notification (custom Notification)
+        case EdgeOnlineNotification.METHOD:
+          edge.handleEdgeOnlineNotification(message as EdgeOnlineNotification);
       }
     }
   }

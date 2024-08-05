@@ -40,6 +40,12 @@ public class AlertingTest {
 		public boolean notifyOnSumStateChange() {
 			return true;
 		}
+
+		// oEMS
+		@Override
+		public LogVerbosity logVerbosity() {
+			return LogVerbosity.NONE;
+		}
 	};
 
 	private static Config conf = new Config() {
@@ -66,6 +72,12 @@ public class AlertingTest {
 		@Override
 		public boolean notifyOnSumStateChange() {
 			return true;
+		}
+
+		// oEMS
+		@Override
+		public LogVerbosity logVerbosity() {
+			return LogVerbosity.NONE;
 		}
 	};
 

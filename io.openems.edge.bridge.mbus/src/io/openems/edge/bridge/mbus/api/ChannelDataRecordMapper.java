@@ -17,7 +17,7 @@ public class ChannelDataRecordMapper {
 		this.channelDataRecordsList = channelDataRecordsList;
 
 		for (ChannelRecord channelRecord : channelDataRecordsList) {
-			this.mapDataToChannel(data, channelRecord.dataRecordPosition, channelRecord.channel,
+			this.mapDataToChannel(data, channelRecord.getDataRecordPosition(), channelRecord.channel,
 					channelRecord.dataType);
 		}
 	}
@@ -47,15 +47,9 @@ public class ChannelDataRecordMapper {
 			return;
 		}
 		switch (dataType) {
-		case Manufacturer:
-			channel.setNextValue(data.getSecondaryAddress().getManufacturerId());
-			break;
-		case DeviceId:
-			channel.setNextValue(data.getSecondaryAddress().getDeviceId());
-			break;
-		case MeterType:
-			channel.setNextValue(data.getSecondaryAddress().getDeviceType());
-			break;
+			case Manufacturer -> channel.setNextValue(data.getSecondaryAddress().getManufacturerId());
+			case DeviceId -> channel.setNextValue(data.getSecondaryAddress().getDeviceId());
+			case MeterType -> channel.setNextValue(data.getSecondaryAddress().getDeviceType());
 		}
 	}
 

@@ -176,6 +176,9 @@ public class TypeUtils {
 
 			} else if (value instanceof Float f) {
 				var floatValue = f.floatValue();
+				if (Float.isNaN(floatValue)) { // oEMS
+				    yield null;
+				}
 				if (floatValue >= Integer.MIN_VALUE && floatValue <= Integer.MAX_VALUE) {
 					yield Integer.valueOf((int) floatValue);
 				} else {
@@ -631,6 +634,45 @@ public class TypeUtils {
 		}
 		return dividend / divisor;
 	}
+
+	// oEMS Start
+
+	/**
+	 * Safely divides Floats.
+	 *
+	 * <ul>
+	 * <li>if dividend is null -&gt; result is null
+	 * </ul>
+	 *
+	 * @param dividend the dividend of the division
+	 * @param divisor  the divisor of the division
+	 * @return the result, possibly null
+	 */
+	public static Float divide(Float dividend, Float divisor) {
+		if (dividend == null) {
+			return null;
+		}
+		return dividend / divisor;
+	}
+
+	/**
+	 * Safely divides Doubles.
+	 *
+	 * <ul>
+	 * <li>if dividend is null -&gt; result is null
+	 * </ul>
+	 *
+	 * @param dividend the dividend of the division
+	 * @param divisor  the divisor of the division
+	 * @return the result, possibly null
+	 */
+	public static Double divide(Double dividend, Double divisor) {
+		if (dividend == null) {
+			return null;
+		}
+		return dividend / divisor;
+	}
+	// oEMS End
 
 	/**
 	 * Safely finds the max value of all values.

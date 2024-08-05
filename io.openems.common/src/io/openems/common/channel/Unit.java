@@ -278,13 +278,37 @@ public enum Unit {
 	MICROOHM("uOhm", OHM, -6),
 
 	// ##########
+	// Percolation Q
+	// ##########
+
+	/**
+	 * Unit of Percolation [m³/s].
+	 */
+	CUBICMETER_PER_SECOND("m³/s"),
+
+	/**
+	 * Unit of Percolation [m³/h].
+	 */
+	CUBICMETER_PER_HOUR("m³/h"),
+
+	// ##########
 	// Pressure
 	// ##########
 
 	/**
 	 * Unit of Pressure [bar].
 	 */
-	BAR("bar");
+	BAR("bar"),
+
+	// #########
+	// Volume
+	// ########
+
+	/**
+	 * Unit volume [m³].
+	 */
+	CUBIC_METER("m³"),
+	;
 
 	public final String symbol;
 	public final Unit baseUnit;
@@ -363,7 +387,8 @@ public enum Unit {
 				MILLIWATT, WATT_HOURS, OHM, KILOOHM, SECONDS, AMPERE_HOURS, HOUR, CUMULATED_SECONDS, KILOAMPERE_HOURS,
 				KILOVOLT_AMPERE, KILOVOLT_AMPERE_REACTIVE, KILOVOLT_AMPERE_REACTIVE_HOURS, KILOWATT_HOURS, MICROOHM,
 				MILLIAMPERE_HOURS, MILLIOHM, MILLISECONDS, MINUTE, THOUSANDTH, VOLT_AMPERE_HOURS,
-				VOLT_AMPERE_REACTIVE_HOURS, WATT_HOURS_BY_WATT_PEAK, CUMULATED_WATT_HOURS, BAR -> //
+				VOLT_AMPERE_REACTIVE_HOURS, WATT_HOURS_BY_WATT_PEAK, CUMULATED_WATT_HOURS, BAR,
+				CUBICMETER_PER_SECOND, CUBICMETER_PER_HOUR, CUBIC_METER -> //
 			value + " " + this.symbol;
 
 		case ON_OFF -> //

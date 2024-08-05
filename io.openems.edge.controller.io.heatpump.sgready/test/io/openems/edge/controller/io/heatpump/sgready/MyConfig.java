@@ -20,6 +20,7 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 		private int automaticLockGridBuyPower;
 		private int automaticLockSoc;
 		private int minimumSwitchingTime;
+		private int meanFilterSize; // oEMS
 
 		private Builder() {
 		}
@@ -95,6 +96,11 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 
 		public Builder setMinimumSwitchingTime(int minimumSwitchingTime) {
 			this.minimumSwitchingTime = minimumSwitchingTime;
+			return this;
+		}
+
+		public Builder setMeanFilterSize(int powerSize) { // oEMS
+			this.meanFilterSize = powerSize;
 			return this;
 		}
 	}
@@ -183,5 +189,10 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 	@Override
 	public boolean debugMode() {
 		return false;
+	}
+
+	@Override
+	public int meanFilterSize() { // oEMS
+		return this.builder.meanFilterSize;
 	}
 }

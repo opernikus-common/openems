@@ -87,9 +87,9 @@ public class SetUserAlertingConfigsRequest extends JsonrpcRequest {
 	}
 
 	/**
-	 * Get list of {@link UserAlertingSetting}.
+	 * Get list of {@link UserAlertingSettings}.
 	 *
-	 * @return list of {@link UserAlertingSetting}
+	 * @return list of {@link UserAlertingSettings}
 	 */
 	public List<UserAlertingSettings> getUserSettings() {
 		return this.userSettings;

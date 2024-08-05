@@ -201,7 +201,7 @@ node_modules/.bin/ng lint --fix
 node_modules/.bin/tsc
 node_modules/.bin/tsc-strict
 node_modules/.bin/ng build -c "openems,openems-backend-prod,prod"
-npm run test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+npm run test -- --no-watch --no-progress --browsers=ChromeHeadlessCI # change to FirefoxHeadlessCI if no chrome is installed
 cd ..
 
 echo

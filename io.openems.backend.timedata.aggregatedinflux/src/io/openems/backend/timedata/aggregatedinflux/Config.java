@@ -50,6 +50,15 @@ import io.openems.shared.influxdb.QueryLanguageConfig;
 	@AttributeDefinition(name = "Number of max scheduled tasks", description = "Max-Size of Queued tasks.")
 	int maxQueueSize() default 5000;
 
+	@AttributeDefinition(name = "Aggregated List", description = "Aggregated list - list of channels for special aggregated handling.")
+	String aggregatedList() default "data/aggregatedInfluxChannel.config"; // oEMS
+
+	@AttributeDefinition(name = "Edge-Filter", description = "Filter Edges by starting digits (e.g. '1011') or by full id (e.g. '100000001'), leave empty for no filter.")
+	String[] edgeFilter() default {}; // oEMS
+
+	@AttributeDefinition(name = "Debug Write", description = "Enable write log output.")
+	boolean debugWrite() default false; // oEMS
+
 	String webconsole_configurationFactory_nameHint() default "Timedata Aggregated InfluxDB";
 
 }

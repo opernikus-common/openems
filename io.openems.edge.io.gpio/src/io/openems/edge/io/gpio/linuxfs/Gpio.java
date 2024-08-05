@@ -16,9 +16,12 @@ public class Gpio implements AutoCloseable {
 	private final int pinNumber;
 	private final String basePath;
 
+	private final Direction dir;
+
 	public Gpio(int pinNumber, Direction dir, String basePath) {
 		this.basePath = basePath;
 		this.pinNumber = pinNumber;
+		this.dir = dir;
 		try {
 			this.exportPin(basePath, pinNumber);
 			this.setDirection(dir);
@@ -93,6 +96,7 @@ public class Gpio implements AutoCloseable {
 			} else if (msg.contains("busy")) {
 				throw new OpenemsException("Skipping write to GPIO pin [" + this.pinNumber + "]: device is busy.");
 			} else {
+				this.setDirection(this.dir);
 				throw new OpenemsException("Unkown error writing GPIO file: " + msg);
 			}
 		}

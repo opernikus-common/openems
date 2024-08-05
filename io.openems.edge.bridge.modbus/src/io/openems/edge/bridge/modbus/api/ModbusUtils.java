@@ -18,6 +18,7 @@ import com.ghgande.j2mod.modbus.procimg.Register;
 
 import io.openems.edge.bridge.modbus.api.element.ModbusRegisterElement;
 import io.openems.edge.bridge.modbus.api.task.FC3ReadRegistersTask;
+import io.openems.edge.bridge.modbus.api.task.FC4ReadInputRegistersTask;
 import io.openems.edge.bridge.modbus.api.task.Task;
 import io.openems.edge.bridge.modbus.api.task.Task.ExecuteState;
 import io.openems.edge.common.taskmanager.Priority;
@@ -50,6 +51,27 @@ public class ModbusUtils {
 	}
 
 	/**
+	 * Reads given Register (FC3) Element once from Modbus.
+	 *
+	 * @param <T>            the Type of the element
+	 * @param modbusProtocol the {@link ModbusProtocol}, that is linked with a
+	 *                       {@link BridgeModbus}
+	 * @param retryPredicate yield true to retry reading values; false otherwise.
+	 *                       Parameters are the {@link ExecuteState} of the entire
+	 *                       task and the individual element value
+	 * @param element        the {@link ModbusRegisterElement}
+	 * @return a future value, e.g. a Integer or null (if tryAgainOnError is false)
+	 */
+	@SuppressWarnings("unchecked")
+	public static <T> CompletableFuture<T> readFC3HoldingRegisterElementOnce(ModbusProtocol modbusProtocol, // oEMS Renamed
+																			 BiPredicate<ExecuteState, T> retryPredicate, ModbusRegisterElement<?, T> element) {
+		return readFC3HoldingRegisterElementsOnce(modbusProtocol, retryPredicate, //
+				new ModbusRegisterElement[] { element }) //
+				.thenApply(rsr -> ((ReadElementsResult<T>) rsr).values().get(0));
+	}
+
+	/**
+	 * oEMS allow Input Elements (Fc4 tasks instead of Fc3)
 	 * Reads given Element once from Modbus.
 	 *
 	 * @param <T>            the Type of the element
@@ -62,15 +84,16 @@ public class ModbusUtils {
 	 * @return a future value, e.g. a Integer or null (if tryAgainOnError is false)
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> CompletableFuture<T> readElementOnce(ModbusProtocol modbusProtocol,
-			BiPredicate<ExecuteState, T> retryPredicate, ModbusRegisterElement<?, T> element) {
-		return readElementsOnce(modbusProtocol, retryPredicate, //
+	public static <T> CompletableFuture<T> readFC4InputElementOnce(ModbusProtocol modbusProtocol,
+																   BiPredicate<ExecuteState, T> retryPredicate, ModbusRegisterElement<?, T> element) {
+		return readFC4InputElementsOnce(modbusProtocol, retryPredicate, //
 				new ModbusRegisterElement[] { element }) //
 				.thenApply(rsr -> ((ReadElementsResult<T>) rsr).values().get(0));
 	}
 
+
 	/**
-	 * Reads given Elements once from Modbus.
+	 * Reads given Register (FC3) Elements once from Modbus.
 	 *
 	 * @param <T>            the Type of the elements
 	 * @param modbusProtocol the {@link ModbusProtocol}, that is linked with a
@@ -82,8 +105,8 @@ public class ModbusUtils {
 	 *         returned, it is guaranteed to have the same length as `elements`
 	 */
 	@SafeVarargs
-	public static <T> CompletableFuture<ReadElementsResult<T>> readElementsOnce(ModbusProtocol modbusProtocol,
-			BiPredicate<ExecuteState, T> retryPredicate, ModbusRegisterElement<?, T>... elements) {
+	public static <T> CompletableFuture<ReadElementsResult<T>> readFC3HoldingRegisterElementsOnce(ModbusProtocol modbusProtocol, // oEMS Renamed
+																								  BiPredicate<ExecuteState, T> retryPredicate, ModbusRegisterElement<?, T>... elements) {
 		if (elements.length == 0) {
 			return completedFuture(new ReadElementsResult<>(NO_OP, emptyList()));
 		}
@@ -93,6 +116,63 @@ public class ModbusUtils {
 
 		// Activate task
 		final Task task = new FC3ReadRegistersTask(executeState::set, //
+				elements[0].startAddress, Priority.HIGH, elements);
+		modbusProtocol.addTask(task);
+
+		@SuppressWarnings("unchecked")
+		final var subResults = (CompletableFuture<T>[]) new CompletableFuture<?>[elements.length];
+		for (var i = 0; i < elements.length; i++) {
+			var subResult = new CompletableFuture<T>();
+			subResults[i] = subResult;
+			elements[i].onUpdateCallback(value -> {
+				if (retryPredicate.test(executeState.get(), value)) {
+					// try again
+					return;
+				} else {
+					// do not try again
+					subResult.complete(value);
+				}
+			});
+		}
+
+		return CompletableFuture //
+				.allOf(subResults) //
+				.thenApply(ignore -> {
+					// remove task
+					modbusProtocol.removeTask(task);
+
+					// return combined future
+					return new ReadElementsResult<>(executeState.get(), //
+							Stream.of(subResults) //
+									.map(CompletableFuture::join) //
+									.toList());
+				});
+	}
+
+	/**
+	 * Reads given Elements once from Modbus via Fc4 (input element).
+	 *
+	 * @param <T>            the Type of the elements
+	 * @param modbusProtocol the {@link ModbusProtocol}, that is linked with a
+	 *                       {@link BridgeModbus}
+	 * @param retryPredicate yield true to retry reading values. Parameters are the
+	 *                       Task success state and individual element value
+	 * @param elements       the {@link ModbusRegisterElement}s
+	 * @return a future array of values, e.g. Integer[] or null. If an array is
+	 *         returned, it is guaranteed to have the same length as `elements`
+	 */
+	@SafeVarargs
+	public static <T> CompletableFuture<ReadElementsResult<T>> readFC4InputElementsOnce(ModbusProtocol modbusProtocol,
+																						BiPredicate<ExecuteState, T> retryPredicate, ModbusRegisterElement<?, T>... elements) {
+		if (elements.length == 0) {
+			return completedFuture(new ReadElementsResult<>(NO_OP, emptyList()));
+		}
+
+		// Register listener for each element
+		final var executeState = new AtomicReference<ExecuteState>(ExecuteState.NO_OP);
+
+		// Activate task
+		final Task task = new FC4ReadInputRegistersTask(executeState::set, //
 				elements[0].startAddress, Priority.HIGH, elements);
 		modbusProtocol.addTask(task);
 

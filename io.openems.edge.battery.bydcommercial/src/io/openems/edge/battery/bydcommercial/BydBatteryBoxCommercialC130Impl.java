@@ -3,7 +3,7 @@ package io.openems.edge.battery.bydcommercial;
 import static io.openems.edge.bridge.modbus.api.ElementToChannelConverter.DIRECT_1_TO_1;
 import static io.openems.edge.bridge.modbus.api.ElementToChannelConverter.SCALE_FACTOR_2;
 import static io.openems.edge.bridge.modbus.api.ElementToChannelConverter.SCALE_FACTOR_MINUS_1;
-import static io.openems.edge.bridge.modbus.api.ModbusUtils.readElementOnce;
+import static io.openems.edge.bridge.modbus.api.ModbusUtils.readFC3HoldingRegisterElementOnce;
 
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
@@ -964,7 +964,7 @@ public class BydBatteryBoxCommercialC130Impl extends AbstractOpenemsModbusCompon
 		BydBatteryBoxCommercialC130Impl.this.isModbusProtocolInitialized = true;
 
 		// Try to read MODULE_QTY Register
-		readElementOnce(this.getModbusProtocol(), ModbusUtils::doNotRetry, new UnsignedWordElement(0x210D))
+		readFC3HoldingRegisterElementOnce(this.getModbusProtocol(), ModbusUtils::doNotRetry, new UnsignedWordElement(0x210D))
 				.thenAccept(moduleQtyValue -> {
 					if (moduleQtyValue != null) {
 						// Register is available -> add Registers for current hardware to protocol

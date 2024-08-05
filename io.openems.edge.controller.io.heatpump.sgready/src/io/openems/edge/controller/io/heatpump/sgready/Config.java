@@ -59,6 +59,9 @@ import org.osgi.service.metatype.annotations.ObjectClassDefinition;
 	@AttributeDefinition(name = "Minimum switching time between two states", description = "Minimum time (Seconds) is applied to avoid continuous switching on threshold")
 	int minimumSwitchingTime() default 60;
 
+	@AttributeDefinition(name = "Mean filter size", description = "Average active power is calculated over the given amount of cycles. A value less or equal to 0 disables the filter.")
+	int meanFilterSize() default 30;
+
 	String webconsole_configurationFactory_nameHint() default "Controller IO SG-Ready Heat Pump [{id}]";
 
 }

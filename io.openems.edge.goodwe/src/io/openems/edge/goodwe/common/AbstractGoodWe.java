@@ -4,7 +4,7 @@ import static io.openems.edge.bridge.modbus.api.ElementToChannelConverter.INVERT
 import static io.openems.edge.bridge.modbus.api.ElementToChannelConverter.SCALE_FACTOR_2;
 import static io.openems.edge.bridge.modbus.api.ElementToChannelConverter.SCALE_FACTOR_MINUS_1;
 import static io.openems.edge.bridge.modbus.api.ElementToChannelConverter.SCALE_FACTOR_MINUS_2;
-import static io.openems.edge.bridge.modbus.api.ModbusUtils.readElementOnce;
+import static io.openems.edge.bridge.modbus.api.ModbusUtils.readFC3HoldingRegisterElementOnce;
 import static io.openems.edge.common.type.TypeUtils.fitWithin;
 
 import java.util.HashSet;
@@ -1187,7 +1187,7 @@ public abstract class AbstractGoodWe extends AbstractOpenemsModbusComponent
 		 * Register 35011: GoodWeType as String (Not supported for GoodWe 20 & 30)
 		 * Register 35003: Serial number as String (Fallback for GoodWe 20 & 30)
 		 */
-		readElementOnce(protocol, ModbusUtils::retryOnNull, new StringWordElement(35011, 5)) //
+		readFC3HoldingRegisterElementOnce(protocol, ModbusUtils::retryOnNull, new StringWordElement(35011, 5)) //
 				.thenAccept(value -> {
 
 					/*
@@ -1205,7 +1205,7 @@ public abstract class AbstractGoodWe extends AbstractOpenemsModbusComponent
 					/*
 					 * Evaluate GoodweType from serial number
 					 */
-					readElementOnce(protocol, ModbusUtils::retryOnNull, new StringWordElement(35003, 8)) //
+					readFC3HoldingRegisterElementOnce(protocol, ModbusUtils::retryOnNull, new StringWordElement(35003, 8)) //
 							.thenAccept(serialNr -> {
 								final var hardwareType = getGoodWeTypeFromSerialNr(serialNr);
 								try {
@@ -1222,7 +1222,7 @@ public abstract class AbstractGoodWe extends AbstractOpenemsModbusComponent
 				});
 
 		// Handles different DSP versions
-		readElementOnce(protocol, ModbusUtils::retryOnNull, new UnsignedWordElement(35016)) //
+		readFC3HoldingRegisterElementOnce(protocol, ModbusUtils::retryOnNull, new UnsignedWordElement(35016)) //
 				.thenAccept(dspVersion -> {
 					try {
 

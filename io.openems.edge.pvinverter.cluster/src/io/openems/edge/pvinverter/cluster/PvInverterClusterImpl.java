@@ -186,8 +186,12 @@ public class PvInverterClusterImpl extends AbstractOpenemsComponent implements P
 				int maxPower = entry.getKey().getMaxApparentPower().getOrError();
 				int power = entry.getValue();
 				if (maxPower > power) {
-					toBeDistributed -= maxPower - power;
-					entry.setValue(power);
+					// oEMS Start
+					int previousToBeDistributed = toBeDistributed;
+					toBeDistributed = Math.max(toBeDistributed - maxPower - power, 0);
+					int newPower = power + (previousToBeDistributed - toBeDistributed);
+					entry.setValue(newPower);
+					// oEMS end
 				}
 			}
 		}

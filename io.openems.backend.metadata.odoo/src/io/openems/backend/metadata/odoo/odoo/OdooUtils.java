@@ -194,7 +194,7 @@ public class OdooUtils {
 
 	protected static SuccessResponseAndHeaders sendAdminJsonrpcRequest(Credentials credentials, String url,
 			JsonObject request, int timeout) throws OpenemsNamedException {
-		var session = OdooUtils.login(credentials, "admin", credentials.getPassword());
+		var session = OdooUtils.login(credentials, credentials.getOdooUsername(), credentials.getPassword()); // oEMS username
 		return OdooUtils.sendJsonrpcRequest(credentials.getUrl() + url, "session_id=" + session, request, timeout);
 	}
 
@@ -209,7 +209,7 @@ public class OdooUtils {
 	 */
 	protected static SuccessResponseAndHeaders sendAdminJsonrpcRequest(Credentials credentials, String url,
 			JsonObject request) throws OpenemsNamedException {
-		var session = OdooUtils.login(credentials, "admin", credentials.getPassword());
+		var session = OdooUtils.login(credentials, credentials.getOdooUsername(), credentials.getPassword()); // oEMS username
 		return OdooUtils.sendJsonrpcRequest(credentials.getUrl() + url, "session_id=" + session, request);
 	}
 
@@ -553,7 +553,7 @@ public class OdooUtils {
 	 * @throws OpenemsNamedException on error
 	 */
 	protected static byte[] getOdooReport(Credentials credentials, String report, int id) throws OpenemsNamedException {
-		var session = OdooUtils.login(credentials, "admin", credentials.getPassword());
+		var session = OdooUtils.login(credentials, credentials.getOdooUsername(), credentials.getPassword()); // oEMS username
 
 		HttpURLConnection connection = null;
 		try {

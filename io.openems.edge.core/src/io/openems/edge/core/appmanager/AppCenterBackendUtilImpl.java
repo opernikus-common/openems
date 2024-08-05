@@ -44,7 +44,7 @@ public class AppCenterBackendUtilImpl implements AppCenterBackendUtil {
 			policy = ReferencePolicy.DYNAMIC, //
 			policyOption = ReferencePolicyOption.GREEDY, //
 			cardinality = ReferenceCardinality.OPTIONAL, //
-			target = "(enabled=true)" //
+			target = "(&(enabled=true)(isAppCenterBackend=YES))" //oEMS isAppCenterBackend
 	)
 	private volatile ControllerApiBackend backend;
 

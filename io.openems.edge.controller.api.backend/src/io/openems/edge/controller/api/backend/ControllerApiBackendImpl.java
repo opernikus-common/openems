@@ -165,6 +165,17 @@ public class ControllerApiBackendImpl extends AbstractOpenemsComponent
 		this.requestHandler.setDebug(config.debugMode());
 	}
 
+	//oEMS
+	private void checkForDuplicateAppCenterBackend() {
+		var anotherAppCenterBackend = this.config.isAppCenterBackend().equals(AppCenterBackend.YES)
+				&& this.componentManager.getEnabledComponents().stream()//
+				.filter(comp -> comp instanceof ControllerApiBackend && !comp.id().equals(this.config.id())) //
+				.anyMatch(backend -> backend.channel("_PropertyIsAppCenterBackend") //
+						.value().asStringWithoutUnit().equals(AppCenterBackend.YES.name()));
+		this.channel(ControllerApiBackend.ChannelId.DUPLICATE_APP_CENTER_BACKENDS) //
+				.setNextValue(anotherAppCenterBackend);
+	}
+
 	@Override
 	@Deactivate
 	protected synchronized void deactivate() {
@@ -211,6 +222,7 @@ public class ControllerApiBackendImpl extends AbstractOpenemsComponent
 
 			case EdgeEventConstants.TOPIC_CONFIG_UPDATE:
 				// Send new EdgeConfig
+				this.checkForDuplicateAppCenterBackend(); // oEMS
 				var config = (EdgeConfig) event.getProperty(EdgeEventConstants.TOPIC_CONFIG_UPDATE_KEY);
 				var message = new EdgeConfigNotification(config);
 				var ws = this.websocket;

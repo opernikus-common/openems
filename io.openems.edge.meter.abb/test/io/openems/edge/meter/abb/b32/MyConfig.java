@@ -1,6 +1,7 @@
 package io.openems.edge.meter.abb.b32;
 
 import io.openems.common.test.AbstractComponentConfig;
+import io.openems.common.utils.ConfigUtils;
 import io.openems.edge.meter.api.MeterType;
 
 @SuppressWarnings("all")
@@ -69,5 +70,10 @@ public class MyConfig extends AbstractComponentConfig implements Config {
 	@Override
 	public String mbus_id() {
 		return this.builder.mbusId;
+	}
+
+	@Override
+	public String Mbus_target() {
+		return ConfigUtils.generateReferenceTargetFilter(this.id(), this.mbus_id());
 	}
 }

@@ -23,6 +23,7 @@ import io.openems.common.exceptions.OpenemsError.OpenemsNamedException;
 import io.openems.common.types.ChannelAddress;
 import io.openems.edge.common.channel.StateChannel;
 import io.openems.edge.common.channel.WriteChannel;
+import io.openems.edge.common.channel.calculate.CalculateAverage;
 import io.openems.edge.common.channel.value.Value;
 import io.openems.edge.common.component.AbstractOpenemsComponent;
 import io.openems.edge.common.component.ComponentManager;
@@ -60,6 +61,10 @@ public class ControllerIoHeatPumpSgReadyImpl extends AbstractOpenemsComponent
 	private final StatusDefinition forceOnState = new StatusDefinition(this, Status.FORCE_ON,
 			ControllerIoHeatPumpSgReady.ChannelId.FORCE_ON_STATE_TIME);
 
+	private static final int ZERO = 0;
+
+	private CalculateAverage calculateAverage; // oEMS
+
 	@Reference
 	protected Sum sum;
 
@@ -85,7 +90,11 @@ public class ControllerIoHeatPumpSgReadyImpl extends AbstractOpenemsComponent
 	private void activate(ComponentContext context, Config config) {
 		super.activate(context, config.id(), config.alias(), config.enabled());
 		this.config = config;
+		this.calculateAverage = new CalculateAverage(checkMeanFilterSize(config.meanFilterSize())); // oEMS
+	}
 
+	private static int checkMeanFilterSize(int meanFilterSize) {
+		return Math.max(meanFilterSize, 1); // using 1 to "deactivate" average calculation since size is 1
 	}
 
 	@Modified
@@ -96,6 +105,8 @@ public class ControllerIoHeatPumpSgReadyImpl extends AbstractOpenemsComponent
 		this._setGridActivePowerNotPresent(false);
 		this._setEssDischargePowerNotPresent(false);
 		this._setStateOfChargeNotPresent(false);
+		// reset Average Calculator
+		this.calculateAverage = new CalculateAverage(checkMeanFilterSize(config.meanFilterSize())); // oEMS
 	}
 
 	@Override
@@ -107,14 +118,14 @@ public class ControllerIoHeatPumpSgReadyImpl extends AbstractOpenemsComponent
 	@Override
 	public void handleEvent(Event event) {
 		switch (event.getTopic()) {
-		case EdgeEventConstants.TOPIC_CYCLE_BEFORE_PROCESS_IMAGE:
+		case EdgeEventConstants.TOPIC_CYCLE_BEFORE_PROCESS_IMAGE -> { // oEMS
 
 			// Updates the time channel depending if the state is active or not.
 			this.lockState.updateActiveTime();
 			this.regularState.updateActiveTime();
 			this.recommState.updateActiveTime();
 			this.forceOnState.updateActiveTime();
-			break;
+		}
 		}
 	}
 
@@ -123,13 +134,8 @@ public class ControllerIoHeatPumpSgReadyImpl extends AbstractOpenemsComponent
 
 		// Handle Mode AUTOMATIC and MANUAL
 		switch (this.config.mode()) {
-		case AUTOMATIC:
-			this.modeAutomatic();
-			break;
-
-		case MANUAL:
-			this.modeManual();
-			break;
+		case AUTOMATIC -> this.modeAutomatic();
+		case MANUAL -> this.modeManual();
 		}
 	}
 
@@ -146,9 +152,12 @@ public class ControllerIoHeatPumpSgReadyImpl extends AbstractOpenemsComponent
 	private void modeAutomatic() throws IllegalArgumentException, OpenemsNamedException {
 
 		// Values to calculate the surplus/grid-buy power
-		final var gridActivePower = this.getGridActivePowerOrZero();
-		final var soc = this.getEssSocOrZero();
-		var essDischargePower = this.getEssDischargePowerOrZero();
+		var gridActivePower = this.getGridActivePowerOrZero();
+		this.calculateAverage.addValue(gridActivePower); // oEMS
+		gridActivePower = this.calculateAverage.calculateRounded(); // oEMS
+		final var capacity = this.getEssCapacityOrZero(); // do we even have an ess
+		final var soc = capacity > ZERO ? this.getEssSocOrZero() : ZERO; // oEMS
+		var essDischargePower = capacity > ZERO ? this.getEssDischargePowerOrZero() : ZERO; // oEMS
 
 		// Detect if hysteresis is active, depending on the minimum switching time
 		if (this.lastStateChange.plusSeconds(this.config.minimumSwitchingTime())
@@ -159,10 +168,10 @@ public class ControllerIoHeatPumpSgReadyImpl extends AbstractOpenemsComponent
 		this._setAwaitingHysteresis(false);
 
 		// We are only interested in discharging, not charging
-		essDischargePower = essDischargePower < 0 ? 0 : essDischargePower;
+		essDischargePower = essDischargePower < ZERO ? ZERO : essDischargePower;
 
 		// Calculate power used by the heat pump
-		var heatPumpPower = this.recommState.isActive() ? this.config.automaticRecommendationSurplusPower() : 0;
+		var heatPumpPower = this.recommState.isActive() ? this.config.automaticRecommendationSurplusPower() : ZERO;
 		heatPumpPower = this.forceOnState.isActive() ? this.config.automaticForceOnSurplusPower() : heatPumpPower;
 
 		// Calculate surplus power
@@ -171,14 +180,14 @@ public class ControllerIoHeatPumpSgReadyImpl extends AbstractOpenemsComponent
 		// Check conditions for lock mode (Lock mode is not depending on the
 		// essDischarge Power)
 		if (this.config.automaticLockCtrlEnabled() && gridActivePower > this.config.automaticLockGridBuyPower()
-				&& soc < this.config.automaticLockSoc()) {
+				&& (capacity == ZERO || soc < this.config.automaticLockSoc())) { // oEMS
 			this.lockState.switchOn();
 			return;
 		}
 
 		// Check conditions for force on mode
 		if (this.config.automaticForceOnCtrlEnabled() && surplusPower > this.config.automaticForceOnSurplusPower()
-				&& soc >= this.config.automaticForceOnSoc()) {
+				&& (capacity == ZERO || soc >= this.config.automaticForceOnSoc())) {
 			this.forceOnState.switchOn();
 			return;
 		}
@@ -207,21 +216,10 @@ public class ControllerIoHeatPumpSgReadyImpl extends AbstractOpenemsComponent
 	private void modeManual() throws IllegalArgumentException, OpenemsNamedException {
 		var state = this.config.manualState();
 		switch (state) {
-		case FORCE_ON:
-			this.forceOnState.switchOn();
-			break;
-		case LOCK:
-			this.lockState.switchOn();
-			break;
-		case RECOMMENDATION:
-			this.recommState.switchOn();
-			break;
-		case REGULAR:
-			this.regularState.switchOn();
-			break;
-		case UNDEFINED:
-			this.regularState.switchOn();
-			break;
+		case FORCE_ON -> this.forceOnState.switchOn();
+		case LOCK -> this.lockState.switchOn();
+		case RECOMMENDATION -> this.recommState.switchOn();
+		case REGULAR, UNDEFINED -> this.regularState.switchOn();
 		}
 	}
 
@@ -233,6 +231,11 @@ public class ControllerIoHeatPumpSgReadyImpl extends AbstractOpenemsComponent
 	private int getEssSocOrZero() {
 		return this.getChannelValueOrZeroAndSetStateChannel(this.sum.getEssSoc(),
 				this.getStateOfChargeNotPresentChannel());
+	}
+
+	// oEMS
+	private int getEssCapacityOrZero() {
+		return this.sum.getEssCapacity().orElse(0);
 	}
 
 	private int getGridActivePowerOrZero() {

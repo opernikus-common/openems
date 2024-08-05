@@ -10,8 +10,12 @@ import java.util.function.Consumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.JsonArray;
+
 import io.openems.backend.alerting.Handler;
+import io.openems.backend.alerting.LogVerbosity;
 import io.openems.backend.alerting.message.OfflineEdgeMessage;
+import io.openems.backend.alerting.message.SumStateMessage;
 import io.openems.backend.alerting.scheduler.MessageScheduler;
 import io.openems.backend.alerting.scheduler.MessageSchedulerService;
 import io.openems.backend.alerting.scheduler.TimedExecutor;
@@ -33,6 +37,8 @@ public class OfflineEdgeHandler implements Handler<OfflineEdgeMessage> {
 
 	private final Logger log = LoggerFactory.getLogger(OfflineEdgeHandler.class);
 
+	private final LogVerbosity logVerbosity; //oEMS
+
 	private final int initialDelay; // in Minutes
 	private final Metadata metadata;
 	private final Mailer mailer;
@@ -44,11 +50,12 @@ public class OfflineEdgeHandler implements Handler<OfflineEdgeMessage> {
 	private final TimedExecutor timeService;
 
 	public OfflineEdgeHandler(MessageSchedulerService mss, TimedExecutor timeService, Mailer mailer, Metadata metadata,
-			int initialDelay) {
+							  int initialDelay, LogVerbosity logVerbosity) { // oEMS Verbosity
 		this.mailer = mailer;
 		this.metadata = metadata;
 		this.initialDelay = initialDelay;
 		this.timeService = timeService;
+		this.logVerbosity = logVerbosity; // oEMS
 
 		this.mss = mss;
 		this.msgScheduler = mss.register(this);
@@ -77,6 +84,7 @@ public class OfflineEdgeHandler implements Handler<OfflineEdgeMessage> {
 		final var params = JsonUtils.generateJsonArray(pack, OfflineEdgeMessage::getParams);
 
 		this.mailer.sendMail(sentAt, OfflineEdgeMessage.TEMPLATE, params);
+		this.handleLog(params); // oEMS
 
 		final var logStr = new StringBuilder(pack.size() * 64);
 		pack.forEach(msg -> {
@@ -84,6 +92,16 @@ public class OfflineEdgeHandler implements Handler<OfflineEdgeMessage> {
 			this.tryReschedule(msg);
 		});
 		this.log.info("Sent OfflineEdgeMsg: {}", logStr.substring(0, logStr.length() - 2));
+	}
+
+	// oEMS Method
+	private void handleLog(JsonArray params) {
+		switch (this.logVerbosity) {
+
+			case NONE -> {
+			}
+			case E_MAIL_ONLY -> this.log.info("Sending Offline email to" + SumStateMessage.TEMPLATE + " with params : " + params);
+		}
 	}
 
 	private void tryReschedule(OfflineEdgeMessage msg) {

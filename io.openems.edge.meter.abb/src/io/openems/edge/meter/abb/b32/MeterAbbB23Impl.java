@@ -1,5 +1,6 @@
 package io.openems.edge.meter.abb.b32;
 
+import org.openmuc.jmbus.VariableDataStructure;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.osgi.service.component.ComponentContext;
 import org.osgi.service.component.annotations.Activate;
@@ -16,7 +17,7 @@ import io.openems.edge.bridge.mbus.api.AbstractOpenemsMbusComponent;
 import io.openems.edge.bridge.mbus.api.BridgeMbus;
 import io.openems.edge.bridge.mbus.api.ChannelRecord;
 import io.openems.edge.bridge.mbus.api.ChannelRecord.DataType;
-import io.openems.edge.bridge.mbus.api.MbusTask;
+import io.openems.edge.bridge.mbus.api.MbusComponent;
 import io.openems.edge.common.component.OpenemsComponent;
 import io.openems.edge.meter.api.ElectricityMeter;
 import io.openems.edge.meter.api.MeterType;
@@ -28,13 +29,15 @@ import io.openems.edge.meter.api.MeterType;
 		configurationPolicy = ConfigurationPolicy.REQUIRE //
 )
 public class MeterAbbB23Impl extends AbstractOpenemsMbusComponent
-		implements MeterAbbB23, ElectricityMeter, OpenemsComponent {
+		implements MeterAbbB23, ElectricityMeter, MbusComponent, OpenemsComponent { // oEMS
 
 	@Reference
 	private ConfigurationAdmin cm;
 
 	@Reference(policy = ReferencePolicy.STATIC, policyOption = ReferencePolicyOption.GREEDY, cardinality = ReferenceCardinality.MANDATORY)
-	private BridgeMbus mbus;
+	protected void setMbus(BridgeMbus mBus) { //oEMS
+		super.setMbus(mBus);
+	}
 
 	private MeterType meterType = MeterType.PRODUCTION;
 
@@ -42,6 +45,7 @@ public class MeterAbbB23Impl extends AbstractOpenemsMbusComponent
 		super(//
 				OpenemsComponent.ChannelId.values(), //
 				ElectricityMeter.ChannelId.values(), //
+				MbusComponent.ChannelId.values(), // oEMS
 				MeterAbbB23.ChannelId.values() //
 		);
 
@@ -52,10 +56,10 @@ public class MeterAbbB23Impl extends AbstractOpenemsMbusComponent
 	@Activate
 	private void activate(ComponentContext context, Config config) {
 		this.meterType = config.type();
-		super.activate(context, config.id(), config.alias(), config.enabled(), config.primaryAddress(), this.cm, "mbus",
-				config.mbus_id());
-		// register into mbus bridge task list
-		this.mbus.addTask(config.id(), new MbusTask(this.mbus, this));
+		if (super.activate(context, config.id(), config.alias(), config.enabled(), config.primaryAddress(), this.cm, "Mbus", // oEMS
+				config.mbus_id())) {
+			return;
+		}
 	}
 
 	@Override
@@ -84,6 +88,11 @@ public class MeterAbbB23Impl extends AbstractOpenemsMbusComponent
 				.add(new ChannelRecord(this.channel(MeterAbbB23.ChannelId.MANUFACTURER_ID), DataType.Manufacturer));
 		this.channelDataRecordsList
 				.add(new ChannelRecord(this.channel(MeterAbbB23.ChannelId.DEVICE_ID), DataType.DeviceId));
+	}
+
+	@Override
+	public void findRecordPositions(VariableDataStructure data) { // oEMS
+
 	}
 
 }
