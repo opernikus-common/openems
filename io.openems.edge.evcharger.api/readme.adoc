@@ -1,0 +1,7 @@
+= EVCharger (Electric Vehicle Charger)
+
+This is the successor nature of the old EVCS nature.
+
+
+
+link:https://github.com/OpenEMS/openems/blob/develop/io.openems.edge.evcharger.api/src/io/openems/edge/evcharger/api/Evcs.java[Evcs icon:code[]]::
