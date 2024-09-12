@@ -1,0 +1,10 @@
+= Controller EvCharger FixActivePower
+
+Fix active power controller for an Electric Vehicle Charger (EvCharger). 
+Can be used to 
+
+* set a fixed active power per phase for a given chargepoint. 
+* limit the number of used phases (if supported by the chargepoint hardware).
+* configure the `OperationMode`
+
+https://github.com/OpenEMS/openems/tree/develop/io.openems.edge.controller.evcharger.fixactivepower[Source Code icon:github[]]
