@@ -3,7 +3,7 @@ package io.openems.edge.evcharger.api.data;
 import io.openems.common.types.OptionsEnum;
 
 /**
- * Charging states how they are handled by OpenEMS. 
+ * Charging states how they are handled by OpenEMS.
  */
 public enum Status implements OptionsEnum {
 	/**
