@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import { formatNumber } from '@angular/common';
 import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
@@ -15,12 +16,8 @@ import { AbstractHistoryChart } from '../abstracthistorychart';
 })
 export class StorageSingleChartComponent extends AbstractHistoryChart implements OnInit, OnChanges, OnDestroy {
 
-    @Input() public period: DefaultTypes.HistoryPeriod;
-    @Input() public showPhases: boolean;
-
-    ngOnChanges() {
-        this.updateChart();
-    }
+    @Input({ required: true }) public period!: DefaultTypes.HistoryPeriod;
+    @Input({ required: true }) public showPhases!: boolean;
 
     constructor(
         protected override service: Service,
@@ -28,6 +25,10 @@ export class StorageSingleChartComponent extends AbstractHistoryChart implements
         private route: ActivatedRoute,
     ) {
         super("storage-single-chart", service, translate);
+    }
+
+    ngOnChanges() {
+        this.updateChart();
     }
 
     ngOnInit() {
@@ -39,6 +40,27 @@ export class StorageSingleChartComponent extends AbstractHistoryChart implements
         this.unsubscribeChartRefresh();
     }
 
+    public getChartHeight(): number {
+        return window.innerHeight / 21 * 9;
+    }
+
+    protected getChannelAddresses(edge: Edge, config: EdgeConfig): Promise<ChannelAddress[]> {
+        return new Promise((resolve) => {
+            const result: ChannelAddress[] = [
+                new ChannelAddress('_sum', 'EssActivePower'),
+                new ChannelAddress('_sum', 'ProductionDcActualPower'),
+                new ChannelAddress('_sum', 'EssActivePowerL1'),
+                new ChannelAddress('_sum', 'EssActivePowerL2'),
+                new ChannelAddress('_sum', 'EssActivePowerL3'),
+            ];
+            resolve(result);
+        });
+    }
+
+    protected setLabel() {
+        this.options = this.createDefaultChartOptions();
+    }
+
     protected updateChart() {
         this.autoSubscribeChartRefresh();
         this.startSpinner();
@@ -47,16 +69,16 @@ export class StorageSingleChartComponent extends AbstractHistoryChart implements
         this.queryHistoricTimeseriesData(this.period.from, this.period.to).then(response => {
             this.service.getCurrentEdge().then(edge => {
                 this.service.getConfig().then(config => {
-                    let result = response.result;
+                    const result = response.result;
                     // convert labels
-                    let labels: Date[] = [];
-                    for (let timestamp of result.timestamps) {
+                    const labels: Date[] = [];
+                    for (const timestamp of result.timestamps) {
                         labels.push(new Date(timestamp));
                     }
                     this.labels = labels;
 
                     // convert datasets
-                    let datasets = [];
+                    const datasets = [];
 
                     // calculate total charge and discharge
                     let effectivePower = [];
@@ -80,7 +102,7 @@ export class StorageSingleChartComponent extends AbstractHistoryChart implements
                         effectivePowerL3 = result.data['_sum/EssActivePowerL3'];
                     }
 
-                    let totalData = effectivePower.map(value => {
+                    const totalData = effectivePower.map(value => {
                         if (value == null) {
                             return null;
                         } else {
@@ -88,7 +110,7 @@ export class StorageSingleChartComponent extends AbstractHistoryChart implements
                         }
                     });
 
-                    let totalDataL1 = effectivePowerL1.map(value => {
+                    const totalDataL1 = effectivePowerL1.map(value => {
                         if (value == null) {
                             return null;
                         } else {
@@ -96,7 +118,7 @@ export class StorageSingleChartComponent extends AbstractHistoryChart implements
                         }
                     });
 
-                    let totalDataL2 = effectivePowerL2.map(value => {
+                    const totalDataL2 = effectivePowerL2.map(value => {
                         if (value == null) {
                             return null;
                         } else {
@@ -104,7 +126,7 @@ export class StorageSingleChartComponent extends AbstractHistoryChart implements
                         }
                     });
 
-                    let totalDataL3 = effectivePowerL3.map(value => {
+                    const totalDataL3 = effectivePowerL3.map(value => {
                         if (value == null) {
                             return null;
                         } else {
@@ -114,7 +136,7 @@ export class StorageSingleChartComponent extends AbstractHistoryChart implements
 
                     this.getChannelAddresses(edge, config).then(async channelAddresses => {
                         channelAddresses.forEach(channelAddress => {
-                            let data = result.data[channelAddress.toString()]?.map(value => {
+                            const data = result.data[channelAddress.toString()]?.map(value => {
                                 if (value == null) {
                                     return null;
                                 } else {
@@ -181,7 +203,7 @@ export class StorageSingleChartComponent extends AbstractHistoryChart implements
             this.applyControllerSpecificChartOptions(this.options);
             this.loading = false;
             this.stopSpinner();
-        });;
+        });
 
     }
 
@@ -191,7 +213,7 @@ export class StorageSingleChartComponent extends AbstractHistoryChart implements
         options.scales[ChartAxis.LEFT].min = null;
         options.plugins.tooltip.callbacks.label = function (tooltipItem: Chart.TooltipItem<any>) {
             let label = tooltipItem.dataset.label;
-            let value = tooltipItem.dataset.data[tooltipItem.dataIndex];
+            const value = tooltipItem.dataset.data[tooltipItem.dataIndex];
             // 0.005 to prevent showing Charge or Discharge if value is e.g. 0.00232138
             if (value < -0.005) {
                 if (label.includes(translate.instant('General.phase'))) {
@@ -216,24 +238,4 @@ export class StorageSingleChartComponent extends AbstractHistoryChart implements
         this.options = options;
     }
 
-    protected getChannelAddresses(edge: Edge, config: EdgeConfig): Promise<ChannelAddress[]> {
-        return new Promise((resolve) => {
-            let result: ChannelAddress[] = [
-                new ChannelAddress('_sum', 'EssActivePower'),
-                new ChannelAddress('_sum', 'ProductionDcActualPower'),
-                new ChannelAddress('_sum', 'EssActivePowerL1'),
-                new ChannelAddress('_sum', 'EssActivePowerL2'),
-                new ChannelAddress('_sum', 'EssActivePowerL3'),
-            ];
-            resolve(result);
-        });
-    }
-
-    protected setLabel() {
-        this.options = this.createDefaultChartOptions();
-    }
-
-    public getChartHeight(): number {
-        return window.innerHeight / 21 * 9;
-    }
 }

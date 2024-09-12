@@ -18,7 +18,6 @@ import io.openems.common.utils.JsonUtils;
 import io.openems.edge.app.integratedsystem.TestFeneconHome;
 import io.openems.edge.app.integratedsystem.TestFeneconHome20;
 import io.openems.edge.app.integratedsystem.TestFeneconHome30;
-import io.openems.edge.app.integratedsystem.TestFeneconIndustrial;
 
 public class TestTranslations {
 
@@ -35,12 +34,16 @@ public class TestTranslations {
 			this.apps.add(new TestTranslation(Apps.feneconHome(t), true, TestFeneconHome.fullSettings()));
 			this.apps.add(new TestTranslation(Apps.feneconHome20(t), true, TestFeneconHome20.fullSettings()));
 			this.apps.add(new TestTranslation(Apps.feneconHome30(t), true, TestFeneconHome30.fullSettings()));
-			this.apps.add(new TestTranslation(Apps.feneconIsk010(t), true, TestFeneconIndustrial.fullSettings()));
-			this.apps.add(new TestTranslation(Apps.feneconIsk110(t), true, TestFeneconIndustrial.fullSettings()));
-			this.apps.add(new TestTranslation(Apps.feneconIsk011(t), true, TestFeneconIndustrial.fullSettings()));
 			this.apps.add(new TestTranslation(Apps.awattarHourly(t), true, new JsonObject()));
 			this.apps.add(new TestTranslation(Apps.entsoE(t), true, JsonUtils.buildJsonObject() //
 					.addProperty("BIDDING_ZONE", "GERMANY") //
+					.build()));
+			this.apps.add(new TestTranslation(Apps.groupeE(t), true, JsonUtils.buildJsonObject() //
+					.build()));
+			this.apps.add(new TestTranslation(Apps.rabotCharge(t), true, JsonUtils.buildJsonObject() //
+					.addProperty("ACCESS_TOKEN", "123456789") //
+					.build()));
+			this.apps.add(new TestTranslation(Apps.stadtwerkHassfurt(t), true, JsonUtils.buildJsonObject() //
 					.build()));
 			this.apps.add(new TestTranslation(Apps.stromdaoCorrently(t), true, JsonUtils.buildJsonObject() //
 					.addProperty("ZIP_CODE", "123456789") //
@@ -56,6 +59,10 @@ public class TestTranslations {
 			this.apps.add(new TestTranslation(Apps.restJsonApiReadOnly(t), true, new JsonObject()));
 			this.apps.add(new TestTranslation(Apps.restJsonApiReadWrite(t), true, JsonUtils.buildJsonObject() //
 					.addProperty("API_TIMEOUT", 60) //
+					.build()));
+			this.apps.add(new TestTranslation(Apps.timedataInfluxDb(t), true, JsonUtils.buildJsonObject() //
+					.addProperty("API_KEY", "123456789") //
+					.addProperty("BUCKET", "bucket")//
 					.build()));
 			this.apps.add(new TestTranslation(Apps.hardyBarthEvcs(t), true, new JsonObject()));
 			this.apps.add(new TestTranslation(Apps.kebaEvcs(t), true, new JsonObject()));
@@ -88,6 +95,10 @@ public class TestTranslations {
 					.build()));
 			this.apps.add(new TestTranslation(Apps.thresholdControl(t), false, JsonUtils.buildJsonObject() //
 					.add("OUTPUT_CHANNELS", JsonUtils.buildJsonArray().add("io0/Relay1").build()) //
+					.build()));
+			this.apps.add(new TestTranslation(Apps.discovergyMeter(t), false, JsonUtils.buildJsonObject() //
+					.addProperty("EMAIL", "test@test.test") //
+					.addProperty("PASSWORD", "xxxx") //
 					.build()));
 			this.apps.add(new TestTranslation(Apps.socomecMeter(t), false, JsonUtils.buildJsonObject() //
 					.addProperty("MODBUS_ID", "modbus0") //
@@ -129,6 +140,9 @@ public class TestTranslations {
 					.addProperty("METER_ID", "meter0") //
 					.build()));
 			this.apps.add(new TestTranslation(Apps.fixActivePower(t), true, JsonUtils.buildJsonObject() //
+					.addProperty("ESS_ID", "ess0") //
+					.build()));
+			this.apps.add(new TestTranslation(Apps.fixStateOfCharge(t), true, JsonUtils.buildJsonObject() //
 					.addProperty("ESS_ID", "ess0") //
 					.build()));
 			this.apps.add(new TestTranslation(Apps.powerPlantController(t), true, new JsonObject()));

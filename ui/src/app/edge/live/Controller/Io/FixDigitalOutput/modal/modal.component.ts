@@ -10,8 +10,8 @@ import { Edge, EdgeConfig, Service, Websocket } from 'src/app/shared/shared';
 })
 export class Controller_Io_FixDigitalOutputModalComponent {
 
-  @Input() public edge: Edge;
-  @Input() public component: EdgeConfig.Component;
+  @Input({ required: true }) public edge!: Edge;
+  @Input({ required: true }) public component!: EdgeConfig.Component;
 
   constructor(
     public service: Service,
@@ -27,12 +27,12 @@ export class Controller_Io_FixDigitalOutputModalComponent {
    * @param event
    */
   updateMode(event: CustomEvent) {
-    let oldMode = this.component.properties.isOn;
+    const oldMode = this.component.properties.isOn;
 
     // ion-segment button only supports string as type
     // https://ionicframework.com/docs/v4/api/segment-button
 
-    let newMode = (event.detail.value.toLowerCase() === 'true');
+    const newMode = (event.detail.value.toLowerCase() === 'true');
 
     this.edge.updateComponentConfig(this.websocket, this.component.id, [
       { name: 'isOn', value: newMode },

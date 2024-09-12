@@ -1,6 +1,7 @@
+// @ts-strict-ignore
 import { Component } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import { AbstractFlatWidget } from 'src/app/shared/genericComponents/flat/abstract-flat-widget';
+import { AbstractFlatWidget } from 'src/app/shared/components/flat/abstract-flat-widget';
 
 import { ChannelAddress, CurrentData, Utils } from '../../../../../shared/shared';
 import { Controller_Asymmetric_PeakShavingModalComponent } from './modal/modal.component';
@@ -17,6 +18,18 @@ export class Controller_Asymmetric_PeakShavingComponent extends AbstractFlatWidg
     public rechargePower: number;
     public readonly CONVERT_WATT_TO_KILOWATT = Utils.CONVERT_WATT_TO_KILOWATT;
 
+    async presentModal() {
+        const modal = await this.modalController.create({
+            component: Controller_Asymmetric_PeakShavingModalComponent,
+            componentProps: {
+                component: this.component,
+                edge: this.edge,
+                mostStressedPhase: this.mostStressedPhase,
+            },
+        });
+        return await modal.present();
+    }
+
     protected override getChannelAddresses() {
         this.meterId = this.component.properties['meter.id'];
         return [
@@ -29,13 +42,13 @@ export class Controller_Asymmetric_PeakShavingComponent extends AbstractFlatWidg
 
     protected override onCurrentData(currentData: CurrentData) {
 
-        let activePowerArray: number[] = [
+        const activePowerArray: number[] = [
             currentData.allComponents[this.meterId + '/ActivePowerL1'],
             currentData.allComponents[this.meterId + '/ActivePowerL2'],
             currentData.allComponents[this.meterId + '/ActivePowerL3'],
         ];
 
-        let name: string[] = ['L1', 'L2', 'L3'];
+        const name: string[] = ['L1', 'L2', 'L3'];
 
         this.mostStressedPhase.next({
 
@@ -48,15 +61,4 @@ export class Controller_Asymmetric_PeakShavingComponent extends AbstractFlatWidg
         this.rechargePower = this.component.properties['rechargePower'];
     }
 
-    async presentModal() {
-        const modal = await this.modalController.create({
-            component: Controller_Asymmetric_PeakShavingModalComponent,
-            componentProps: {
-                component: this.component,
-                edge: this.edge,
-                mostStressedPhase: this.mostStressedPhase,
-            },
-        });
-        return await modal.present();
-    }
 }

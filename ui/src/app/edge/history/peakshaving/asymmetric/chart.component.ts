@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
@@ -13,12 +14,8 @@ import { AbstractHistoryChart } from '../../abstracthistorychart';
 })
 export class AsymmetricPeakshavingChartComponent extends AbstractHistoryChart implements OnInit, OnChanges, OnDestroy {
 
-    @Input() public period: DefaultTypes.HistoryPeriod;
-    @Input() public component: EdgeConfig.Component;
-
-    ngOnChanges() {
-        this.updateChart();
-    }
+    @Input({ required: true }) public period!: DefaultTypes.HistoryPeriod;
+    @Input({ required: true }) public component!: EdgeConfig.Component;
 
     constructor(
         protected override service: Service,
@@ -26,6 +23,10 @@ export class AsymmetricPeakshavingChartComponent extends AbstractHistoryChart im
         private route: ActivatedRoute,
     ) {
         super("asymmetricpeakshaving-chart", service, translate);
+    }
+
+    ngOnChanges() {
+        this.updateChart();
     }
 
     ngOnInit() {
@@ -37,30 +38,34 @@ export class AsymmetricPeakshavingChartComponent extends AbstractHistoryChart im
         this.unsubscribeChartRefresh();
     }
 
+    public getChartHeight(): number {
+        return window.innerHeight / 1.3;
+    }
+
     protected updateChart() {
         this.autoSubscribeChartRefresh();
         this.startSpinner();
         this.loading = true;
         this.colors = [];
         this.queryHistoricTimeseriesData(this.period.from, this.period.to).then(response => {
-            let meterIdActivePowerL1 = this.component.properties['meter.id'] + '/ActivePowerL1';
-            let meterIdActivePowerL2 = this.component.properties['meter.id'] + '/ActivePowerL2';
-            let meterIdActivePowerL3 = this.component.properties['meter.id'] + '/ActivePowerL3';
-            let peakshavingPower = this.component.id + '/_PropertyPeakShavingPower';
-            let rechargePower = this.component.id + '/_PropertyRechargePower';
-            let result = response.result;
+            const meterIdActivePowerL1 = this.component.properties['meter.id'] + '/ActivePowerL1';
+            const meterIdActivePowerL2 = this.component.properties['meter.id'] + '/ActivePowerL2';
+            const meterIdActivePowerL3 = this.component.properties['meter.id'] + '/ActivePowerL3';
+            const peakshavingPower = this.component.id + '/_PropertyPeakShavingPower';
+            const rechargePower = this.component.id + '/_PropertyRechargePower';
+            const result = response.result;
             // convert labels
-            let labels: Date[] = [];
-            for (let timestamp of result.timestamps) {
+            const labels: Date[] = [];
+            for (const timestamp of result.timestamps) {
                 labels.push(new Date(timestamp));
             }
             this.labels = labels;
 
             // convert datasets
-            let datasets = [];
+            const datasets = [];
 
             if (meterIdActivePowerL1 in result.data) {
-                let data = result.data[meterIdActivePowerL1].map(value => {
+                const data = result.data[meterIdActivePowerL1].map(value => {
                     if (value == null) {
                         return null;
                     } else if (value == 0) {
@@ -77,7 +82,7 @@ export class AsymmetricPeakshavingChartComponent extends AbstractHistoryChart im
                 this.colors.push(this.phase1Color);
             }
             if (meterIdActivePowerL2 in result.data) {
-                let data = result.data[meterIdActivePowerL2].map(value => {
+                const data = result.data[meterIdActivePowerL2].map(value => {
                     if (value == null) {
                         return null;
                     } else if (value == 0) {
@@ -94,7 +99,7 @@ export class AsymmetricPeakshavingChartComponent extends AbstractHistoryChart im
                 this.colors.push(this.phase2Color);
             }
             if (meterIdActivePowerL3 in result.data) {
-                let data = result.data[meterIdActivePowerL3].map(value => {
+                const data = result.data[meterIdActivePowerL3].map(value => {
                     if (value == null) {
                         return null;
                     } else if (value == 0) {
@@ -111,7 +116,7 @@ export class AsymmetricPeakshavingChartComponent extends AbstractHistoryChart im
                 this.colors.push(this.phase3Color);
             }
             if (rechargePower in result.data) {
-                let data = result.data[rechargePower].map(value => {
+                const data = result.data[rechargePower].map(value => {
                     if (value == null) {
                         return null;
                     } else if (value == 0) {
@@ -132,7 +137,7 @@ export class AsymmetricPeakshavingChartComponent extends AbstractHistoryChart im
                 });
             }
             if (peakshavingPower in result.data) {
-                let data = result.data[peakshavingPower].map(value => {
+                const data = result.data[peakshavingPower].map(value => {
                     if (value == null) {
                         return null;
                     } else if (value == 0) {
@@ -164,7 +169,7 @@ export class AsymmetricPeakshavingChartComponent extends AbstractHistoryChart im
                 } else {
                     effectivePower = result.data['_sum/EssActivePower'];
                 }
-                let chargeData = effectivePower.map(value => {
+                const chargeData = effectivePower.map(value => {
                     if (value == null) {
                         return null;
                     } else if (value < 0) {
@@ -184,7 +189,7 @@ export class AsymmetricPeakshavingChartComponent extends AbstractHistoryChart im
                 /*
                  * Storage Discharge
                  */
-                let dischargeData = effectivePower.map(value => {
+                const dischargeData = effectivePower.map(value => {
                     if (value == null) {
                         return null;
                     } else if (value > 0) {
@@ -214,12 +219,12 @@ export class AsymmetricPeakshavingChartComponent extends AbstractHistoryChart im
             this.unit = YAxisTitle.ENERGY;
             await this.setOptions(this.options);
             this.stopSpinner();
-        });;
+        });
     }
 
     protected getChannelAddresses(edge: Edge, config: EdgeConfig): Promise<ChannelAddress[]> {
         return new Promise((resolve) => {
-            let result: ChannelAddress[] = [
+            const result: ChannelAddress[] = [
                 new ChannelAddress(this.component.id, '_PropertyPeakShavingPower'),
                 new ChannelAddress(this.component.id, '_PropertyRechargePower'),
                 new ChannelAddress(this.component.properties['meter.id'], 'ActivePowerL1'),
@@ -236,7 +241,4 @@ export class AsymmetricPeakshavingChartComponent extends AbstractHistoryChart im
         this.options = this.createDefaultChartOptions();
     }
 
-    public getChartHeight(): number {
-        return window.innerHeight / 1.3;
-    }
 }

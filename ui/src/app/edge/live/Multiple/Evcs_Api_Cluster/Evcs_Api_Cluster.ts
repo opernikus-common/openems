@@ -1,5 +1,6 @@
+// @ts-strict-ignore
 import { Component } from '@angular/core';
-import { AbstractFlatWidget } from 'src/app/shared/genericComponents/flat/abstract-flat-widget';
+import { AbstractFlatWidget } from 'src/app/shared/components/flat/abstract-flat-widget';
 
 import { ChannelAddress, CurrentData, EdgeConfig, Utils } from '../../../../shared/shared';
 import { Evcs_Api_ClusterModalComponent } from './modal/evcsCluster-modal.page';
@@ -11,20 +12,33 @@ import { Evcs_Api_ClusterModalComponent } from './modal/evcsCluster-modal.page';
 export class Evcs_Api_ClusterComponent extends AbstractFlatWidget {
 
   public channelAddresses: ChannelAddress[] = [];
-  public evcsIdsInCluster: String[] = [];
+  public evcsIdsInCluster: string[] = [];
   public evcssInCluster: EdgeConfig.Component[] = [];
-  public evcsComponent: EdgeConfig.Component = null;
+  public evcsComponent: EdgeConfig.Component | null = null;
   public evcsMap: { [sourceId: string]: EdgeConfig.Component } = {};
   public isConnectionSuccessful: boolean;
   public alias: string;
   public readonly CONVERT_TO_WATT = Utils.CONVERT_TO_WATT;
 
+  async presentModal() {
+    const modal = await this.modalController.create({
+      component: Evcs_Api_ClusterModalComponent,
+      componentProps: {
+        config: this.component,
+        edge: this.edge,
+        componentId: this.componentId,
+        evcsMap: this.evcsMap,
+      },
+    });
+    return await modal.present();
+  }
+
   protected override getChannelAddresses() {
 
     this.evcsIdsInCluster = this.config.components[this.componentId].properties["evcs.ids"];
-    let nature = 'io.openems.edge.evcs.api.Evcs';
+    const nature = 'io.openems.edge.evcs.api.Evcs';
 
-    for (let component of this.config.getComponentsImplementingNature(nature)) {
+    for (const component of this.config.getComponentsImplementingNature(nature)) {
       if (this.evcsIdsInCluster.includes(component.id)) {
         this.evcssInCluster.push(component);
         this.fillChannelAddresses(component.id, this.channelAddresses);
@@ -54,7 +68,7 @@ export class Evcs_Api_ClusterComponent extends AbstractFlatWidget {
       this.evcsMap[evcs.id] = null;
     });
 
-    let controllers = this.config.getComponentsByFactory("Controller.Evcs");
+    const controllers = this.config.getComponentsByFactory("Controller.Evcs");
 
     // Adds the controllers to the each charging stations
     controllers.forEach(controller => {
@@ -80,16 +94,4 @@ export class Evcs_Api_ClusterComponent extends AbstractFlatWidget {
     );
   }
 
-  async presentModal() {
-    const modal = await this.modalController.create({
-      component: Evcs_Api_ClusterModalComponent,
-      componentProps: {
-        config: this.component,
-        edge: this.edge,
-        componentId: this.componentId,
-        evcsMap: this.evcsMap,
-      },
-    });
-    return await modal.present();
-  }
 }

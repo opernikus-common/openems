@@ -4,24 +4,20 @@ ARG JAVA_VERSION=21
 FROM --platform=$BUILDPLATFORM eclipse-temurin:${JAVA_VERSION}-alpine AS build_backend
 
 WORKDIR /src
+ENV OEMS_BACKEND_OUTPUT=/opt/openems-backend.jar
 RUN --mount=type=bind,target=.,readwrite \
     --mount=type=cache,target=/root/.gradle \
-        ./gradlew --no-build-cache assemble && \
-        ./gradlew --no-build-cache buildBackend && \
-        cp build/openems-backend.jar /opt
+        ./gradlew --no-build-cache buildBackend
 
 ### Build jar container base
 FROM ghcr.io/linuxserver/baseimage-alpine:edge AS base_container
 
 ARG JAVA_VERSION
 
-RUN wget -O /etc/apk/keys/adoptium.rsa.pub https://packages.adoptium.net/artifactory/api/security/keypair/public/repositories/apk  && \
-    echo 'https://packages.adoptium.net/artifactory/apk/alpine/main' >> /etc/apk/repositories
-
 RUN apk update && apk upgrade
 
 RUN apk add --no-cache \
-    temurin-${JAVA_VERSION}-jre
+    openjdk${JAVA_VERSION}-jre
 
 ### Build backend container
 FROM base_container

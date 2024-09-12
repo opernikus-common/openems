@@ -1,5 +1,6 @@
-import { Edge } from '../edge/edge';
-import { EdgeConfig } from '../edge/edgeconfig';
+// @ts-strict-ignore
+import { Edge } from '../components/edge/edge';
+import { EdgeConfig } from '../components/edge/edgeconfig';
 
 export enum WidgetClass {
     'Energymonitor',
@@ -9,7 +10,7 @@ export enum WidgetClass {
     'Grid',
     'Common_Production',
     'Consumption',
-    'Controller_ChannelThreshold'
+    'Controller_ChannelThreshold',
 }
 
 export enum WidgetNature {
@@ -41,18 +42,41 @@ export type Icon = {
     color: string;
     size: string;
     name: string;
-}
+};
 
 export class Widget {
-    public name: WidgetNature | WidgetFactory | String;
+    public name: WidgetNature | WidgetFactory | string;
     public componentId: string;
 }
 
 export class Widgets {
+    /**
+     * Names of Widgets.
+     */
+    public readonly names: string[] = [];
+
+    private constructor(
+        /**
+         * List of all Widgets.
+         */
+        public readonly list: Widget[],
+        /**
+         * List of Widget-Classes.
+         */
+        public readonly classes: string[],
+    ) {
+        // fill names
+        for (const widget of list) {
+            const name: string = widget.name.toString();
+            if (!this.names.includes(name)) {
+                this.names.push(name);
+            }
+        }
+    }
 
     public static parseWidgets(edge: Edge, config: EdgeConfig): Widgets {
 
-        let classes: String[] = Object.values(WidgetClass) //
+        const classes: string[] = Object.values(WidgetClass) //
             .filter(v => typeof v === 'string')
             .filter(clazz => {
                 if (!edge.isVersionAtLeast('2018.8')) {
@@ -78,13 +102,13 @@ export class Widgets {
                         return config.hasProducer();
                     case 'Controller_ChannelThreshold':
                         return config.getComponentIdsByFactory('Controller.ChannelThreshold')?.length > 0;
-                };
+                }
                 return false;
             }).map(clazz => clazz.toString());
-        let list: Widget[] = [];
+        const list: Widget[] = [];
 
-        for (let nature of Object.values(WidgetNature).filter(v => typeof v === 'string')) {
-            for (let componentId of config.getComponentIdsImplementingNature(nature.toString())) {
+        for (const nature of Object.values(WidgetNature).filter(v => typeof v === 'string')) {
+            for (const componentId of config.getComponentIdsImplementingNature(nature.toString())) {
                 if (nature === 'io.openems.edge.io.api.DigitalInput' && list.some(e => e.name === 'io.openems.edge.io.api.DigitalInput')) {
                     continue;
                 }
@@ -93,8 +117,8 @@ export class Widgets {
                 }
             }
         }
-        for (let factory of Object.values(WidgetFactory).filter(v => typeof v === 'string')) {
-            for (let componentId of config.getComponentIdsByFactory(factory.toString())) {
+        for (const factory of Object.values(WidgetFactory).filter(v => typeof v === 'string')) {
+            for (const componentId of config.getComponentIdsByFactory(factory.toString())) {
                 if (config.getComponent(componentId).isEnabled) {
                     list.push({ name: factory, componentId: componentId });
                 }
@@ -123,32 +147,7 @@ export class Widgets {
         });
         return new Widgets(list, classes);
     }
-
-    /**
-     * Names of Widgets.
-     */
-    public readonly names: string[] = [];
-
-    private constructor(
-        /**
-         * List of all Widgets.
-         */
-        public readonly list: Widget[],
-        /**
-         * List of Widget-Classes.
-         */
-        public readonly classes: String[],
-    ) {
-        // fill names
-        for (let widget of list) {
-            let name: string = widget.name.toString();
-            if (!this.names.includes(name)) {
-                this.names.push(name);
-            }
-        }
-    }
 }
 
 export enum ProductType {
-    HOME = "home"
 }

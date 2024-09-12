@@ -12,18 +12,18 @@ import { AbstractHistoryWidget } from '../abstracthistorywidget';
 })
 export class HeatingelementWidgetComponent extends AbstractHistoryWidget implements OnInit, OnChanges, OnDestroy {
 
-    @Input() public period: DefaultTypes.HistoryPeriod;
-    @Input() public componentId: string;
-
     private static readonly SELECTOR = "heatingelementWidget";
+    @Input({ required: true }) public period!: DefaultTypes.HistoryPeriod;
+    @Input({ required: true }) public componentId!: string;
 
-    public component: EdgeConfig.Component = null;
+
+    public component: EdgeConfig.Component | null = null;
 
     public activeTimeOverPeriodLevel1: number | null = null;
     public activeTimeOverPeriodLevel2: number | null = null;
     public activeTimeOverPeriodLevel3: number | null = null;
 
-    public edge: Edge = null;
+    public edge: Edge | null = null;
 
     constructor(
         public override service: Service,
@@ -47,12 +47,12 @@ export class HeatingelementWidgetComponent extends AbstractHistoryWidget impleme
 
     ngOnChanges() {
         this.updateValues();
-    };
+    }
 
     public getCumulativeValue(channeladdress: string, response: QueryHistoricTimeseriesDataResponse) {
-        let array = response.result.data[channeladdress];
-        let firstValue = array.find(el => el != null) ?? 0;
-        let lastValue = array.slice().reverse().find(el => el != null) ?? 0;
+        const array = response.result.data[channeladdress];
+        const firstValue = array.find(el => el != null) ?? 0;
+        const lastValue = array.slice().reverse().find(el => el != null) ?? 0;
         return lastValue - firstValue;
     }
 
@@ -62,11 +62,11 @@ export class HeatingelementWidgetComponent extends AbstractHistoryWidget impleme
             this.activeTimeOverPeriodLevel2 = this.getCumulativeValue(this.componentId + '/Level2CumulatedTime', response);
             this.activeTimeOverPeriodLevel3 = this.getCumulativeValue(this.componentId + '/Level3CumulatedTime', response);
         });
-    };
+    }
 
     protected getChannelAddresses(edge: Edge, config: EdgeConfig): Promise<ChannelAddress[]> {
         return new Promise((resolve) => {
-            let channeladdresses = [
+            const channeladdresses = [
                 new ChannelAddress(this.componentId, 'Level1CumulatedTime'),
                 new ChannelAddress(this.componentId, 'Level2CumulatedTime'),
                 new ChannelAddress(this.componentId, 'Level3CumulatedTime'),

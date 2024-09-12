@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
@@ -14,12 +15,9 @@ import { AbstractHistoryChart } from '../abstracthistorychart';
 })
 export class HeatPumpChartComponent extends AbstractHistoryChart implements OnInit, OnChanges, OnDestroy {
 
-    @Input() public period: DefaultTypes.HistoryPeriod;
-    @Input() public component: EdgeConfig.Component;
+    @Input({ required: true }) public period!: DefaultTypes.HistoryPeriod;
+    @Input({ required: true }) public component!: EdgeConfig.Component;
 
-    ngOnChanges() {
-        this.updateChart();
-    }
 
     constructor(
         protected override service: Service,
@@ -27,6 +25,10 @@ export class HeatPumpChartComponent extends AbstractHistoryChart implements OnIn
         private route: ActivatedRoute,
     ) {
         super("heatpump-chart", service, translate);
+    }
+
+    ngOnChanges() {
+        this.updateChart();
     }
 
     ngOnInit() {
@@ -38,26 +40,30 @@ export class HeatPumpChartComponent extends AbstractHistoryChart implements OnIn
         this.unsubscribeChartRefresh();
     }
 
+    public getChartHeight(): number {
+        return window.innerHeight / 1.3;
+    }
+
     protected updateChart() {
         this.autoSubscribeChartRefresh();
         this.startSpinner();
         this.loading = true;
         this.colors = [];
         this.queryHistoricTimeseriesData(this.period.from, this.period.to).then(response => {
-            let result = response.result;
+            const result = response.result;
             // convert labels
-            let labels: Date[] = [];
-            for (let timestamp of result.timestamps) {
+            const labels: Date[] = [];
+            for (const timestamp of result.timestamps) {
                 labels.push(new Date(timestamp));
             }
             this.labels = labels;
 
             // convert datasets
-            let datasets = [];
+            const datasets = [];
 
             if (this.component.id + '/Status' in result.data) {
 
-                let stateTimeData = result.data[this.component.id + '/Status'].map(value => {
+                const stateTimeData = result.data[this.component.id + '/Status'].map(value => {
                     if (value == null) {
                         return null;
                     } else {
@@ -95,8 +101,12 @@ export class HeatPumpChartComponent extends AbstractHistoryChart implements OnIn
         });
     }
 
+    protected setLabel() {
+        this.options = this.createDefaultChartOptions();
+    }
+
     private applyControllerSpecificOptions(options: Chart.ChartOptions) {
-        let translate = this.translate;
+        const translate = this.translate;
         options.scales[ChartAxis.LEFT]['title'].text = this.translate.instant('General.state');
         options.scales[ChartAxis.LEFT].ticks.callback = function (label, index, labels) {
             switch (label) {
@@ -114,8 +124,8 @@ export class HeatPumpChartComponent extends AbstractHistoryChart implements OnIn
         };
 
         options.plugins.tooltip.callbacks.label = function (tooltipItem: Chart.TooltipItem<any>) {
-            let label = tooltipItem.dataset.label;
-            let value = tooltipItem.dataset.data[tooltipItem.dataIndex];
+            const label = tooltipItem.dataset.label;
+            const value = tooltipItem.dataset.data[tooltipItem.dataIndex];
             let toolTipValue;
             switch (value) {
                 case -1:
@@ -146,11 +156,4 @@ export class HeatPumpChartComponent extends AbstractHistoryChart implements OnIn
         this.options = options;
     }
 
-    protected setLabel() {
-        this.options = this.createDefaultChartOptions();
-    }
-
-    public getChartHeight(): number {
-        return window.innerHeight / 1.3;
-    }
 }

@@ -1,6 +1,6 @@
-import { LINE_INFO } from "src/app/shared/edge/edgeconfig.spec";
-import { OeFormlyViewTester } from "src/app/shared/genericComponents/shared/testing/tester";
-import { sharedSetup, TestContext } from "src/app/shared/test/utils.spec";
+import { LINE_INFO } from "src/app/shared/components/edge/edgeconfig.spec";
+import { OeFormlyViewTester } from "src/app/shared/components/shared/testing/tester";
+import { sharedSetup, TestContext } from "src/app/shared/components/shared/testing/utils.spec";
 
 import { ModalComponent } from "./modal";
 
@@ -10,7 +10,7 @@ export function expectView(testContext: TestContext, viewContext: OeFormlyViewTe
 
   const generatedView = OeFormlyViewTester.apply(ModalComponent.generateView(testContext.translate), viewContext);
   expect(generatedView).toEqual(view);
-};
+}
 
 describe('Autarchy - Modal', () => {
   let TEST_CONTEXT: TestContext;

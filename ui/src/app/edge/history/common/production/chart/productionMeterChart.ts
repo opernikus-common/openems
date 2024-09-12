@@ -1,5 +1,6 @@
+// @ts-strict-ignore
 import { Component } from '@angular/core';
-import { AbstractHistoryChart } from 'src/app/shared/genericComponents/chart/abstracthistorychart';
+import { AbstractHistoryChart } from 'src/app/shared/components/chart/abstracthistorychart';
 import { QueryHistoricTimeseriesEnergyResponse } from 'src/app/shared/jsonrpc/response/queryHistoricTimeseriesEnergyResponse';
 import { ChartAxis, HistoryUtils, YAxisTitle } from 'src/app/shared/service/utils';
 
@@ -8,12 +9,12 @@ import { ChannelAddress } from '../../../../../shared/shared';
 /** Will be used in the Future again */
 @Component({
   selector: 'productionMeterchart',
-  templateUrl: '../../../../../shared/genericComponents/chart/abstracthistorychart.html',
+  templateUrl: '../../../../../shared/components/chart/abstracthistorychart.html',
 })
 export class ProductionMeterChartComponent extends AbstractHistoryChart {
 
   protected override getChartData(): HistoryUtils.ChartData {
-    let channels: HistoryUtils.InputChannel[] = [{
+    const channels: HistoryUtils.InputChannel[] = [{
       name: 'ActivePower',
       powerChannel: ChannelAddress.fromString(this.component.id + '/ActivePower'),
       energyChannel: ChannelAddress.fromString(this.component.id + '/ActiveProductionEnergy'),
@@ -32,7 +33,7 @@ export class ProductionMeterChartComponent extends AbstractHistoryChart {
     return {
       input: channels,
       output: (data: HistoryUtils.ChannelData) => {
-        let datasets: HistoryUtils.DisplayValues[] = [];
+        const datasets: HistoryUtils.DisplayValue[] = [];
         datasets.push({
           name: this.translate.instant('General.production'),
           nameSuffix: (energyPeriodResponse: QueryHistoricTimeseriesEnergyResponse) => {

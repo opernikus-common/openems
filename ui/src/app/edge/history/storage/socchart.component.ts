@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
@@ -13,12 +14,8 @@ import { AbstractHistoryChart } from '../abstracthistorychart';
 })
 export class SocStorageChartComponent extends AbstractHistoryChart implements OnInit, OnChanges, OnDestroy {
 
-    @Input() public period: DefaultTypes.HistoryPeriod;
+    @Input({ required: true }) public period!: DefaultTypes.HistoryPeriod;
     private emergencyCapacityReserveComponents: EdgeConfig.Component[] = [];
-
-    public ngOnChanges() {
-        this.updateChart();
-    }
 
     constructor(
         protected override service: Service,
@@ -26,6 +23,14 @@ export class SocStorageChartComponent extends AbstractHistoryChart implements On
         private route: ActivatedRoute,
     ) {
         super("storage-single-chart", service, translate);
+    }
+
+    public getChartHeight(): number {
+        return window.innerHeight / 21 * 9;
+    }
+
+    public ngOnChanges() {
+        this.updateChart();
     }
 
     public ngOnInit() {
@@ -45,22 +50,22 @@ export class SocStorageChartComponent extends AbstractHistoryChart implements On
         this.queryHistoricTimeseriesData(this.period.from, this.period.to).then(response => {
             this.service.getCurrentEdge().then(edge => {
                 this.service.getConfig().then(config => {
-                    let result = response.result;
+                    const result = response.result;
                     // convert labels
-                    let labels: Date[] = [];
-                    for (let timestamp of result.timestamps) {
+                    const labels: Date[] = [];
+                    for (const timestamp of result.timestamps) {
                         labels.push(new Date(timestamp));
                     }
                     this.labels = labels;
 
                     // convert datasets
-                    let datasets = [];
-                    let moreThanOneESS = Object.keys(result.data).length > 1 ? true : false;
+                    const datasets = [];
+                    const moreThanOneESS = Object.keys(result.data).length > 1 ? true : false;
                     this.getChannelAddresses(edge, config)
                         .then(channelAddresses => {
                             channelAddresses.forEach(channelAddress => {
-                                let component = config.getComponent(channelAddress.componentId);
-                                let data = result.data[channelAddress.toString()]?.map(value => {
+                                const component = config.getComponent(channelAddress.componentId);
+                                const data = result.data[channelAddress.toString()]?.map(value => {
                                     if (value == null) {
                                         return null;
                                     } else if (value > 100 || value < 0) {
@@ -96,7 +101,7 @@ export class SocStorageChartComponent extends AbstractHistoryChart implements On
                                 if (channelAddress.channelId === 'ActualReserveSoc') {
                                     datasets.push({
                                         label:
-                                            this.emergencyCapacityReserveComponents.length > 1 ? component.alias : this.translate.instant("Edge.Index.EmergencyReserve.emergencyReserve"),
+                                            this.emergencyCapacityReserveComponents.length > 1 ? component.alias : this.translate.instant("Edge.Index.EmergencyReserve.EMERGENCY_RESERVE"),
                                         data: data,
                                         borderDash: [3, 3],
 
@@ -163,7 +168,4 @@ export class SocStorageChartComponent extends AbstractHistoryChart implements On
         this.options = this.createDefaultChartOptions();
     }
 
-    public getChartHeight(): number {
-        return window.innerHeight / 21 * 9;
-    }
 }

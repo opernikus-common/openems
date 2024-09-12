@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AbstractFlatWidget } from 'src/app/shared/genericComponents/flat/abstract-flat-widget';
+import { AbstractFlatWidget } from 'src/app/shared/components/flat/abstract-flat-widget';
 import { ChannelAddress, Currency, CurrentData, Utils } from 'src/app/shared/shared';
 
 import { ModalComponent } from '../modal/modal';
@@ -12,7 +12,8 @@ export class FlatComponent extends AbstractFlatWidget implements OnInit {
 
     protected readonly CONVERT_MODE_TO_MANUAL_OFF_AUTOMATIC = Utils.CONVERT_MODE_TO_MANUAL_OFF_AUTOMATIC(this.translate);
     protected readonly CONVERT_TIME_OF_USE_TARIFF_STATE = Utils.CONVERT_TIME_OF_USE_TARIFF_STATE(this.translate);
-    protected priceWithCurrency: any;
+
+    protected priceWithCurrency: string = "-";
 
     async presentModal() {
         const modal = await this.modalController.create({
@@ -31,8 +32,8 @@ export class FlatComponent extends AbstractFlatWidget implements OnInit {
     }
 
     protected override onCurrentData(currentData: CurrentData): void {
-        var quarterlyPrice = currentData.allComponents[this.component.id + '/QuarterlyPrices'];
-        var currencyLabel: string = Currency.getCurrencyLabelByEdgeId(this.edge.id);
+        const quarterlyPrice = currentData.allComponents[this.component.id + '/QuarterlyPrices'];
+        const currencyLabel: string = Currency.getCurrencyLabelByEdgeId(this.edge.id);
         this.priceWithCurrency = Utils.CONVERT_PRICE_TO_CENT_PER_KWH(2, currencyLabel)(quarterlyPrice);
     }
 }

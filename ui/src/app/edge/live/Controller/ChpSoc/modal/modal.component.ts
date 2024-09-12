@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
@@ -16,10 +17,10 @@ export class Controller_ChpSocModalComponent implements OnInit {
 
     private static readonly SELECTOR = "chpsoc-modal";
 
-    @Input() public edge: Edge;
-    @Input() public component: EdgeConfig.Component;
-    @Input() public outputChannel: ChannelAddress;
-    @Input() public inputChannel: ChannelAddress;
+    @Input({ required: true }) public edge!: Edge;
+    @Input({ required: true }) public component!: EdgeConfig.Component;
+    @Input({ required: true }) public outputChannel!: ChannelAddress;
+    @Input({ required: true }) public inputChannel!: ChannelAddress;
 
     public thresholds: RangeValue = {
         lower: null,
@@ -37,7 +38,7 @@ export class Controller_ChpSocModalComponent implements OnInit {
     ngOnInit() {
         this.thresholds['lower'] = this.component.properties['lowThreshold'];
         this.thresholds['upper'] = this.component.properties['highThreshold'];
-    };
+    }
 
     /**
     * Updates the Charge-Mode of the EVCS-Controller.
@@ -45,7 +46,7 @@ export class Controller_ChpSocModalComponent implements OnInit {
     * @param event
     */
     updateMode(event: CustomEvent) {
-        let oldMode = this.component.properties.mode;
+        const oldMode = this.component.properties.mode;
         let newMode: mode;
 
         switch (event.detail.value) {
@@ -80,11 +81,11 @@ export class Controller_ChpSocModalComponent implements OnInit {
     * @param event
     */
     updateThresholds() {
-        let oldLowerThreshold = this.component.properties['lowThreshold'];
-        let oldUpperThreshold = this.component.properties['highThreshold'];
+        const oldLowerThreshold = this.component.properties['lowThreshold'];
+        const oldUpperThreshold = this.component.properties['highThreshold'];
 
-        let newLowerThreshold = this.thresholds['lower'];
-        let newUpperThreshold = this.thresholds['upper'];
+        const newLowerThreshold = this.thresholds['lower'];
+        const newUpperThreshold = this.thresholds['upper'];
 
         // prevents automatic update when no values have changed
         if (this.edge != null && (oldLowerThreshold != newLowerThreshold || oldUpperThreshold != newUpperThreshold)) {

@@ -1,18 +1,21 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { environment } from 'src/environments';
+
 import { ChangelogViewComponent } from './changelog/view/view';
 import { EdgeComponent } from './edge/edge.component';
-import { OverviewComponent as ChannelthresholdChartOverviewComponent } from './edge/history/Controller/ChannelThreshold/overview/overview';
-import { OverviewComponent as TimeOfUseTariffOverviewComponent } from './edge/history/Controller/Ess/TimeOfUseTariff/overview/overview';
 import { OverviewComponent as AutarchyChartOverviewComponent } from './edge/history/common/autarchy/overview/overview';
+import { DetailsOverviewComponent as ConsumptionDetailsOverviewComponent } from './edge/history/common/consumption/details/details.overview';
 import { OverviewComponent as ConsumptionChartOverviewComponent } from './edge/history/common/consumption/overview/overview';
 import { OverviewComponent as GridChartOverviewComponent } from './edge/history/common/grid/overview/overview';
+import { DetailsOverviewComponent } from './edge/history/common/production/details/details.overview';
 import { OverviewComponent as ProductionChartOverviewComponent } from './edge/history/common/production/overview/overview';
 import { OverviewComponent as SelfconsumptionChartOverviewComponent } from './edge/history/common/selfconsumption/overview/overview';
+import { OverviewComponent as ChannelthresholdChartOverviewComponent } from './edge/history/Controller/ChannelThreshold/overview/overview';
+import { OverviewComponent as TimeOfUseTariffOverviewComponent } from './edge/history/Controller/Ess/TimeOfUseTariff/overview/overview';
+import { OverviewComponent as GridOptimizedChargeChartOverviewComponent } from './edge/history/Controller/Ess/GridoptimizedCharge/overview/overview';
 import { DelayedSellToGridChartOverviewComponent } from './edge/history/delayedselltogrid/symmetricpeakshavingchartoverview/delayedselltogridchartoverview.component';
 import { FixDigitalOutputChartOverviewComponent } from './edge/history/fixdigitaloutput/fixdigitaloutputchartoverview/fixdigitaloutputchartoverview.component';
-import { GridOptimizedChargeChartOverviewComponent } from './edge/history/gridoptimizedcharge/gridoptimizedchargechartoverview/gridoptimizedchargechartoverview.component';
 import { HeatingelementChartOverviewComponent } from './edge/history/heatingelement/heatingelementchartoverview/heatingelementchartoverview.component';
 import { HeatPumpChartOverviewComponent } from './edge/history/heatpump/heatpumpchartoverview/heatpumpchartoverview.component';
 import { HistoryComponent as EdgeHistoryComponent } from './edge/history/history.component';
@@ -35,29 +38,33 @@ import { IndexComponent as EdgeSettingsComponentInstallIndexComponentComponent }
 import { ComponentInstallComponent as EdgeSettingsComponentInstallComponentComponent } from './edge/settings/component/install/install.component';
 import { IndexComponent as EdgeSettingsComponentUpdateIndexComponentComponent } from './edge/settings/component/update/index.component';
 import { ComponentUpdateComponent as EdgeSettingsComponentUpdateComponentComponent } from './edge/settings/component/update/update.component';
+import { JsonrpcTestComponent } from './edge/settings/jsonrpctest/jsonrpctest';
 import { NetworkComponent as EdgeSettingsNetworkComponent } from './edge/settings/network/network.component';
+import { PowerAssistantComponent } from './edge/settings/powerassistant/powerassistant';
 import { AliasUpdateComponent } from './edge/settings/profile/aliasupdate.component';
 import { ProfileComponent as EdgeSettingsProfileComponent } from './edge/settings/profile/profile.component';
 import { SettingsComponent as EdgeSettingsComponent } from './edge/settings/settings.component';
+import { SystemComponent as EdgeSettingsSystemComponent } from './edge/settings/system/system.component';
 import { SystemExecuteComponent as EdgeSettingsSystemExecuteComponent } from './edge/settings/systemexecute/systemexecute.component';
 import { SystemLogComponent as EdgeSettingsSystemLogComponent } from './edge/settings/systemlog/systemlog.component';
-import { SystemUpdateComponent as EdgeSettingsSystemUpdateComponent } from './edge/settings/systemupdate/systemupdate.component';
 import { LoginComponent } from './index/login.component';
 import { OverViewComponent } from './index/overview/overview.component';
-import { DataService } from './shared/genericComponents/shared/dataservice';
+import { LoadingScreenComponent } from './index/shared/loading-screen';
+import { DataService } from './shared/components/shared/dataservice';
 import { UserComponent } from './user/user.component';
+import { CurrentAndVoltageOverviewComponent } from './shared/components/edge/meter/currentVoltage/currentVoltage.overview';
 
 const routes: Routes = [
 
   // TODO should be removed in the future
-  { path: 'index', redirectTo: 'login', pathMatch: 'full' },
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
+  { path: '', redirectTo: 'index', pathMatch: 'full' },
+  { path: 'index', component: LoadingScreenComponent },
   { path: 'login', component: LoginComponent, data: { navbarTitle: environment.uiTitle } },
 
   { path: 'overview', component: OverViewComponent },
 
   { path: 'user', component: UserComponent },
-  { path: 'changelog', component: ChangelogViewComponent },
+  { path: 'changelog', component: ChangelogViewComponent, data: { navbarTitleToBeTranslated: 'Menu.changelog' } },
 
   // Edge Pages
   {
@@ -88,8 +95,12 @@ const routes: Routes = [
           { path: ':componentId/timeslotpeakshavingchart', component: TimeslotPeakshavingChartOverviewComponent },
           { path: 'autarchychart', component: AutarchyChartOverviewComponent },
           { path: 'consumptionchart', component: ConsumptionChartOverviewComponent },
+          { path: 'consumptionchart/:componentId', component: ConsumptionDetailsOverviewComponent },
+          { path: 'consumptionchart/:componentId/currentVoltage', component: CurrentAndVoltageOverviewComponent },
           { path: 'gridchart', component: GridChartOverviewComponent },
           { path: 'productionchart', component: ProductionChartOverviewComponent },
+          { path: 'productionchart/:componentId', component: DetailsOverviewComponent },
+          { path: 'productionchart/:componentId/currentVoltage', component: CurrentAndVoltageOverviewComponent },
           { path: 'selfconsumptionchart', component: SelfconsumptionChartOverviewComponent },
           { path: 'storagechart', component: StorageChartOverviewComponent },
 
@@ -100,27 +111,29 @@ const routes: Routes = [
 
       { path: 'settings', data: { navbarTitleToBeTranslated: 'Menu.edgeSettings' }, component: EdgeSettingsComponent },
       { path: 'settings/channels', component: EdgeSettingsChannelsComponent },
-      { path: 'settings/component.install', component: EdgeSettingsComponentInstallIndexComponentComponent },
-      { path: 'settings/component.install/:factoryId', component: EdgeSettingsComponentInstallComponentComponent },
-      { path: 'settings/component.update', component: EdgeSettingsComponentUpdateIndexComponentComponent },
-      { path: 'settings/component.update/:componentId', component: EdgeSettingsComponentUpdateComponentComponent },
-      { path: 'settings/network', component: EdgeSettingsNetworkComponent },
+      { path: 'settings/component.install', component: EdgeSettingsComponentInstallIndexComponentComponent, data: { navbarTitleToBeTranslated: 'Edge.Config.Index.addComponents' } },
+      { path: 'settings/component.install/:factoryId', component: EdgeSettingsComponentInstallComponentComponent, data: { navbarTitleToBeTranslated: 'Edge.Config.Index.addComponents' } },
+      { path: 'settings/component.update', component: EdgeSettingsComponentUpdateIndexComponentComponent, data: { navbarTitleToBeTranslated: 'Edge.Config.Index.adjustComponents' } },
+      { path: 'settings/component.update/:componentId', component: EdgeSettingsComponentUpdateComponentComponent, data: { navbarTitleToBeTranslated: 'Edge.Config.Index.adjustComponents' } },
+      { path: 'settings/network', component: EdgeSettingsNetworkComponent, data: { navbarTitleToBeTranslated: 'Edge.Config.Index.networkConfiguration' } },
       { path: 'settings/profile', component: EdgeSettingsProfileComponent },
       { path: 'settings/profile/:componentId', component: AliasUpdateComponent },
       { path: 'settings/systemexecute', component: EdgeSettingsSystemExecuteComponent },
-      { path: 'settings/systemlog', component: EdgeSettingsSystemLogComponent },
-      { path: 'settings/systemupdate', component: EdgeSettingsSystemUpdateComponent },
+      { path: 'settings/systemlog', component: EdgeSettingsSystemLogComponent, data: { navbarTitleToBeTranslated: 'Edge.Config.Index.liveLog' } },
+      { path: 'settings/system', component: EdgeSettingsSystemComponent, data: { navbarTitleToBeTranslated: 'Edge.Config.Index.SYSTEM' } },
       { path: 'settings/app', data: { navbarTitle: environment.edgeShortName + ' Apps' }, component: EdgeSettingsAppIndex },
       { path: 'settings/app/install/:appId', component: EdgeSettingsAppInstall },
       { path: 'settings/app/update/:appId', component: EdgeSettingsAppUpdate },
       { path: 'settings/app/single/:appId', component: EdgeSettingsAppSingle },
       { path: 'settings/alerting', component: EdgeSettingsAlerting },
+      { path: 'settings/jsonrpctest', component: JsonrpcTestComponent },
+      { path: 'settings/powerAssistant', component: PowerAssistantComponent, data: { navbarTitle: 'Power-Assistant' } },
     ],
   },
 
   { path: 'demo', component: LoginComponent },
   // Fallback
-  { path: '**', pathMatch: 'full', redirectTo: 'login' },
+  { path: '**', pathMatch: 'full', redirectTo: 'index' },
 ];
 
 export const appRoutingProviders: any[] = [];

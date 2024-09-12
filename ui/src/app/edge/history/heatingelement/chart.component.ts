@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
@@ -16,12 +17,8 @@ import { AbstractHistoryChart } from '../abstracthistorychart';
 })
 export class HeatingelementChartComponent extends AbstractHistoryChart implements OnInit, OnChanges, OnDestroy {
 
-  @Input() public period: DefaultTypes.HistoryPeriod;
-  @Input() public component: EdgeConfig.Component;
-
-  ngOnChanges() {
-    this.updateChart();
-  }
+  @Input({ required: true }) public period!: DefaultTypes.HistoryPeriod;
+  @Input({ required: true }) public component!: EdgeConfig.Component;
 
   constructor(
     protected override service: Service,
@@ -29,6 +26,10 @@ export class HeatingelementChartComponent extends AbstractHistoryChart implement
     private route: ActivatedRoute,
   ) {
     super("heatingelement-chart", service, translate);
+  }
+
+  ngOnChanges() {
+    this.updateChart();
   }
 
   ngOnInit() {
@@ -41,6 +42,10 @@ export class HeatingelementChartComponent extends AbstractHistoryChart implement
     this.unsubscribeChartRefresh();
   }
 
+  public getChartHeight(): number {
+    return window.innerHeight / 1.3;
+  }
+
   protected updateChart() {
     this.autoSubscribeChartRefresh();
     this.startSpinner();
@@ -48,20 +53,20 @@ export class HeatingelementChartComponent extends AbstractHistoryChart implement
     this.loading = true;
     this.queryHistoricTimeseriesData(this.period.from, this.period.to).then(response => {
       this.service.getCurrentEdge().then(() => {
-        let result = (response as QueryHistoricTimeseriesDataResponse).result;
+        const result = (response as QueryHistoricTimeseriesDataResponse).result;
         // convert labels
-        let labels: Date[] = [];
-        for (let timestamp of result.timestamps) {
+        const labels: Date[] = [];
+        for (const timestamp of result.timestamps) {
           labels.push(new Date(timestamp));
         }
         this.labels = labels;
 
         // convert datasets
-        let datasets = [];
-        let level = this.component.id + '/Level';
+        const datasets = [];
+        const level = this.component.id + '/Level';
 
         if (level in result.data) {
-          let levelData = result.data[level].map(value => {
+          const levelData = result.data[level].map(value => {
             if (value == null) {
               return null;
             } else {
@@ -96,19 +101,18 @@ export class HeatingelementChartComponent extends AbstractHistoryChart implement
       this.unit = YAxisTitle.NONE;
       await this.setOptions(this.options);
       this.applyControllerSpecificOptions(this.options);
-    });;
+    });
   }
 
   protected getChannelAddresses(edge: Edge, config: EdgeConfig): Promise<ChannelAddress[]> {
     return new Promise((resolve) => {
-      let levels = new ChannelAddress(this.component.id, 'Level');
-      let channeladdresses = [levels];
+      const levels = new ChannelAddress(this.component.id, 'Level');
+      const channeladdresses = [levels];
       resolve(channeladdresses);
     });
   }
 
   protected applyControllerSpecificOptions(options: ChartOptions) {
-    const translate = this.translate;
     options.scales[ChartAxis.LEFT]['title'].text = 'Level';
     options.scales[ChartAxis.LEFT]['beginAtZero'] = true;
     options.scales[ChartAxis.LEFT].max = 3;
@@ -120,7 +124,4 @@ export class HeatingelementChartComponent extends AbstractHistoryChart implement
     this.options = this.createDefaultChartOptions();
   }
 
-  public getChartHeight(): number {
-    return window.innerHeight / 1.3;
-  }
 }

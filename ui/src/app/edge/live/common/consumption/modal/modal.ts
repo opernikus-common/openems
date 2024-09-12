@@ -1,21 +1,17 @@
 import { Component } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { TextIndentation } from 'src/app/shared/genericComponents/modal/modal-line/modal-line';
-import { Converter } from 'src/app/shared/genericComponents/shared/converter';
-import { Name } from 'src/app/shared/genericComponents/shared/name';
-import { AbstractFormlyComponent, OeFormlyField, OeFormlyView } from 'src/app/shared/genericComponents/shared/oe-formly-component';
-import { Phase } from 'src/app/shared/genericComponents/shared/phase';
+import { TextIndentation } from 'src/app/shared/components/modal/modal-line/modal-line';
+import { Converter } from 'src/app/shared/components/shared/converter';
+import { Name } from 'src/app/shared/components/shared/name';
+import { AbstractFormlyComponent, OeFormlyField, OeFormlyView } from 'src/app/shared/components/shared/oe-formly-component';
+import { Phase } from 'src/app/shared/components/shared/phase';
 
 import { ChannelAddress, CurrentData, EdgeConfig } from '../../../../../shared/shared';
 
 @Component({
-  templateUrl: '../../../../../shared/formly/formly-field-modal/template.html',
+  templateUrl: '../../../../../shared/components/formly/formly-field-modal/template.html',
 })
 export class ModalComponent extends AbstractFormlyComponent {
-
-  protected override generateView(config: EdgeConfig): OeFormlyView {
-    return ModalComponent.generateView(config, this.translate);
-  }
 
   public static generateView(config: EdgeConfig, translate: TranslateService): OeFormlyView {
 
@@ -26,7 +22,7 @@ export class ModalComponent extends AbstractFormlyComponent {
     const consumptionMeters: EdgeConfig.Component[] | null = config.getComponentsImplementingNature("io.openems.edge.meter.api.ElectricityMeter")
       .filter(component => component.isEnabled && config.isTypeConsumptionMetered(component));
 
-    let lines: OeFormlyField[] = [];
+    const lines: OeFormlyField[] = [];
 
     // Total
     lines.push({
@@ -98,7 +94,7 @@ export class ModalComponent extends AbstractFormlyComponent {
     lines.push({ type: 'horizontal-line' });
 
     // OtherPower
-    let channelsToSubscribe: ChannelAddress[] = [new ChannelAddress('_sum', 'ConsumptionActivePower')];
+    const channelsToSubscribe: ChannelAddress[] = [new ChannelAddress('_sum', 'ConsumptionActivePower')];
 
     evcss.forEach(evcs => channelsToSubscribe.push(new ChannelAddress(evcs.id, 'ChargePower')));
     consumptionMeters.forEach(meter => {
@@ -122,4 +118,9 @@ export class ModalComponent extends AbstractFormlyComponent {
       lines: lines,
     };
   }
+
+  protected override generateView(config: EdgeConfig): OeFormlyView {
+    return ModalComponent.generateView(config, this.translate);
+  }
+
 }

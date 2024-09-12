@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
@@ -10,10 +11,10 @@ import { Edge, EdgeConfig, Service, Websocket } from '../../../../../../shared/s
 })
 export class Controller_Symmetric_TimeSlot_PeakShavingModalComponent implements OnInit {
 
+    private static readonly SELECTOR = "timeslotpeakshaving-modal";
+
     @Input() protected component: EdgeConfig.Component | null = null;
     @Input() protected edge: Edge | null = null;
-
-    private static readonly SELECTOR = "timeslotpeakshaving-modal";
 
     public formGroup: FormGroup;
     public loading: boolean = false;
@@ -67,11 +68,11 @@ export class Controller_Symmetric_TimeSlot_PeakShavingModalComponent implements 
     applyChanges() {
         if (this.edge != null) {
             if (this.edge.roleIsAtLeast('owner')) {
-                let peakShavingPower = this.formGroup.controls['peakShavingPower'];
-                let rechargePower = this.formGroup.controls['rechargePower'];
+                const peakShavingPower = this.formGroup.controls['peakShavingPower'];
+                const rechargePower = this.formGroup.controls['rechargePower'];
                 if (peakShavingPower.valid && rechargePower.valid) {
                     if (peakShavingPower.value >= rechargePower.value) {
-                        let updateComponentArray = [];
+                        const updateComponentArray = [];
                         Object.keys(this.formGroup.controls).forEach((element, index) => {
                             if (this.formGroup.controls[element].dirty) {
                                 if (Object.keys(this.formGroup.controls)[index] == 'slowChargePower') {

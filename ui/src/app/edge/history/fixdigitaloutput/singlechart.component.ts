@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
@@ -15,12 +16,9 @@ import { AbstractHistoryChart } from '../abstracthistorychart';
 })
 export class FixDigitalOutputSingleChartComponent extends AbstractHistoryChart implements OnInit, OnChanges, OnDestroy {
 
-  @Input() public period: DefaultTypes.HistoryPeriod;
-  @Input() public componentId: string;
+  @Input({ required: true }) public period!: DefaultTypes.HistoryPeriod;
+  @Input({ required: true }) public componentId!: string;
 
-  ngOnChanges() {
-    this.updateChart();
-  }
 
   constructor(
     protected override service: Service,
@@ -28,6 +26,10 @@ export class FixDigitalOutputSingleChartComponent extends AbstractHistoryChart i
     private route: ActivatedRoute,
   ) {
     super("fixdigitaloutput-single-chart", service, translate);
+  }
+
+  ngOnChanges() {
+    this.updateChart();
   }
 
   ngOnInit() {
@@ -39,25 +41,29 @@ export class FixDigitalOutputSingleChartComponent extends AbstractHistoryChart i
     this.unsubscribeChartRefresh();
   }
 
+  public getChartHeight(): number {
+    return window.innerHeight / 1.3;
+  }
+
   protected updateChart() {
     this.autoSubscribeChartRefresh();
     this.startSpinner();
     this.colors = [];
     this.loading = true;
     this.queryHistoricTimeseriesData(this.period.from, this.period.to).then(response => {
-      let result = (response as QueryHistoricTimeseriesDataResponse).result;
+      const result = (response as QueryHistoricTimeseriesDataResponse).result;
       // convert labels
-      let labels: Date[] = [];
-      for (let timestamp of result.timestamps) {
+      const labels: Date[] = [];
+      for (const timestamp of result.timestamps) {
         labels.push(new Date(timestamp));
       }
       this.labels = labels;
 
       // convert datasets
-      let datasets: Chart.ChartDataset[] = [];
-      for (let channel in result.data) {
-        let address = ChannelAddress.fromString(channel);
-        let data = result.data[channel].map(value => {
+      const datasets: Chart.ChartDataset[] = [];
+      for (const channel in result.data) {
+        const address = ChannelAddress.fromString(channel);
+        const data = result.data[channel].map(value => {
           if (value == null) {
             return null;
           } else {
@@ -90,7 +96,7 @@ export class FixDigitalOutputSingleChartComponent extends AbstractHistoryChart i
   protected getChannelAddresses(edge: Edge, config: EdgeConfig): Promise<ChannelAddress[]> {
     return new Promise((resolve) => {
       const outputChannel = ChannelAddress.fromString(config.getComponentProperties(this.componentId)['outputChannelAddress']);
-      let channeladdresses = [outputChannel];
+      const channeladdresses = [outputChannel];
       resolve(channeladdresses);
     });
   }
@@ -99,7 +105,4 @@ export class FixDigitalOutputSingleChartComponent extends AbstractHistoryChart i
     this.options = this.createDefaultChartOptions();
   }
 
-  public getChartHeight(): number {
-    return window.innerHeight / 1.3;
-  }
 }

@@ -1,8 +1,9 @@
+// @ts-strict-ignore
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { fromEvent, Subject } from 'rxjs';
 import { debounceTime, delay, takeUntil } from 'rxjs/operators';
 import { Service } from 'src/app/shared/shared';
-import { CurrentData } from '../../../../shared/edge/currentdata';
+import { CurrentData } from '../../../../shared/components/edge/currentdata';
 import { ConsumptionSectionComponent } from './section/consumption.component';
 import { GridSectionComponent } from './section/grid.component';
 import { ProductionSectionComponent } from './section/production.component';
@@ -13,8 +14,6 @@ import { StorageSectionComponent } from './section/storage.component';
   templateUrl: './chart.component.html',
 })
 export class EnergymonitorChartComponent implements OnInit, OnDestroy {
-
-  public readonly spinnerId = "energymonitor";
 
   @ViewChild(ConsumptionSectionComponent, { static: true })
   public consumptionSection: ConsumptionSectionComponent;
@@ -31,22 +30,25 @@ export class EnergymonitorChartComponent implements OnInit, OnDestroy {
   @ViewChild('energymonitorChart', { static: true })
   private chartDiv: ElementRef;
 
-  @Input()
-  set currentData(currentData: CurrentData) {
-    this.service.stopSpinner(this.spinnerId);
-    this.updateCurrentData(currentData);
-  }
-
   public translation: string;
   public width: number;
   public height: number;
   public gridMode: number;
 
+  public readonly spinnerId = "energymonitor";
+
   private ngUnsubscribe: Subject<void> = new Subject<void>();
+
+
 
   constructor(
     private service: Service,
   ) { }
+  @Input()
+  set currentData(currentData: CurrentData) {
+    this.service.stopSpinner(this.spinnerId);
+    this.updateCurrentData(currentData);
+  }
 
   ngOnInit() {
     this.service.startSpinner(this.spinnerId);
@@ -70,7 +72,7 @@ export class EnergymonitorChartComponent implements OnInit, OnDestroy {
     /*
      * Set values for energy monitor
      */
-    let summary = currentData.summary;
+    const summary = currentData.summary;
     [this.consumptionSection, this.gridSection, this.productionSection, this.storageSection]
       .filter(section => section != null)
       .forEach(section => {
@@ -91,8 +93,8 @@ export class EnergymonitorChartComponent implements OnInit, OnDestroy {
     }
     this.height = this.width = size;
     this.translation = `translate(${this.width / 2}, ${this.height / 2})`;
-    var outerRadius = Math.min(this.width, this.height) / 2;
-    var innerRadius = outerRadius - (outerRadius * 0.1378);
+    const outerRadius = Math.min(this.width, this.height) / 2;
+    const innerRadius = outerRadius - (outerRadius * 0.1378);
     // All sections from update() in section
     [this.consumptionSection, this.gridSection, this.productionSection, this.storageSection]
       .filter(section => section != null)

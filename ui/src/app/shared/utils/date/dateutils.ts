@@ -1,3 +1,4 @@
+import { isBefore } from "date-fns";
 
 export namespace DateUtils {
 
@@ -9,7 +10,7 @@ export namespace DateUtils {
    */
   export function maxDate(...dates: Date[]) {
 
-    if (dates.length === 0 || dates.every(element => typeof element === null)) {
+    if (dates.length === 0 || dates.every(element => element === null)) {
       return null;
     }
 
@@ -26,7 +27,7 @@ export namespace DateUtils {
    */
   export function minDate(...dates: Date[]) {
 
-    if (dates.length === 0 || dates.every(element => typeof element === null)) {
+    if (dates.length === 0 || dates.every(element => element === null)) {
       return null;
     }
 
@@ -75,5 +76,19 @@ export namespace DateUtils {
 
   export function isFullHour(date: Date) {
     return date.getMinutes() != 0 ? null : date;
+  }
+
+  /**
+   * Checks if passed date is before a certain date
+   *
+   * @param date the date
+   * @param compareDate the date to compare it to
+   * @returns true, if the passed date is before compareDate
+   */
+  export function isDateBefore(date: Date, compareDate: Date): boolean {
+    if (date != null && compareDate != null) {
+      return isBefore(date, compareDate);
+    }
+    return false;
   }
 }

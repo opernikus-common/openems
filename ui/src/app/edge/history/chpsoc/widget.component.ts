@@ -13,14 +13,13 @@ import { calculateActiveTimeOverPeriod } from '../shared';
 })
 export class ChpSocWidgetComponent extends AbstractHistoryWidget implements OnInit, OnChanges, OnDestroy {
 
-    @Input() public period: DefaultTypes.HistoryPeriod;
-    @Input() public componentId: string;
-
     private static readonly SELECTOR = "chpsocWidget";
+    @Input({ required: true }) public period!: DefaultTypes.HistoryPeriod;
+    @Input({ required: true }) public componentId!: string;
 
-    public activeSecondsOverPeriod: number = null;
-    public edge: Edge = null;
-    public component: EdgeConfig.Component = null;
+    public activeSecondsOverPeriod: number | null = null;
+    public edge: Edge | null = null;
+    public component: EdgeConfig.Component | null = null;
 
     constructor(
         public override service: Service,
@@ -44,23 +43,23 @@ export class ChpSocWidgetComponent extends AbstractHistoryWidget implements OnIn
 
     ngOnChanges() {
         this.updateValues();
-    };
+    }
 
     // Gather result & timestamps to calculate effective active time in %
     protected updateValues() {
         this.queryHistoricTimeseriesData(this.service.historyPeriod.value.from, this.service.historyPeriod.value.to).then(response => {
             this.service.getConfig().then(config => {
-                let result = (response as QueryHistoricTimeseriesDataResponse).result;
-                let outputChannel = ChannelAddress.fromString(config.getComponentProperties(this.componentId)['outputChannelAddress']);
+                const result = (response as QueryHistoricTimeseriesDataResponse).result;
+                const outputChannel = ChannelAddress.fromString(config.getComponentProperties(this.componentId)['outputChannelAddress']);
                 this.activeSecondsOverPeriod = calculateActiveTimeOverPeriod(outputChannel, result);
             });
         });
-    };
+    }
 
     protected getChannelAddresses(edge: Edge, config: EdgeConfig): Promise<ChannelAddress[]> {
         return new Promise((resolve) => {
             const outputChannel = ChannelAddress.fromString(config.getComponentProperties(this.componentId)['outputChannelAddress']);
-            let channeladdresses = [outputChannel];
+            const channeladdresses = [outputChannel];
             resolve(channeladdresses);
         });
     }

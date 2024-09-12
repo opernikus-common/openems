@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { environment } from 'src/environments';
@@ -10,27 +10,11 @@ import { Changelog } from './changelog.constants';
   selector: 'changelog',
   templateUrl: './changelog.component.html',
 })
-export class ChangelogComponent implements OnInit {
+export class ChangelogComponent {
 
   public environment = environment;
 
-  protected slice: number = 10;
-  protected showAll: boolean = false;
-  constructor(
-    public translate: TranslateService,
-    public service: Service,
-    private route: ActivatedRoute,
-  ) { }
-
-  ngOnInit() {
-    this.service.setCurrentComponent({ languageKey: 'Menu.changelog' }, this.route);
-  }
-
   public readonly roleIsAtLeast = Role.isAtLeast;
-  public numberToRole(role: number): string {
-    return Role[role].toLowerCase();
-  }
-
   public readonly changelogs: {
     title?: string,
     version?: string,
@@ -44,4 +28,16 @@ export class ChangelogComponent implements OnInit {
       },
     ];
 
+
+  protected slice: number = 10;
+  protected showAll: boolean = false;
+  constructor(
+    public translate: TranslateService,
+    public service: Service,
+    private route: ActivatedRoute,
+  ) { }
+
+  public numberToRole(role: number): string {
+    return Role[role].toLowerCase();
+  }
 }

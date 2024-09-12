@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import { registerLocaleData } from '@angular/common';
 import { Injectable } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -9,8 +10,8 @@ import { filter, first, take } from 'rxjs/operators';
 import { ChosenFilter } from 'src/app/index/filter/filter.component';
 import { environment } from 'src/environments';
 
-import { Edge } from '../edge/edge';
-import { EdgeConfig } from '../edge/edgeconfig';
+import { Edge } from '../components/edge/edge';
+import { EdgeConfig } from '../components/edge/edgeconfig';
 import { JsonrpcResponseError } from '../jsonrpc/base';
 import { GetEdgeRequest } from '../jsonrpc/request/getEdgeRequest';
 import { GetEdgesRequest } from '../jsonrpc/request/getEdgesRequest';
@@ -22,10 +23,10 @@ import { User } from '../jsonrpc/shared';
 import { ChannelAddress } from '../shared';
 import { Language } from '../type/language';
 import { Role } from '../type/role';
+import { DateUtils } from '../utils/date/dateutils';
 import { AbstractService } from './abstractservice';
 import { DefaultTypes } from './defaulttypes';
 import { Websocket } from './websocket';
-import { DateUtils } from '../utils/date/dateutils';
 
 @Injectable()
 export class Service extends AbstractService {
@@ -33,6 +34,18 @@ export class Service extends AbstractService {
   public static readonly TIMEOUT = 15_000;
 
   public notificationEvent: Subject<DefaultTypes.Notification> = new Subject<DefaultTypes.Notification>();
+
+  /**
+ * Currently selected history period
+ */
+  public historyPeriod: BehaviorSubject<DefaultTypes.HistoryPeriod>;
+
+  /**
+   * Currently selected history period string
+   *
+   * initialized as day, is getting changed by pickdate component
+   */
+  public periodString: DefaultTypes.PeriodString = DefaultTypes.PeriodString.DAY;
 
   /**
    * Represents the resolution of used device
@@ -49,10 +62,9 @@ export class Service extends AbstractService {
   public currentPageTitle: string;
 
   /**
-   * Holds the current Activated Route
-   */
-  private currentActivatedRoute: ActivatedRoute = null;
-
+   * Holds reference to Websocket. This is set by Websocket in constructor.
+  */
+  public websocket: Websocket = null;
   /**
    * Holds the currently selected Edge.
    */
@@ -68,9 +80,14 @@ export class Service extends AbstractService {
   public currentUser: User | null = null;
 
   /**
-   * Holds reference to Websocket. This is set by Websocket in constructor.
+   * Holds the current Activated Route
    */
-  public websocket: Websocket = null;
+  private currentActivatedRoute: ActivatedRoute | null = null;
+
+  private queryEnergyQueue: {
+    fromDate: Date, toDate: Date, channels: ChannelAddress[], promises: { resolve, reject }[]
+  }[] = [];
+  private queryEnergyTimeout: any = null;
 
   constructor(
     private router: Router,
@@ -115,6 +132,8 @@ export class Service extends AbstractService {
     this.notificationEvent.next(notification);
   }
 
+  // https://v16.angular.io/api/core/ErrorHandler#errorhandler
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public override handleError(error: any) {
     console.error(error);
     // TODO: show notification
@@ -125,7 +144,7 @@ export class Service extends AbstractService {
     // this.notify(notification);
   }
 
-  public setCurrentComponent(currentPageTitle: string | { languageKey: string, interpolateParams?: Object }, activatedRoute: ActivatedRoute): Promise<Edge> {
+  public setCurrentComponent(currentPageTitle: string | { languageKey: string, interpolateParams?: {} }, activatedRoute: ActivatedRoute): Promise<Edge> {
     return new Promise((resolve, reject) => {
       // Set the currentPageTitle only once per ActivatedRoute
       if (this.currentActivatedRoute != activatedRoute) {
@@ -168,14 +187,10 @@ export class Service extends AbstractService {
   public getConfig(): Promise<EdgeConfig> {
     return new Promise<EdgeConfig>((resolve, reject) => {
       this.getCurrentEdge().then(edge => {
-        edge.getConfig(this.websocket).pipe(
-          filter(config => config != null && config.isValid()),
-          first(),
-        ).toPromise()
-          .then(config => resolve(config))
-          .catch(reason => reject(reason));
-      })
-        .catch(reason => reject(reason));
+        edge.getFirstValidConfig(this.websocket)
+          .then(resolve)
+          .catch(reject);
+      }).catch(reason => reject(reason));
     });
   }
 
@@ -189,14 +204,14 @@ export class Service extends AbstractService {
     return new Promise((resolve) => {
       resolve(channels);
     });
-  };
+  }
 
   public queryEnergy(fromDate: Date, toDate: Date, channels: ChannelAddress[]): Promise<QueryHistoricTimeseriesEnergyResponse> {
     // keep only the date, without time
     fromDate.setHours(0, 0, 0, 0);
     toDate.setHours(0, 0, 0, 0);
-    let promise = { resolve: null, reject: null };
-    let response = new Promise<QueryHistoricTimeseriesEnergyResponse>((resolve, reject) => {
+    const promise = { resolve: null, reject: null };
+    const response = new Promise<QueryHistoricTimeseriesEnergyResponse>((resolve, reject) => {
       promise.resolve = resolve;
       promise.reject = reject;
     });
@@ -210,23 +225,23 @@ export class Service extends AbstractService {
         this.queryEnergyTimeout = null;
 
         // merge requests
-        let mergedRequests: {
+        const mergedRequests: {
           fromDate: Date, toDate: Date, channels: ChannelAddress[], promises: { resolve, reject }[];
         }[] = [];
         let request;
-        while (request = this.queryEnergyQueue.pop()) {
+        while ((request = this.queryEnergyQueue.pop())) {
           if (mergedRequests.length == 0) {
             mergedRequests.push(request);
           } else {
             let merged = false;
-            for (let mergedRequest of mergedRequests) {
+            for (const mergedRequest of mergedRequests) {
               if (mergedRequest.fromDate.valueOf() === request.fromDate.valueOf()
                 && mergedRequest.toDate.valueOf() === request.toDate.valueOf()) {
                 // same date -> merge
                 mergedRequest.promises = mergedRequest.promises.concat(request.promises);
-                for (let newChannel of request.channels) {
+                for (const newChannel of request.channels) {
                   let isAlreadyThere = false;
-                  for (let existingChannel of mergedRequest.channels) {
+                  for (const existingChannel of mergedRequest.channels) {
                     if (existingChannel.channelId == newChannel.channelId && existingChannel.componentId == newChannel.componentId) {
                       isAlreadyThere = true;
                       break;
@@ -247,27 +262,27 @@ export class Service extends AbstractService {
 
         // send merged requests
         this.getCurrentEdge().then(edge => {
-          for (let source of mergedRequests) {
+          for (const source of mergedRequests) {
 
             // Jump to next request for empty channelAddresses
             if (source.channels.length == 0) {
               continue;
             }
 
-            let request = new QueryHistoricTimeseriesEnergyRequest(DateUtils.maxDate(source.fromDate, edge?.firstSetupProtocol), source.toDate, source.channels);
+            const request = new QueryHistoricTimeseriesEnergyRequest(DateUtils.maxDate(source.fromDate, edge?.firstSetupProtocol), source.toDate, source.channels);
             edge.sendRequest(this.websocket, request).then(response => {
-              let result = (response as QueryHistoricTimeseriesEnergyResponse).result;
+              const result = (response as QueryHistoricTimeseriesEnergyResponse).result;
               if (Object.keys(result.data).length != 0) {
-                for (let promise of source.promises) {
+                for (const promise of source.promises) {
                   promise.resolve(response as QueryHistoricTimeseriesEnergyResponse);
                 }
               } else {
-                for (let promise of source.promises) {
+                for (const promise of source.promises) {
                   promise.reject(new JsonrpcResponseError(response.id, { code: 0, message: "Result was empty" }));
                 }
               }
             }).catch(reason => {
-              for (let promise of source.promises) {
+              for (const promise of source.promises) {
                 promise.reject(reason);
               }
             });
@@ -299,10 +314,10 @@ export class Service extends AbstractService {
           const result = (response as GetEdgesResponse).result;
 
           // TODO change edges-map to array or other way around
-          let value = this.metadata.value;
-          let mappedResult = [];
-          for (let edge of result.edges) {
-            let mappedEdge = new Edge(
+          const value = this.metadata.value;
+          const mappedResult = [];
+          for (const edge of result.edges) {
+            const mappedEdge = new Edge(
               edge.id,
               edge.comment,
               edge.producttype,
@@ -340,8 +355,8 @@ export class Service extends AbstractService {
         return;
       }
       this.websocket.sendSafeRequest(new GetEdgeRequest({ edgeId: edgeId })).then((response) => {
-        let edgeData = (response as GetEdgeResponse).result.edge;
-        let value = this.metadata.value;
+        const edgeData = (response as GetEdgeResponse).result.edge;
+        const value = this.metadata.value;
         const currentEdge = new Edge(
           edgeData.id,
           edgeData.comment,
@@ -359,11 +374,6 @@ export class Service extends AbstractService {
       }).catch(reject);
     });
   }
-
-  private queryEnergyQueue: {
-    fromDate: Date, toDate: Date, channels: ChannelAddress[], promises: { resolve, reject }[]
-  }[] = [];
-  private queryEnergyTimeout: any = null;
 
   public startSpinner(selector: string) {
     this.spinner.show(selector, {
@@ -398,16 +408,4 @@ export class Service extends AbstractService {
     });
     toast.present();
   }
-
-  /**
-   * Currently selected history period
-   */
-  public historyPeriod: BehaviorSubject<DefaultTypes.HistoryPeriod>;
-
-  /**
-   * Currently selected history period string
-   *
-   * initialized as day, is getting changed by pickdate component
-   */
-  public periodString: DefaultTypes.PeriodString = DefaultTypes.PeriodString.DAY;
 }

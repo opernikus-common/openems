@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
@@ -10,12 +11,13 @@ import { Edge, EdgeConfig, Service, Websocket } from 'src/app/shared/shared';
 })
 export class AliasUpdateComponent implements OnInit {
 
-    private edge: Edge;
+    public component: EdgeConfig.Component | null = null;
 
-    public component: EdgeConfig.Component = null;
     public formGroup: FormGroup | null = null;
-    public factory: EdgeConfig.Factory = null;
-    public componentIcon: string = null;
+    public factory: EdgeConfig.Factory | null = null;
+    public componentIcon: string | null = null;
+
+    private edge: Edge;
 
     constructor(
         private service: Service,
@@ -30,7 +32,7 @@ export class AliasUpdateComponent implements OnInit {
             this.edge = edge;
         });
         this.service.getConfig().then(config => {
-            let componentId = this.route.snapshot.params["componentId"];
+            const componentId = this.route.snapshot.params["componentId"];
             this.component = config.components[componentId];
             this.factory = config.factories[this.component.factoryId];
             this.componentIcon = config.getFactoryIcon(this.factory);
@@ -41,7 +43,7 @@ export class AliasUpdateComponent implements OnInit {
     }
 
     updateAlias(alias) {
-        let newAlias = alias;
+        const newAlias = alias;
         if (this.edge != null) {
             if (this.component.id == newAlias) {
                 this.service.toast(this.translate.instant('General.inputNotValid'), 'danger');

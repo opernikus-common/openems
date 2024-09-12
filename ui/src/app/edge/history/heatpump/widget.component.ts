@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import { Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ModalController } from '@ionic/angular';
@@ -12,10 +13,9 @@ import { AbstractHistoryWidget } from '../abstracthistorywidget';
 })
 export class HeatpumpWidgetComponent extends AbstractHistoryWidget implements OnInit, OnChanges, OnDestroy {
 
-    @Input() public period: DefaultTypes.HistoryPeriod;
-    @Input() public componentId: string;
-
     private static readonly SELECTOR = "heatpumpWidget";
+    @Input({ required: true }) public period!: DefaultTypes.HistoryPeriod;
+    @Input({ required: true }) public componentId!: string;
 
     public component: EdgeConfig.Component | null = null;
 
@@ -24,7 +24,7 @@ export class HeatpumpWidgetComponent extends AbstractHistoryWidget implements On
     public activeTimeOverPeriodRecommendation: number | null = null;
     public activeTimeOverPeriodLock: number | null = null;
 
-    public edge: Edge = null;
+    public edge: Edge | null = null;
 
     constructor(
         public override service: Service,
@@ -49,13 +49,13 @@ export class HeatpumpWidgetComponent extends AbstractHistoryWidget implements On
 
     ngOnChanges() {
         this.updateValues();
-    };
+    }
 
     protected updateValues() {
         this.service.getConfig().then(config => {
             this.getChannelAddresses(this.edge, config).then(channels => {
                 this.service.queryEnergy(this.period.from, this.period.to, channels).then(response => {
-                    let result = response.result;
+                    const result = response.result;
                     if (this.componentId + '/ForceOnStateTime' in result.data) {
                         this.activeTimeOverPeriodForceOn = result.data[this.componentId + '/ForceOnStateTime'];
                     }
@@ -75,7 +75,7 @@ export class HeatpumpWidgetComponent extends AbstractHistoryWidget implements On
 
     protected getChannelAddresses(edge: Edge, config: EdgeConfig): Promise<ChannelAddress[]> {
         return new Promise((resolve) => {
-            let channels: ChannelAddress[] = [
+            const channels: ChannelAddress[] = [
                 new ChannelAddress(this.componentId, 'ForceOnStateTime'),
                 new ChannelAddress(this.componentId, 'RegularStateTime'),
                 new ChannelAddress(this.componentId, 'RecommendationStateTime'),

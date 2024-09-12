@@ -1,3 +1,4 @@
+// @ts-strict-ignore
 import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -31,28 +32,24 @@ export class SingleAppComponent implements OnInit, OnDestroy {
   public form: FormGroup | null = null;
   public model: any | null = null;
 
+  protected canEnterKey: boolean | undefined;
+  protected hasPredefinedKey: boolean | undefined;
+  protected keyForFreeApps: string;
+  protected isFreeApp: boolean = false;
+  protected isPreInstalledApp: boolean = false;
+
   private appId: string | null = null;
   private appName: string | null = null;
   private app: GetApps.App | null = null;
   private descriptor: GetAppDescriptor.AppDescriptor | null = null;
   private isXL: boolean = true;
-
   // for stopping spinner when all responses are recieved
   private readonly requestCount: number = 3;
   private receivedResponse: number = 0;
-
   private edge: Edge | null = null;
-
   private key: string | null = null;
   private useMasterKey: boolean = false;
-
-  protected canEnterKey: boolean | undefined;
-  protected hasPredefinedKey: boolean | undefined;
-
   private stopOnDestroy: Subject<void> = new Subject<void>();
-  protected keyForFreeApps: string;
-  protected isFreeApp: boolean = false;
-  protected isPreInstalledApp: boolean = false;
 
   public constructor(
     private route: ActivatedRoute,
@@ -66,13 +63,18 @@ export class SingleAppComponent implements OnInit, OnDestroy {
   ) {
   }
 
+  @HostListener('window:resize', ['$event'])
+  private onResize(event) {
+    this.updateIsXL();
+  }
+
   public ngOnInit() {
     this.service.startSpinner(this.spinnerId);
     this.updateIsXL();
 
     this.appId = this.route.snapshot.params['appId'];
     this.appName = this.route.snapshot.queryParams['name'];
-    let appId = this.appId;
+    const appId = this.appId;
     this.service.setCurrentComponent(this.appName, this.route).then(edge => {
       this.edge = edge;
 
@@ -95,8 +97,8 @@ export class SingleAppComponent implements OnInit, OnDestroy {
           filter(config => config !== null),
           takeUntil(this.stopOnDestroy),
         ).subscribe(next => {
-          let appManager = next.getComponent("_appManager");
-          let newKeyForFreeApps = appManager.properties["keyForFreeApps"];
+          const appManager = next.getComponent("_appManager");
+          const newKeyForFreeApps = appManager.properties["keyForFreeApps"];
           if (!newKeyForFreeApps) {
             // no key in config
             this.increaseReceivedResponse();
@@ -151,7 +153,7 @@ export class SingleAppComponent implements OnInit, OnDestroy {
             componentId: '_appManager',
             payload: new GetApp.Request({ appId: appId }),
           })).then(response => {
-            let app = (response as GetApp.Response).result.app;
+            const app = (response as GetApp.Response).result.app;
             app.imageUrl = environment.links.APP_CENTER.APP_IMAGE(this.translate.currentLang, app.appId);
             this.setApp(app);
           }).catch(reason => {
@@ -165,7 +167,7 @@ export class SingleAppComponent implements OnInit, OnDestroy {
           componentId: '_appManager',
           payload: new GetAppDescriptor.Request({ appId: appId }),
         })).then(response => {
-          let descriptor = (response as GetAppDescriptor.Response).result;
+          const descriptor = (response as GetAppDescriptor.Response).result;
           this.descriptor = GetAppDescriptor.postprocess(descriptor, this.sanitizer);
         })
         .catch(InstallAppComponent.errorToast(this.service, error => 'Error while receiving AppDescriptor for App[' + appId + ']: ' + error))
@@ -180,20 +182,37 @@ export class SingleAppComponent implements OnInit, OnDestroy {
     this.stopOnDestroy.complete();
   }
 
-  @HostListener('window:resize', ['$event'])
-  private onResize(event) {
-    this.updateIsXL();
+  protected iFrameStyle() {
+    const styles = {
+      'height': (this.isXL) ? '100%' : window.innerHeight + 'px',
+    };
+    return styles;
+  }
+
+  protected installApp(appId: string) {
+    if (this.key || this.useMasterKey) {
+      // if key already set navigate directly to installation view
+      const state = this.useMasterKey ? { useMasterKey: true } : { appKey: this.key };
+      this.router.navigate(['device/' + (this.edge.id) + '/settings/app/install/' + this.appId]
+        , { queryParams: { name: this.appName }, state: state });
+      return;
+    }
+    // if the version is not high enough and the edge doesnt support installing apps via keys directly navigate to installation
+    if (!hasKeyModel(this.edge) || this.isFreeApp) {
+      this.router.navigate(['device/' + (this.edge.id) + '/settings/app/install/' + this.appId]
+        , { queryParams: { name: this.appName } });
+      return;
+    }
+    // show modal to let the user enter a key
+    this.presentModal(appId, KeyValidationBehaviour.NAVIGATE);
+  }
+
+  protected registerKey(appId: string) {
+    this.presentModal(appId, KeyValidationBehaviour.REGISTER);
   }
 
   private updateIsXL() {
     this.isXL = 1200 <= window.innerWidth;
-  }
-
-  protected iFrameStyle() {
-    let styles = {
-      'height': (this.isXL) ? '100%' : window.innerHeight + 'px',
-    };
-    return styles;
   }
 
   private setApp(app: GetApps.App) {
@@ -223,28 +242,6 @@ export class SingleAppComponent implements OnInit, OnDestroy {
       cssClass: 'auto-height',
     });
     return await modal.present();
-  }
-
-  protected installApp(appId: string) {
-    if (this.key || this.useMasterKey) {
-      // if key already set navigate directly to installation view
-      const state = this.useMasterKey ? { useMasterKey: true } : { appKey: this.key };
-      this.router.navigate(['device/' + (this.edge.id) + '/settings/app/install/' + this.appId]
-        , { queryParams: { name: this.appName }, state: state });
-      return;
-    }
-    // if the version is not high enough and the edge doesnt support installing apps via keys directly navigate to installation
-    if (!hasKeyModel(this.edge) || this.isFreeApp) {
-      this.router.navigate(['device/' + (this.edge.id) + '/settings/app/install/' + this.appId]
-        , { queryParams: { name: this.appName } });
-      return;
-    }
-    // show modal to let the user enter a key
-    this.presentModal(appId, KeyValidationBehaviour.NAVIGATE);
-  }
-
-  protected registerKey(appId: string) {
-    this.presentModal(appId, KeyValidationBehaviour.REGISTER);
   }
 
 }

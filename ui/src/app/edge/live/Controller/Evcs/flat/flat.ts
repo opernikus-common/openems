@@ -1,5 +1,6 @@
+// @ts-strict-ignore
 import { Component } from '@angular/core';
-import { AbstractFlatWidget } from 'src/app/shared/genericComponents/flat/abstract-flat-widget';
+import { AbstractFlatWidget } from 'src/app/shared/components/flat/abstract-flat-widget';
 import { DefaultTypes } from 'src/app/shared/service/defaulttypes';
 import { ChannelAddress, CurrentData, EdgeConfig, Utils } from 'src/app/shared/shared';
 
@@ -18,7 +19,7 @@ export class FlatComponent extends AbstractFlatWidget {
   public readonly CONVERT_MANUAL_ON_OFF = Utils.CONVERT_MANUAL_ON_OFF(this.translate);
 
   protected controller: EdgeConfig.Component;
-  protected evcsComponent: EdgeConfig.Component = null;
+  protected evcsComponent: EdgeConfig.Component | null = null;
   protected isConnectionSuccessful: boolean = false;
   protected isEnergySinceBeginningAllowed: boolean = false;
   protected mode: string;
@@ -32,25 +33,34 @@ export class FlatComponent extends AbstractFlatWidget {
   protected minChargePower: number;
   protected maxChargePower: number;
   protected forceChargeMinPower: string;
-  protected chargeMode: ChargeMode = null;
+  protected chargeMode: ChargeMode | null = null;
   protected readonly CONVERT_TO_WATT = Utils.CONVERT_TO_WATT;
   protected readonly CONVERT_TO_KILO_WATTHOURS = Utils.CONVERT_TO_KILO_WATTHOURS;
   protected readonly CONVERT_MANUAL_ON_OFF_AUTOMATIC = Utils.CONVERT_MODE_TO_MANUAL_OFF_AUTOMATIC(this.translate);
   protected chargeTarget: string;
   protected energySession: string;
   protected chargeDischargePower: { name: string, value: number };
-  protected propertyMode: DefaultTypes.ManualOnOff = null;
+  protected propertyMode: DefaultTypes.ManualOnOff | null = null;
   protected status: string;
 
+  formatNumber(i: number) {
+    const round = Math.ceil(i / 100) * 100;
+    return round;
+  }
+
+
+  async presentModal() {
+    const modal = await this.modalController.create({
+      component: ModalComponent,
+      componentProps: {
+        component: this.component,
+      },
+    });
+    return await modal.present();
+  }
+
   protected override getChannelAddresses(): ChannelAddress[] {
-    let controllers = this.config.getComponentsByFactory("Controller.Evcs");
-    for (let controller of controllers) {
-      let properties = controller.properties;
-      if ("evcs.id" in properties && properties["evcs.id"] === this.componentId) {
-        this.controller = controller;
-      }
-    }
-    return [
+    const result = [
       new ChannelAddress(this.component.id, 'ChargePower'),
       new ChannelAddress(this.component.id, 'Phases'),
       new ChannelAddress(this.component.id, 'Plug'),
@@ -61,8 +71,17 @@ export class FlatComponent extends AbstractFlatWidget {
       new ChannelAddress(this.component.id, 'MinimumHardwarePower'),
       new ChannelAddress(this.component.id, 'MaximumHardwarePower'),
       new ChannelAddress(this.component.id, 'SetChargePowerLimit'),
-      new ChannelAddress(this.controller.id, '_PropertyEnabledCharging'),
     ];
+
+    const controllers = this.config.getComponentsByFactory("Controller.Evcs");
+    for (const controller of controllers) {
+      const properties = controller.properties;
+      if ("evcs.id" in properties && properties["evcs.id"] === this.componentId) {
+        this.controller = controller;
+        result.push(new ChannelAddress(controller.id, '_PropertyEnabledCharging'));
+      }
+    }
+    return result;
   }
 
   protected override onCurrentData(currentData: CurrentData) {
@@ -161,21 +180,6 @@ export class FlatComponent extends AbstractFlatWidget {
     }
   }
 
-  formatNumber(i: number) {
-    let round = Math.ceil(i / 100) * 100;
-    return round;
-  }
-
-
-  async presentModal() {
-    const modal = await this.modalController.create({
-      component: ModalComponent,
-      componentProps: {
-        component: this.component,
-      },
-    });
-    return await modal.present();
-  }
 }
 
 enum ChargeState {
@@ -187,7 +191,7 @@ enum ChargeState {
   ERROR,                    //Error
   AUTHORIZATION_REJECTED,   //Authorization rejected
   ENERGY_LIMIT_REACHED,     //Energy limit reached
-  CHARGING_FINISHED         //Charging has finished
+  CHARGING_FINISHED,         //Charging has finished
 }
 
 
@@ -197,9 +201,9 @@ enum ChargePlug {
   PLUGGED_ON_EVCS,                          //Plugged on EVCS
   PLUGGED_ON_EVCS_AND_LOCKED = 3,           //Plugged on EVCS and locked
   PLUGGED_ON_EVCS_AND_ON_EV = 5,            //Plugged on EVCS and on EV
-  PLUGGED_ON_EVCS_AND_ON_EV_AND_LOCKED = 7  //Plugged on EVCS and on EV and locked
+  PLUGGED_ON_EVCS_AND_ON_EV_AND_LOCKED = 7,  //Plugged on EVCS and on EV and locked
 }
 enum Prioritization {
   CAR,
-  STORAGE
+  STORAGE,
 }

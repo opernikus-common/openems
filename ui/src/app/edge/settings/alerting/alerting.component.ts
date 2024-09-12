@@ -1,18 +1,18 @@
-import { User } from 'src/app/shared/jsonrpc/shared';
+// @ts-strict-ignore
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
-import { SetUserAlertingConfigsRequest, UserSettingRequest } from 'src/app/shared/jsonrpc/request/setUserAlertingConfigsRequest';
 import { GetUserAlertingConfigsRequest } from 'src/app/shared/jsonrpc/request/getUserAlertingConfigsRequest';
-import { GetUserAlertingConfigsResponse, AlertingSettingResponse } from 'src/app/shared/jsonrpc/response/getUserAlertingConfigsResponse';
+import { SetUserAlertingConfigsRequest, UserSettingRequest } from 'src/app/shared/jsonrpc/request/setUserAlertingConfigsRequest';
+import { AlertingSettingResponse, GetUserAlertingConfigsResponse } from 'src/app/shared/jsonrpc/response/getUserAlertingConfigsResponse';
 import { Edge, Service, Utils, Websocket } from 'src/app/shared/shared';
 
 export enum AlertingType {
   offline = 0,
   fault = 1,
-  warning = 2
-};
+  warning = 2,
+}
 
 type DefaultValues = { [K in AlertingType]: Delay[]; };
 type Delay = { value: number, label: string };
@@ -24,20 +24,18 @@ type DetailedAlertingSetting = AlertingSetting & { isOfflineActive: boolean, isF
   templateUrl: './alerting.component.html',
 })
 export class AlertingComponent implements OnInit {
-  protected AlertingType = AlertingType;
 
   protected static readonly SELECTOR = "alerting";
+
   public readonly spinnerId: string = AlertingComponent.SELECTOR;
 
   protected readonly defaultValues: DefaultValues;
+  protected AlertingType = AlertingType;
 
   protected edge: Edge;
-  protected user: User;
   protected error: Error;
-
   protected currentUserInformation: DetailedAlertingSetting;
   protected currentUserForm: FormGroup;
-
   protected otherUserInformation: AlertingSetting[];
   protected otherUserForm: FormGroup;
 
@@ -60,11 +58,7 @@ export class AlertingComponent implements OnInit {
     this.service.setCurrentComponent({ languageKey: 'Edge.Config.Index.alerting' }, this.route).then(edge => {
       this.edge = edge;
 
-      this.service.metadata.subscribe(metadata => {
-        this.user = metadata.user;
-      });
-
-      let request = new GetUserAlertingConfigsRequest({ edgeId: this.edge.id });
+      const request = new GetUserAlertingConfigsRequest({ edgeId: this.edge.id });
 
       this.sendRequest(request).then(response => {
         const result = response.result;
@@ -75,6 +69,114 @@ export class AlertingComponent implements OnInit {
         this.error = error.error;
       });
     });
+  }
+
+  /**
+   * get if given delay is valid
+   */
+  protected isInvalidDelay(type: AlertingType, delay: number): boolean {
+    if (delay <= 0) {
+      return false;
+    }
+    return this.defaultValues[type].findIndex(e => e.value === delay) === -1;
+  }
+
+  /**
+   * get the label matching the given delay, with translated timeunits and
+   * attention to writing differences and singular and plural.
+   *
+   * @param delay to generate label for
+   * @returns label as string
+   */
+  protected getLabelToDelay(delay: number): string {
+    if (delay <= 0) {
+      return this.translate.instant("Edge.Config.ALERTING.DEACTIVATED");
+    }
+    if (delay >= 1440) {
+      delay = delay / 1440;
+      return delay + ' ' + (delay == 1
+        ? this.translate.instant("General.TIME.DAY")
+        : this.translate.instant("General.TIME.DAYS"));
+    } else if (delay >= 60) {
+      delay = delay / 60;
+      return delay + ' ' + (delay == 1
+        ? this.translate.instant("General.TIME.HOUR")
+        : this.translate.instant("General.TIME.HOURS"));
+    } else {
+      return delay + ' ' + (delay == 1
+        ? this.translate.instant("General.TIME.MINUTE")
+        : this.translate.instant("General.TIME.MINUTES"));
+    }
+  }
+
+  protected setUsersAlertingConfig() {
+    const edgeId: string = this.edge.id;
+
+    const dirtyformGroups: FormGroup<any>[] = [];
+    const changedUserSettings: UserSettingRequest[] = [];
+
+    if (this.currentUserForm.dirty) {
+      const formGroup = this.currentUserForm;
+      dirtyformGroups.push(formGroup);
+
+      const offlineEdgeDelay = this.currentUserInformation.isOfflineActive ?
+        this.currentUserForm.controls["offlineEdgeDelay"].value : 0;
+      const faultEdgeDelay = this.currentUserInformation.isFaultActive ?
+        this.currentUserForm.controls["faultEdgeDelay"].value : 0;
+      const warningEdgeDelay = this.currentUserInformation.isWarningActive ?
+        this.currentUserForm.controls["warningEdgeDelay"].value : 0;
+
+      changedUserSettings.push({
+        userLogin: this.currentUserInformation.userLogin,
+        offlineEdgeDelay: offlineEdgeDelay,
+        warningEdgeDelay: warningEdgeDelay,
+        faultEdgeDelay: faultEdgeDelay,
+      });
+    }
+
+    const userOptions: AlertingSetting[] = [];
+    if (this.otherUserInformation) {
+      if (this.otherUserForm.dirty) {
+        dirtyformGroups.push(this.otherUserForm);
+
+        for (const user of this.otherUserInformation) {
+          const control = this.otherUserForm.controls[user.userLogin];
+          if (control.dirty) {
+            const offlineEdgeDelay = control.value['offlineEdgeDelay'];
+            const faultEdgeDelay = control.value['faultEdgeDelay'];
+            const warningEdgeDelay = control.value['warningEdgeDelay'];
+            //let isActivated = control.value['isActivated'];
+            changedUserSettings.push({
+              userLogin: user.userLogin,
+              offlineEdgeDelay: offlineEdgeDelay,
+              warningEdgeDelay: warningEdgeDelay,
+              faultEdgeDelay: faultEdgeDelay,
+            });
+            userOptions.push(user);
+          }
+        }
+      }
+    }
+
+    console.log(changedUserSettings);
+
+    const request = new SetUserAlertingConfigsRequest({ edgeId: edgeId, userSettings: changedUserSettings });
+    this.sendRequestAndUpdate(request, dirtyformGroups);
+  }
+
+  /**
+   * get if any userSettings has changed/is dirty.
+   * @returns true if any settings are changed, else false
+   */
+  protected isDirty(): boolean {
+    if (this.error || !this.currentUserForm) {
+      return false;
+    }
+    return this.currentUserForm?.dirty || this.otherUserForm?.dirty;
+  }
+
+  protected loadOtherUsers(): void {
+    console.info("TEST");
   }
 
   private setupCurrentUser(response: AlertingSettingResponse) {
@@ -97,10 +199,10 @@ export class AlertingComponent implements OnInit {
     this.otherUserInformation = [];
     this.otherUserForm = new FormGroup({});
 
-    var sorted = this.sortedAlphabetically(response);
+    const sorted = this.sortedAlphabetically(response);
 
     sorted.forEach((r) => {
-      var setting: AlertingSetting = {
+      const setting: AlertingSetting = {
         userLogin: r.userLogin,
         offlineEdgeDelay: r.offlineEdgeDelay,
         faultEdgeDelay: r.faultEdgeDelay,
@@ -132,7 +234,7 @@ export class AlertingComponent implements OnInit {
   }
 
   private getValueOrDefault(setting: AlertingSetting, type: AlertingType) {
-    var val = this.getValue(setting, type);
+    const val = this.getValue(setting, type);
     return val <= 0 ? this.defaultValues[type][0].value : val;
   }
 
@@ -146,10 +248,6 @@ export class AlertingComponent implements OnInit {
       isFaultActive: setting.faultEdgeDelay > 0,
       isWarningActive: setting.warningEdgeDelay > 0,
     };
-  }
-
-  protected loadOtherUsers(): void {
-    console.info("TEST");
   }
 
   private sortedAlphabetically(userSettings: AlertingSettingResponse[]): AlertingSettingResponse[] {
@@ -167,99 +265,6 @@ export class AlertingComponent implements OnInit {
   }
 
   /**
-   * get if given delay is valid
-   */
-  protected isInvalidDelay(type: AlertingType, delay: number): boolean {
-    if (delay <= 0) {
-      return false;
-    }
-    return this.defaultValues[type].findIndex(e => e.value === delay) === -1;
-  }
-
-  /**
-   * get the label matching the given delay, with translated timeunits and
-   * attention to writing differences and singular and plural.
-   *
-   * @param delay to generate label for
-   * @returns label as string
-   */
-  protected getLabelToDelay(delay: number): string {
-    if (delay <= 0) {
-      return this.translate.instant("Edge.Config.Alerting.deactivated");
-    }
-    if (delay >= 1440) {
-      delay = delay / 1440;
-      return delay + ' ' + (delay == 1
-        ? this.translate.instant("Edge.Config.Alerting.interval.day")
-        : this.translate.instant("Edge.Config.Alerting.interval.days"));
-    } else if (delay >= 60) {
-      delay = delay / 60;
-      return delay + ' ' + (delay == 1
-        ? this.translate.instant("Edge.Config.Alerting.interval.hour")
-        : this.translate.instant("Edge.Config.Alerting.interval.hours"));
-    } else {
-      return delay + ' ' + (delay == 1
-        ? this.translate.instant("Edge.Config.Alerting.interval.minute")
-        : this.translate.instant("Edge.Config.Alerting.interval.minutes"));
-    }
-  }
-
-  protected setUsersAlertingConfig() {
-    let edgeId: string = this.edge.id;
-
-    let dirtyformGroups: FormGroup<any>[] = [];
-    let changedUserSettings: UserSettingRequest[] = [];
-
-    if (this.currentUserForm.dirty) {
-      var formGroup = this.currentUserForm;
-      dirtyformGroups.push(formGroup);
-
-      let offlineEdgeDelay = this.currentUserInformation.isOfflineActive ?
-        this.currentUserForm.controls["offlineEdgeDelay"].value : 0;
-      let faultEdgeDelay = this.currentUserInformation.isFaultActive ?
-        this.currentUserForm.controls["faultEdgeDelay"].value : 0;
-      let warningEdgeDelay = this.currentUserInformation.isWarningActive ?
-        this.currentUserForm.controls["warningEdgeDelay"].value : 0;
-
-      changedUserSettings.push({
-        userLogin: this.currentUserInformation.userLogin,
-        offlineEdgeDelay: offlineEdgeDelay,
-        warningEdgeDelay: warningEdgeDelay,
-        faultEdgeDelay: faultEdgeDelay,
-      });
-    }
-
-    let userOptions: AlertingSetting[] = [];
-    if (this.otherUserInformation) {
-      if (this.otherUserForm.dirty) {
-        dirtyformGroups.push(this.otherUserForm);
-
-        for (let user of this.otherUserInformation) {
-          let control = this.otherUserForm.controls[user.userLogin];
-          if (control.dirty) {
-            let offlineEdgeDelay = control.value['offlineEdgeDelay'];
-            let faultEdgeDelay = control.value['faultEdgeDelay'];
-            let warningEdgeDelay = control.value['warningEdgeDelay'];
-            //let isActivated = control.value['isActivated'];
-            changedUserSettings.push({
-              userLogin: user.userLogin,
-              offlineEdgeDelay: offlineEdgeDelay,
-              warningEdgeDelay: warningEdgeDelay,
-              faultEdgeDelay: faultEdgeDelay,
-            });
-            userOptions.push(user);
-          }
-        }
-      }
-    }
-
-    console.log(changedUserSettings);
-
-    let request = new SetUserAlertingConfigsRequest({ edgeId: edgeId, userSettings: changedUserSettings });
-    this.sendRequestAndUpdate(request, dirtyformGroups);
-  }
-
-  /**
    * send requests, show events using toasts and reset given formGroup if successful.
    * @param request   stucture containing neccesary parameters
    * @param formGroup   formGroup to update
@@ -269,12 +274,12 @@ export class AlertingComponent implements OnInit {
     this.sendRequest(request)
       .then(() => {
         this.service.toast(this.translate.instant('General.changeAccepted'), 'success');
-        for (let group of formGroup.values()) {
+        for (const group of formGroup.values()) {
           group.markAsPristine();
         }
       })
       .catch((response) => {
-        let error = response.error;
+        const error = response.error;
         this.errorToast(this.translate.instant('General.changeFailed'), error.message);
       });
   }
@@ -290,9 +295,9 @@ export class AlertingComponent implements OnInit {
       this.websocket.sendRequest(request).then(response => {
         resolve(response as GetUserAlertingConfigsResponse);
       }).catch(reason => {
-        let error = reason.error;
+        const error = reason.error;
         console.error(error);
-        this.errorToast(this.translate.instant('Edge.Config.Alerting.toast.error'), error.message);
+        this.errorToast(this.translate.instant('Edge.Config.ALERTING.TOAST.ERROR'), error.message);
         reject(reason);
       }).finally(() => {
         this.service.stopSpinner(this.spinnerId);
@@ -302,16 +307,5 @@ export class AlertingComponent implements OnInit {
 
   private errorToast(errorType: string, errorMsg: string) {
     this.service.toast('[ ' + errorType + ' ]<br/>' + errorMsg, 'danger');
-  }
-
-  /**
-   * get if any userSettings has changed/is dirty.
-   * @returns true if any settings are changed, else false
-   */
-  protected isDirty(): boolean {
-    if (this.error || !this.currentUserForm) {
-      return false;
-    }
-    return this.currentUserForm?.dirty || this.otherUserForm?.dirty;
   }
 }

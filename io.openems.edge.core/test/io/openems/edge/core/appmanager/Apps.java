@@ -16,7 +16,9 @@ import io.openems.edge.app.api.ModbusTcpApiReadOnly;
 import io.openems.edge.app.api.ModbusTcpApiReadWrite;
 import io.openems.edge.app.api.RestJsonApiReadOnly;
 import io.openems.edge.app.api.RestJsonApiReadWrite;
+import io.openems.edge.app.api.TimedataInfluxDb;
 import io.openems.edge.app.ess.FixActivePower;
+import io.openems.edge.app.ess.FixStateOfCharge;
 import io.openems.edge.app.ess.PowerPlantController;
 import io.openems.edge.app.ess.PrepareBatteryExtension;
 import io.openems.edge.app.evcs.AlpitronicEvcs;
@@ -32,12 +34,10 @@ import io.openems.edge.app.heat.HeatingElement;
 import io.openems.edge.app.integratedsystem.FeneconHome;
 import io.openems.edge.app.integratedsystem.FeneconHome20;
 import io.openems.edge.app.integratedsystem.FeneconHome30;
-import io.openems.edge.app.integratedsystem.fenecon.industrial.s.Isk010;
-import io.openems.edge.app.integratedsystem.fenecon.industrial.s.Isk011;
-import io.openems.edge.app.integratedsystem.fenecon.industrial.s.Isk110;
 import io.openems.edge.app.loadcontrol.ManualRelayControl;
 import io.openems.edge.app.loadcontrol.ThresholdControl;
 import io.openems.edge.app.meter.CarloGavazziMeter;
+import io.openems.edge.app.meter.DiscovergyMeter;
 import io.openems.edge.app.meter.JanitzaMeter;
 import io.openems.edge.app.meter.MicrocareSdm630Meter;
 import io.openems.edge.app.meter.SocomecMeter;
@@ -52,6 +52,9 @@ import io.openems.edge.app.pvselfconsumption.GridOptimizedCharge;
 import io.openems.edge.app.pvselfconsumption.SelfConsumptionOptimization;
 import io.openems.edge.app.timeofusetariff.AwattarHourly;
 import io.openems.edge.app.timeofusetariff.EntsoE;
+import io.openems.edge.app.timeofusetariff.GroupeE;
+import io.openems.edge.app.timeofusetariff.RabotCharge;
+import io.openems.edge.app.timeofusetariff.StadtwerkHassfurt;
 import io.openems.edge.app.timeofusetariff.StromdaoCorrently;
 import io.openems.edge.app.timeofusetariff.Tibber;
 import io.openems.edge.common.component.ComponentManager;
@@ -110,36 +113,6 @@ public class Apps {
 		return app(t, FeneconHome30::new, "App.FENECON.Home.30");
 	}
 
-	/**
-	 * Test method for creating a {@link Isk110}.
-	 * 
-	 * @param t the {@link AppManagerTestBundle}
-	 * @return the {@link OpenemsApp} instance
-	 */
-	public static final Isk110 feneconIsk110(AppManagerTestBundle t) {
-		return app(t, Isk110::new, "App.FENECON.Industrial.S.ISK110");
-	}
-
-	/**
-	 * Test method for creating a {@link Isk010}.
-	 * 
-	 * @param t the {@link AppManagerTestBundle}
-	 * @return the {@link OpenemsApp} instance
-	 */
-	public static final Isk010 feneconIsk010(AppManagerTestBundle t) {
-		return app(t, Isk010::new, "App.FENECON.Industrial.S.ISK010");
-	}
-
-	/**
-	 * Test method for creating a {@link Isk011}.
-	 * 
-	 * @param t the {@link AppManagerTestBundle}
-	 * @return the {@link OpenemsApp} instance
-	 */
-	public static final Isk011 feneconIsk011(AppManagerTestBundle t) {
-		return app(t, Isk011::new, "App.FENECON.Industrial.S.ISK011");
-	}
-
 	// TimeOfUseTariff
 
 	/**
@@ -160,6 +133,36 @@ public class Apps {
 	 */
 	public static final EntsoE entsoE(AppManagerTestBundle t) {
 		return app(t, EntsoE::new, "App.TimeOfUseTariff.ENTSO-E");
+	}
+
+	/**
+	 * Test method for creating a {@link GroupeE}.
+	 * 
+	 * @param t the {@link AppManagerTestBundle}
+	 * @return the {@link OpenemsApp} instance
+	 */
+	public static final GroupeE groupeE(AppManagerTestBundle t) {
+		return app(t, GroupeE::new, "App.TimeOfUseTariff.GroupeE");
+	}
+
+	/**
+	 * Test method for creating a {@link StadtwerkHassfurt}.
+	 * 
+	 * @param t the {@link AppManagerTestBundle}
+	 * @return the {@link OpenemsApp} instance
+	 */
+	public static final StadtwerkHassfurt stadtwerkHassfurt(AppManagerTestBundle t) {
+		return app(t, StadtwerkHassfurt::new, "App.TimeOfUseTariff.Hassfurt");
+	}
+
+	/**
+	 * Test method for creating a {@link RabotCharge}.
+	 * 
+	 * @param t the {@link AppManagerTestBundle}
+	 * @return the {@link OpenemsApp} instance
+	 */
+	public static final RabotCharge rabotCharge(AppManagerTestBundle t) {
+		return app(t, RabotCharge::new, "App.TimeOfUseTariff.RabotCharge");
 	}
 
 	/**
@@ -299,6 +302,16 @@ public class Apps {
 	}
 
 	/**
+	 * Test method for creating a {@link TimedataInfluxDb}.
+	 * 
+	 * @param t the {@link AppManagerTestBundle}
+	 * @return the {@link OpenemsApp} instance
+	 */
+	public static final TimedataInfluxDb timedataInfluxDb(AppManagerTestBundle t) {
+		return app(t, TimedataInfluxDb::new, "App.Timedata.InfluxDb");
+	}
+
+	/**
 	 * Test method for creating a {@link AlpitronicEvcs}.
 	 * 
 	 * @param t the {@link AppManagerTestBundle}
@@ -427,6 +440,16 @@ public class Apps {
 	}
 
 	/**
+	 * Test method for creating a {@link DiscoveregyMeter}.
+	 * 
+	 * @param t the {@link AppManagerTestBundle}
+	 * @return the {@link OpenemsApp} instance
+	 */
+	public static final DiscovergyMeter discovergyMeter(AppManagerTestBundle t) {
+		return app(t, DiscovergyMeter::new, "App.Meter.Discovergy");
+	}
+
+	/**
 	 * Test method for creating a {@link CarloGavazziMeter}.
 	 * 
 	 * @param t the {@link AppManagerTestBundle}
@@ -540,6 +563,16 @@ public class Apps {
 	 */
 	public static final FixActivePower fixActivePower(AppManagerTestBundle t) {
 		return app(t, FixActivePower::new, "App.Ess.FixActivePower");
+	}
+
+	/**
+	 * Test method for creating a {@link FixStateOfCharge}.
+	 * 
+	 * @param t the {@link AppManagerTestBundle}
+	 * @return the {@link OpenemsApp} instance
+	 */
+	public static final FixStateOfCharge fixStateOfCharge(AppManagerTestBundle t) {
+		return app(t, FixStateOfCharge::new, "App.Ess.FixStateOfCharge");
 	}
 
 	/**

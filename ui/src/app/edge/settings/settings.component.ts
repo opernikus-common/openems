@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Role } from 'src/app/shared/type/role';
 import { environment } from 'src/environments';
 import { Edge, Service, Utils } from '../../shared/shared';
-import { canSeeAppCenter } from './app/permissions';
+import { JsonrpcTestPermission } from './jsonrpctest/jsonrpctest.permission';
 
 @Component({
   selector: 'settings',
@@ -10,23 +10,30 @@ import { canSeeAppCenter } from './app/permissions';
 })
 export class SettingsComponent implements OnInit {
 
-  public edge: Edge = null;
+  public edge: Edge | null = null;
   public environment = environment;
 
-  public canSeeAppCenter: boolean | undefined;
+  public isAtLeastOwner: boolean = false;
+  public isAtLeastInstaller: boolean = false;
+  public isAtLeastAdmin: boolean = false;
+  public canSeeJsonrpcTest: boolean = false;
+
   protected isEdgeBackend: boolean = environment.backend === 'OpenEMS Edge';
 
   constructor(
-    private route: ActivatedRoute,
     protected utils: Utils,
     private service: Service,
   ) {
   }
 
   public ngOnInit() {
-    this.service.setCurrentComponent({ languageKey: 'Menu.edgeSettings' }, this.route).then(edge => {
+    this.service.getCurrentEdge().then(edge => {
       this.edge = edge;
-      this.canSeeAppCenter = canSeeAppCenter(this.edge);
+      const user = this.service.metadata?.value?.user;
+      this.isAtLeastOwner = edge.roleIsAtLeast(Role.OWNER);
+      this.isAtLeastInstaller = edge.roleIsAtLeast(Role.INSTALLER);
+      this.isAtLeastAdmin = edge.roleIsAtLeast(Role.ADMIN);
+      this.canSeeJsonrpcTest = JsonrpcTestPermission.canSee(user, edge);
     });
   }
 }
