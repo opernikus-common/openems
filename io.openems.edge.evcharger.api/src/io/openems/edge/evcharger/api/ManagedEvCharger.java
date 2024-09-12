@@ -22,8 +22,8 @@ import io.openems.edge.evcharger.api.data.Phases;
 import io.openems.edge.evcharger.api.data.Priority;
 
 /**
- * ManagedEvCharger represents a fully operational and manageable
- * EvCharger chargepoint.
+ * ManagedEvCharger represents a fully operational and manageable EvCharger
+ * chargepoint.
  */
 public interface ManagedEvCharger extends OpenemsComponent {
 
@@ -383,8 +383,6 @@ public interface ManagedEvCharger extends OpenemsComponent {
 	public default void _setPowerPrecision(double value) {
 		this.getPowerPrecisionChannel().setNextValue(value);
 	}
-
-
 
 	/**
 	 * Gets the Channel for {@link ConfigChannelId#PRIORITY}.

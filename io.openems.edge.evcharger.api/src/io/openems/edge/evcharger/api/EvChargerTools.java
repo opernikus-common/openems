@@ -20,43 +20,6 @@ import io.openems.edge.timedata.api.utils.CalculateEnergyFromPower;
 
 public class EvChargerTools {
 
-	// TODO calculate overall energy correctly based on the
-	// RAW_ACTIVE_CONSUMPTION_ENERGY plus the energy read out from DB at startup
-	//
-	// also ACTIVE_CONSUMPTION_ENERGY = (offset aus db) +
-	// (RAW_ACTIVE_CONSUMPTION_ENERGY zum aktuellen Zeitpunkt) -
-	// (RAW_ACTIVE_CONSUMPTION_ENERGY zum Startzeitpunkt))
-	/**
-	 * Adds EvCharger listeners to handle the missing channels for an EVCharger.
-	 * 
-	 * <p>
-	 * Note: needs to be called again after change on phaseRotation.
-	 * 
-	 * @param charger the charger.
-	 */
-	// public static void addEvChargerListener(EvCharger charger) {
-	//
-	// // addRawCurrentListener(charger);
-	// addRawPowerListener(charger);
-	//
-	// // we ignore RAW_CONSUMPTION_ENERGY_SESSION, because it is probably better to
-	// // calculate it the same way for all charge point models (better UI feeling)
-	//
-	// /*
-	// * The nature ElectricityMeter provides a lot more information. Note that this
-	// * values typically are not needed for a simple EvCharger. They only burden
-	// the
-	// * load on the database. Please decide wise, if you want to set them.
-	// * REACTIVE_POWER(|L1|L2|L3) VOLTAGE(|L1|L2|L3)
-	// * ACTIVE_PRODUCTION_ENERGY(|L1|L2|L3) ACTIVE_CONSUMPTION_ENERGY(L1|L2|L3)
-	// * FREQUENCY
-	// */
-	//
-	// addEnergyListener(charger);
-	//
-	// // TODO ManageableEvCharger interface
-	// }
-
 	/**
 	 * Adds EvCharger raw current listeners.
 	 * 
@@ -98,24 +61,6 @@ public class EvChargerTools {
 		((IntegerReadChannel) charger.channel(charger.getPhaseRotation().getInPhase3()))
 				.removeOnSetNextValueCallback(currentListener.c());
 	}
-
-	// /**
-	// * Adds EvCharger ConfigChannelId listeners.
-	// *
-	// * @param genCharger the ManagedEvCharger object.
-	// * @param rawCharger the concrete hardware implementation of the charger.
-	// */
-	// public static void addConfigListener(ManageableEvCharger rawCharger) {
-	// rawCharger.getMinCurrentChannel().onSetNextValue(val -> {
-	// rawCharger._setMinCurrent(val.get());
-	// });
-	// rawCharger.getMaxCurrentChannel().onSetNextValue(val -> {
-	// rawCharger._setMaxCurrent(val.get());
-	// });
-	// rawCharger.getChargingTypeChannel().onSetNextValue(val -> {
-	// rawCharger._setChargingType(val.get());
-	// });
-	// }
 
 	/**
 	 * Adds raw charge power EvCharger listeners.

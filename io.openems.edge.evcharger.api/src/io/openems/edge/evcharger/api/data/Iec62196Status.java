@@ -6,7 +6,9 @@ import io.openems.common.types.OptionsEnum;
  * Charging states based on IEC 62196-2.
  * 
  * <p>
- * See https://de.wikipedia.org/wiki/IEC_62196#Typ_2:_EN_62196-2_(VDE-AR-E_2623-2-2) for more.
+ * See
+ * https://de.wikipedia.org/wiki/IEC_62196#Typ_2:_EN_62196-2_(VDE-AR-E_2623-2-2)
+ * for more.
  */
 public enum Iec62196Status implements OptionsEnum {
 	UNDEFINED(64, "Undefined"), //

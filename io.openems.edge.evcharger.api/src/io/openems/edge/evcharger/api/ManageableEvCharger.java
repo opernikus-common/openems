@@ -56,24 +56,4 @@ public interface ManageableEvCharger extends EvCharger, ElectricityMeter, Timeda
 	 */
 	public void applyCurrent(int current, int maxNumberOfPhases) throws Exception;
 
-	// TODO
-	// /**
-	// * Used for Modbus/TCP Api Controller. Provides a Modbus table for the
-	// Channels
-	// * of this Component.
-	// *
-	// * @param accessMode filters the Modbus-Records that should be shown
-	// * @return the {@link ModbusSlaveNatureTable}
-	// */
-	// public static ModbusSlaveNatureTable getModbusSlaveNatureTable(AccessMode
-	// accessMode) {
-	// return ModbusSlaveNatureTable.of(ManageableEvCharger.class, accessMode, 100)
-	// //
-	// .channel(0, RawChannelId.SET_CHARGE_POWER_LIMIT, ModbusType.UINT16) //
-	// .channel(1, RawChannelId.SET_DISPLAY_TEXT, ModbusType.STRING16) //
-	// .channel(17, RawChannelId.SET_ENERGY_LIMIT, ModbusType.UINT16) //
-	// .channel(18, RawChannelId.PRIORITY, ModbusType.ENUM16) //
-	// .build();
-	// }
-
 }
