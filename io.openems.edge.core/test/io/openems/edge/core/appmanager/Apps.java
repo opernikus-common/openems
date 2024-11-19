@@ -19,6 +19,7 @@ import io.openems.edge.app.api.RestJsonApiReadWrite;
 import io.openems.edge.app.api.TimedataInfluxDb;
 import io.openems.edge.app.ess.FixActivePower;
 import io.openems.edge.app.ess.FixStateOfCharge;
+import io.openems.edge.app.ess.Limiter14a;
 import io.openems.edge.app.ess.PowerPlantController;
 import io.openems.edge.app.ess.PrepareBatteryExtension;
 import io.openems.edge.app.evcs.AlpitronicEvcs;
@@ -34,13 +35,23 @@ import io.openems.edge.app.heat.HeatingElement;
 import io.openems.edge.app.integratedsystem.FeneconHome;
 import io.openems.edge.app.integratedsystem.FeneconHome20;
 import io.openems.edge.app.integratedsystem.FeneconHome30;
+import io.openems.edge.app.integratedsystem.fenecon.commercial.FeneconCommercial92;
 import io.openems.edge.app.loadcontrol.ManualRelayControl;
 import io.openems.edge.app.loadcontrol.ThresholdControl;
 import io.openems.edge.app.meter.CarloGavazziMeter;
 import io.openems.edge.app.meter.DiscovergyMeter;
 import io.openems.edge.app.meter.JanitzaMeter;
 import io.openems.edge.app.meter.MicrocareSdm630Meter;
+import io.openems.edge.app.meter.PhoenixContactMeter;
+import io.openems.edge.app.meter.PqPlusMeter;
 import io.openems.edge.app.meter.SocomecMeter;
+import io.openems.edge.app.openemshardware.BeagleBoneBlack;
+import io.openems.edge.app.openemshardware.Compulab;
+import io.openems.edge.app.openemshardware.TechbaseCm3;
+import io.openems.edge.app.openemshardware.TechbaseCm4;
+import io.openems.edge.app.openemshardware.TechbaseCm4Max;
+import io.openems.edge.app.openemshardware.TechbaseCm4s;
+import io.openems.edge.app.openemshardware.TechbaseCm4sGen2;
 import io.openems.edge.app.peakshaving.PeakShaving;
 import io.openems.edge.app.peakshaving.PhaseAccuratePeakShaving;
 import io.openems.edge.app.pvinverter.FroniusPvInverter;
@@ -56,13 +67,13 @@ import io.openems.edge.app.timeofusetariff.GroupeE;
 import io.openems.edge.app.timeofusetariff.RabotCharge;
 import io.openems.edge.app.timeofusetariff.StadtwerkHassfurt;
 import io.openems.edge.app.timeofusetariff.StromdaoCorrently;
+import io.openems.edge.app.timeofusetariff.Swisspower;
 import io.openems.edge.app.timeofusetariff.Tibber;
 import io.openems.edge.common.component.ComponentManager;
 
-public class Apps {
+public final class Apps {
 
 	private Apps() {
-		super();
 	}
 
 	/**
@@ -113,6 +124,16 @@ public class Apps {
 		return app(t, FeneconHome30::new, "App.FENECON.Home.30");
 	}
 
+	/**
+	 * Test method for creating a {@link FeneconCommercial92}.
+	 * 
+	 * @param t the {@link AppManagerTestBundle}
+	 * @return the {@link OpenemsApp} instance
+	 */
+	public static final FeneconCommercial92 feneconCommercial92(AppManagerTestBundle t) {
+		return app(t, FeneconCommercial92::new, "App.FENECON.Commercial.92");
+	}
+
 	// TimeOfUseTariff
 
 	/**
@@ -156,6 +177,16 @@ public class Apps {
 	}
 
 	/**
+	 * Test method for creating a {@link Swisspower}.
+	 * 
+	 * @param t the {@link AppManagerTestBundle}
+	 * @return the {@link OpenemsApp} instance
+	 */
+	public static final Swisspower swisspower(AppManagerTestBundle t) {
+		return app(t, Swisspower::new, "App.TimeOfUseTariff.Swisspower");
+	}
+
+	/**
 	 * Test method for creating a {@link RabotCharge}.
 	 * 
 	 * @param t the {@link AppManagerTestBundle}
@@ -183,6 +214,76 @@ public class Apps {
 	 */
 	public static final Tibber tibber(AppManagerTestBundle t) {
 		return app(t, Tibber::new, "App.TimeOfUseTariff.Tibber");
+	}
+
+	/**
+	 * Test method for creating a {@link BeagleBoneBlack}.
+	 * 
+	 * @param t the {@link AppManagerTestBundle}
+	 * @return the {@link OpenemsApp} instance
+	 */
+	public static final BeagleBoneBlack beagleBoneBlack(AppManagerTestBundle t) {
+		return app(t, BeagleBoneBlack::new, "App.OpenemsHardware.BeagleBoneBlack");
+	}
+
+	/**
+	 * Test method for creating a {@link Compulab}.
+	 * 
+	 * @param t the {@link AppManagerTestBundle}
+	 * @return the {@link OpenemsApp} instance
+	 */
+	public static final Compulab compulab(AppManagerTestBundle t) {
+		return app(t, Compulab::new, "App.OpenemsHardware.Compulab");
+	}
+
+	/**
+	 * Test method for creating a {@link TechbaseCm3}.
+	 * 
+	 * @param t the {@link AppManagerTestBundle}
+	 * @return the {@link OpenemsApp} instance
+	 */
+	public static final TechbaseCm3 techbaseCm3(AppManagerTestBundle t) {
+		return app(t, TechbaseCm3::new, "App.OpenemsHardware.CM3");
+	}
+
+	/**
+	 * Test method for creating a {@link TechbaseCm4}.
+	 * 
+	 * @param t the {@link AppManagerTestBundle}
+	 * @return the {@link OpenemsApp} instance
+	 */
+	public static final TechbaseCm4 techbaseCm4(AppManagerTestBundle t) {
+		return app(t, TechbaseCm4::new, "App.OpenemsHardware.CM4");
+	}
+
+	/**
+	 * Test method for creating a {@link TechbaseCm4Max}.
+	 * 
+	 * @param t the {@link AppManagerTestBundle}
+	 * @return the {@link OpenemsApp} instance
+	 */
+	public static final TechbaseCm4Max techbaseCm4Max(AppManagerTestBundle t) {
+		return app(t, TechbaseCm4Max::new, "App.OpenemsHardware.CM4Max");
+	}
+
+	/**
+	 * Test method for creating a {@link TechbaseCm4s}.
+	 * 
+	 * @param t the {@link AppManagerTestBundle}
+	 * @return the {@link OpenemsApp} instance
+	 */
+	public static final TechbaseCm4s techbaseCm4s(AppManagerTestBundle t) {
+		return app(t, TechbaseCm4s::new, "App.OpenemsHardware.CM4S");
+	}
+
+	/**
+	 * Test method for creating a {@link TechbaseCm4sGen2}.
+	 * 
+	 * @param t the {@link AppManagerTestBundle}
+	 * @return the {@link OpenemsApp} instance
+	 */
+	public static final TechbaseCm4sGen2 techbaseCm4sGen2(AppManagerTestBundle t) {
+		return app(t, TechbaseCm4sGen2::new, "App.OpenemsHardware.CM4S.Gen2");
 	}
 
 	// Test
@@ -470,6 +571,16 @@ public class Apps {
 	}
 
 	/**
+	 * Test method for creating a {@link PqPlusMeter}.
+	 * 
+	 * @param t the {@link AppManagerTestBundle}
+	 * @return the {@link OpenemsApp} instance
+	 */
+	public static final PqPlusMeter pqPlusMeter(AppManagerTestBundle t) {
+		return app(t, PqPlusMeter::new, "App.Meter.PqPlus");
+	}
+
+	/**
 	 * Test method for creating a {@link MicrocareSdm630Meter}.
 	 * 
 	 * @param t the {@link AppManagerTestBundle}
@@ -477,6 +588,16 @@ public class Apps {
 	 */
 	public static final MicrocareSdm630Meter microcareSdm630Meter(AppManagerTestBundle t) {
 		return app(t, MicrocareSdm630Meter::new, "App.Meter.Microcare.Sdm630");
+	}
+
+	/**
+	 * Test method for creating a {@link PhoenixContactMeter}.
+	 * 
+	 * @param t the {@link AppManagerTestBundle}
+	 * @return the {@link OpenemsApp} instance
+	 */
+	public static final PhoenixContactMeter phoenixContactMeter(AppManagerTestBundle t) {
+		return app(t, PhoenixContactMeter::new, "App.Meter.PhoenixContact");
 	}
 
 	// PV-Inverter
@@ -593,6 +714,16 @@ public class Apps {
 	 */
 	public static final PowerPlantController powerPlantController(AppManagerTestBundle t) {
 		return app(t, PowerPlantController::new, "App.Ess.PowerPlantController");
+	}
+
+	/**
+	 * Test method for creating a {@link Limiter14a}.
+	 * 
+	 * @param t the {@link AppManagerTestBundle}
+	 * @return the {@link OpenemsApp} instance
+	 */
+	public static final Limiter14a limiter14a(AppManagerTestBundle t) {
+		return app(t, Limiter14a::new, "App.Ess.Limiter14a");
 	}
 
 	private static final <T> T app(AppManagerTestBundle t, DefaultAppConstructor<T> constructor, String appId) {
