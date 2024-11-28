@@ -1,0 +1,7 @@
+= EvCharger Managed 
+
+Representation of a managed EvCharger component. 
+Component enhances an EvCharger driver component (a ManageableEvCharger) with more context
+and it unifies the behavior of different chargepoint driver implementations to the controller level.
+
+https://github.com/OpenEMS/openems/tree/develop/io.openems.edge.evcharger.managed.base[Source Code icon:github[]]
